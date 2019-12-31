@@ -1,12 +1,12 @@
 <template>
-    <div class="home">
-        This is home page
+    <div class="add">
+        This is add page
     </div>
 </template>
 
 <script>
 export default {
-    name: 'home',
+    name: 'add',
     components: {},
 };
 </script>
