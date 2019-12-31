@@ -37,6 +37,15 @@ const routes = [
     },
   },
   {
+    path: '/folder',
+    name: 'folder',
+    component: () => import('@/views/Folder.vue'),
+    meta: {
+      requireAuth: true,
+      index: 3,
+    },
+  },
+  {
     path: '*',
     name: 'notfound',
     redirect: '/',
