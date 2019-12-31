@@ -1,5 +1,6 @@
 <template>
     <v-app>
+        {{ user }}
         <v-content>
             <transition name="slide-left" mode="out-in">
                 <router-view :key="$route.fullPath"></router-view>
@@ -12,6 +13,13 @@
 import Vue from 'vue';
 export default Vue.extend({
     name: 'App',
+    computed: {
+        user: {
+            get() {
+                return this.$store.getters.user;
+            },
+        },
+    },
 });
 </script>
 <style>
