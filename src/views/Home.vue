@@ -27,28 +27,18 @@
             </v-toolbar>
         </div>
         <div class="px-8">
-            <v-card raised dark height="30vh">
-                <v-card color="primary" height="20vh" class="pa-6">
-                    hey
-                </v-card>
-                <div class="d-flex align-center px-6 py-5" >
-                    <div>
-                        <div class="grey--text overline">learned</div>
-                        <div class="caption">100%</div>
-                    </div>
-                    <v-spacer></v-spacer>
-                    <v-chip small class="primary" outlined>browse</v-chip>
-                </div>
-            </v-card>
+            <flash-set-card></flash-set-card>
+            <option-panel></option-panel>
         </div>
     </div>
 </template>
 
 <script>
+import FlashSetCard from '@/components/FlashSetCard.vue';
+import OptionPanel from '@/components/OptionPanel.vue';
 export default {
     name: 'home',
-    components: {
-    },
+    components: { FlashSetCard, OptionPanel },
     computed: {
         currentUser() {
             return this.$store.getters.user;

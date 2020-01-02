@@ -78,7 +78,7 @@ export default {
 <style scoped>
 .rotated-fab {
     transform: rotate(90deg);
-    transition: 0.2s cubic-bezier(1, 0, 0, 1);
+    transition: transform 0.2s cubic-bezier(1, 0, 0, 1);
 }
 .rotated-fab--active {
     transform: rotate(40deg);
