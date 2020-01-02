@@ -27,10 +27,10 @@
             </v-toolbar>
         </div>
         <div class="px-8">
-            <r-card raised dark height="30vh">
-                <r-card color="primary" height="20vh" class="pa-6">
+            <v-card raised dark height="30vh">
+                <v-card color="primary" height="20vh" class="pa-6">
                     hey
-                </r-card>
+                </v-card>
                 <div class="d-flex align-center px-6 py-5">
                     <div>
                         <div class="grey--text overline">learned</div>
@@ -39,17 +39,15 @@
                     <v-spacer></v-spacer>
                     <v-chip small class="primary" outlined>browse</v-chip>
                 </div>
-            </r-card>
+            </v-card>
         </div>
     </div>
 </template>
 
 <script>
-import RCard from '@/components/RCard.vue';
 export default {
     name: 'home',
     components: {
-        RCard,
     },
     computed: {
         currentUser() {
