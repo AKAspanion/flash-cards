@@ -4,6 +4,7 @@
         right
         absolute
         direction="top"
+        v-if="showBarNav"
         v-model="navModel"
         transition="slide-y-reverse-transition"
     >

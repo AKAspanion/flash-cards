@@ -1,6 +1,6 @@
 <template>
     <div class="home">
-        <div class="px-5 py-2">
+        <!-- <div class="px-5 py-2">
             <v-toolbar flat height="120">
                 <div class="avatar-container">
                     <v-btn icon>
@@ -25,9 +25,9 @@
                     </div>
                 </div>
             </v-toolbar>
-        </div>
+        </div> -->
         <div class="px-8">
-            <flash-set-card></flash-set-card>
+            <!-- <flash-set-card></flash-set-card> -->
             <option-panel></option-panel>
         </div>
     </div>

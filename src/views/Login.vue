@@ -11,13 +11,14 @@
                     label="Password"
                     v-model="user.password"
                 ></v-text-field>
-                <v-btn type="submit">Login</v-btn>
+                <v-btn type="submit" :loading="loading">Login</v-btn>
             </v-form>
         </v-card>
     </div>
 </template>
 
 <script>
+import { navigateToPath } from '@/util';
 import FirebaseWeb from '@/firebase';
 const firebase = new FirebaseWeb();
 
@@ -29,14 +30,22 @@ export default {
                 password: '',
             },
             loginForm: false,
+            loading: false
         };
     },
     methods: {
         onLogin() {
-            if (!firebase.isAppInitialized()) {
-                firebase.initializeFirebase();
-            }
-            firebase.signInWithEmail(this.user);
+            this.loading = true;
+            firebase.signInWithEmail(this.user)
+                .then(()=>{
+                    navigateToPath('/home');
+                })
+                .catch((err)=>{
+                    console.log(err);
+                })
+                .finally(()=>{                
+                    this.loading = false;
+                })
         },
     },
 };
