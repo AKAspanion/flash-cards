@@ -1,17 +1,9 @@
 <template>
-    <v-card flat tile width="100vw" height="calc(100vh - 56px)">
-        <div class="floating-loader">
-            <v-progress-linear
-                v-if="loading"
-                color="primary"
-                indeterminate
-                height="4"
-            ></v-progress-linear>
-        </div>
+    <v-sheet flat tile width="100vw" height="100vh">
         <transition name="slide-left" mode="out-in">
             <router-view :key="$route.fullPath"></router-view>
         </transition>
-    </v-card>
+    </v-sheet>
 </template>
 
 <script>
