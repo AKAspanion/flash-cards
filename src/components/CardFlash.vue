@@ -7,13 +7,15 @@
             <div class="flash-card-front pa-6">
                 <div class="flash-card-content">
                     <div class="d-flex align-center justify-center fill-height">
-                        <span
+                        <div
+                            @click="onTextClick"
                             v-if="!editing && !flipped"
-                            class="headline"
-                            @click="editing = true"
+                            class="headline d-inline-block"
                         >
-                            {{ value.front || 'this is example front side' }}
-                        </span>
+                            {{
+                                value.front || 'example front side of a flashcard'
+                            }}
+                        </div>
                         <v-textarea
                             dark
                             rounded
@@ -21,36 +23,38 @@
                             rows="10"
                             hide-details
                             :value="value.front"
+                            :ref="value.id + 'front'"
                             v-if="editing && !flipped"
                             @input="update('front', $event)"
                         >
+                            <template #append>
+                                <v-icon @click="editing = false">
+                                    mdi-check
+                                </v-icon>
+                            </template>
                         </v-textarea>
                     </div>
                 </div>
                 <div class="flash-card-actions d-flex align-center my-3">
-                    <v-btn icon dark @click="$emit('delete')">
-                        <v-icon>mdi-delete</v-icon>
+                    <v-btn icon dark @click="$emit('delete', value)">
+                        <v-icon>mdi-trash-can</v-icon>
                     </v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn v-if="editing" icon dark @click="editing = false"
-                        ><v-icon>mdi-check</v-icon></v-btn
-                    >
-                    <v-spacer></v-spacer>
                     <v-btn icon dark @click="onCardFlip">
-                        <v-icon>mdi-flip-horizontal</v-icon>
+                        <v-icon>mdi-flip-to-back</v-icon>
                     </v-btn>
                 </div>
             </div>
             <div class="flash-card-back pa-6">
                 <div class="flash-card-content">
                     <div class="d-flex align-center justify-center fill-height">
-                        <span
+                        <div
+                            @click="onTextClick"
                             v-if="!editing && flipped"
-                            class="headline"
-                            @click="editing = true"
+                            class="headline d-inline-block"
                         >
-                            {{ value.back || 'this is example back side' }}
-                        </span>
+                            {{ value.back || 'example back side of a flashcard' }}
+                        </div>
                         <v-textarea
                             dark
                             rounded
@@ -58,20 +62,22 @@
                             rows="10"
                             hide-details
                             :value="value.back"
+                            :ref="value.id + 'back'"
                             v-if="editing && flipped"
                             @input="update('back', $event)"
                         >
+                            <template #append>
+                                <v-icon @click="editing = false">
+                                    mdi-check
+                                </v-icon>
+                            </template>
                         </v-textarea>
                     </div>
                 </div>
                 <div class="flash-card-actions d-flex align-center my-3">
                     <v-spacer></v-spacer>
-                    <v-btn v-if="editing" icon dark @click="editing = false"
-                        ><v-icon>mdi-check</v-icon></v-btn
-                    >
-                    <v-spacer></v-spacer>
                     <v-btn icon dark @click="onCardFlip">
-                        <v-icon>mdi-flip-horizontal</v-icon>
+                        <v-icon>mdi-flip-to-front</v-icon>
                     </v-btn>
                 </div>
             </div>
@@ -91,6 +97,16 @@ export default {
     methods: {
         update(key, value) {
             this.$emit('input', { ...this.value, [key]: value });
+        },
+        onTextClick() {
+            this.editing = true;
+            setTimeout(() => {
+                this.$nextTick(() => {
+                    this.$refs[
+                        `${this.value.id}${this.flipped ? 'back' : 'front'}`
+                    ].focus();
+                });
+            }, 50);
         },
         onCardFlip() {
             this.$emit('flip');
@@ -125,7 +141,7 @@ export default {
 }
 
 .flash-card-content {
-    overflow: hidden;
+    overflow-x: hidden;
     height: calc(100% - 50px);
 }
 

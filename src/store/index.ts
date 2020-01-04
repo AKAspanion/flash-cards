@@ -19,6 +19,7 @@ export default new Vuex.Store({
     loading: false,
     isLoggedIn: false,
     landingVisited: false,
+    flashCardSets: [],
   },
   mutations: {
     setSnackBar(state, payload) {
@@ -32,6 +33,12 @@ export default new Vuex.Store({
     },
     setLogin(state, payload) {
       state.isLoggedIn = payload;
+    },
+    setFlashCardSets(state, payload) {
+      state.flashCardSets = payload;
+    },
+    landingVisited(state, payload) {
+      state.landingVisited = payload;
     },
   },
   actions: {
@@ -86,6 +93,9 @@ export default new Vuex.Store({
     LOADING({ commit }, payload) {
       commit('setLoading', payload);
     },
+    SET_FLASH_CARDS({ commit }, payload) {
+      commit('setFlashCardSets', payload);
+    },
   },
   getters: {
     loading(state) {
@@ -99,6 +109,12 @@ export default new Vuex.Store({
     },
     loggedIn(state) {
       return state.isLoggedIn;
+    },
+    flashCardSets(state) {
+      return state.flashCardSets;
+    },
+    landingVisited(state) {
+      return state.landingVisited;
     },
   },
 });

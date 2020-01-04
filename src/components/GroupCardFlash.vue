@@ -6,9 +6,11 @@
                 v-for="(card, index) in value"
                 v-slot:default="{ active, toggle }"
             >
-                <transition name="slide-left" mode="out-in">
-                    <card-flash :value="card" @input="onUpdate"></card-flash>
-                </transition>
+                <card-flash
+                    :value="card"
+                    @input="onUpdate"
+                    @delete="onDelete"
+                ></card-flash>
             </v-slide-item>
         </v-slide-group>
     </v-sheet>
@@ -29,9 +31,13 @@ export default {
     methods: {
         onUpdate(val) {
             let newData = [...this.value];
-            newData[newData.findIndex((obj) => obj.id == val.id)] = {
+            newData[newData.findIndex((obj) => obj.id === val.id)] = {
                 ...val,
             };
+            this.$emit('input', newData);
+        },
+        onDelete(val) {
+            let newData = this.value.filter((obj) => obj.id !== val.id);
             this.$emit('input', newData);
         },
     },

@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { navigateToPath, uid } from '@/util';
+import { navigateToPath, uid, fetchAllFlashCardSets } from '@/util';
 import BarTop from '@/components/BarTop.vue';
 import BtnAction from '@/components/BtnAction.vue';
 import GroupCardFlash from '@/components/GroupCardFlash.vue';
@@ -61,20 +61,15 @@ export default {
     data() {
         return {
             title: 'untitled set',
-            cards: [
-                {
-                    front: 'what is hello in hindi',
-                    back: 'namaste',
-                    id: 1,
-                },
-                {
-                    front: 'what is yes in french',
-                    back: 'qui',
-                    id: 2,
-                },
-            ],
             titleEdit: false,
         };
+    },
+    computed: {
+        cards() {
+            return this.$store.getters.flashCardSets.length
+                ? this.$store.getters.flashCardSets[0].cards
+                : [];
+        },
     },
     components: {
         BarTop,
@@ -92,6 +87,22 @@ export default {
         onCardChange() {
             console.log(card);
         },
+    },
+    mounted() {
+        if (!this.$store.getters.landingVisited) {
+            this.$store.dispatch('LOADING', true);
+            fetchAllFlashCardSets(this.$store.getters.user)
+                .then((data) => {
+                    this.$store.dispatch('SET_FLASH_CARDS', data);
+                    this.$store.dispatch('LANDING_VISITED', true);
+                })
+                .catch(() => {
+                    this.$store.dispatch('SET_FLASH_CARDS', []);
+                })
+                .finally(() => {
+                    this.$store.dispatch('LOADING', false);
+                });
+        }
     },
 };
 </script>
