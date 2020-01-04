@@ -11,15 +11,14 @@
             </v-icon>
         </div>
         <div class="pt-4 pb-12 px-8">
-            <slot
-                >options<br />options<br />options<br />options<br />options<br
-            /></slot>
+            <slot></slot>
         </div>
     </v-card>
 </template>
 
 <script>
 export default {
+    props: ['value'],
     data() {
         return {
             start: false,
@@ -31,6 +30,11 @@ export default {
             touchStartEvent: null,
             touchEndEvent: null,
         };
+    },
+    watch: {
+        value(val) {
+            this.$emit('input', val);
+        },
     },
     methods: {
         handleMouseDown(e) {
@@ -72,7 +76,7 @@ export default {
             let card = document.querySelector('.options-card');
             card.style.transition = `transform 200ms ease-out`;
             if (!this.moving) {
-                this.open = !this.open;
+                this.toggleOpen();
                 if (!this.open) {
                     card.style.transform = `translate3d(0px, calc(100% - 56px), 0)`;
                 } else {
@@ -93,10 +97,21 @@ export default {
             this.moving = false;
             this.snap = false;
         },
-
         handleClick(e) {
             if (!this.touchEndEvent) {
-                this.open = !this.open;
+                this.toggleOpen();
+            }
+        },
+        toggleOpen() {
+            this.open = !this.open;
+        },
+        togglePanel() {
+            this.toggleOpen();
+            let card = document.querySelector('.options-card');
+            if (this.open) {
+                card.style.transform = `translate3d(0px, 0, 0)`;
+            } else {
+                card.style.transform = `translate3d(0px, calc(100% - 56px), 0)`;
             }
         },
     },

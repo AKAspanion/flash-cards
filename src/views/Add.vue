@@ -1,6 +1,6 @@
 <template>
     <div class="add-container">
-        <bar-top @click:left="goBack">
+        <bar-top @click:left="goBack" @click:right="openOptions">
             <template #left-button>
                 <v-icon size="32" color="primary">mdi-arrow-left</v-icon>
             </template>
@@ -19,9 +19,9 @@
                         @keyup.enter="titleEdit = false"
                     >
                         <template #append>
-                            <v-icon @click="titleEdit = false"
-                                >mdi-check</v-icon
-                            >
+                            <v-icon @click="titleEdit = false">
+                                mdi-check
+                            </v-icon>
                         </template>
                     </v-text-field>
                 </div>
@@ -55,6 +55,10 @@
         <v-btn fixed fab left bottom color="primary">
             <v-icon>mdi-check</v-icon>
         </v-btn>
+        <option-panel
+            ref="addoptions"
+            v-slot:default="{ toggle }"
+        ></option-panel>
     </div>
 </template>
 
@@ -62,6 +66,7 @@
 import { navigateToPath, uid, fetchAllFlashCardSets } from '@/util';
 import BarTop from '@/components/BarTop.vue';
 import BtnAction from '@/components/BtnAction.vue';
+import OptionPanel from '@/components/OptionPanel.vue';
 import GroupCardFlash from '@/components/GroupCardFlash.vue';
 import ContainerEmpty from '@/components/ContainerEmpty.vue';
 export default {
@@ -69,6 +74,7 @@ export default {
     components: {
         BarTop,
         BtnAction,
+        OptionPanel,
         ContainerEmpty,
         GroupCardFlash,
     },
@@ -83,9 +89,11 @@ export default {
         goBack() {
             navigateToPath('/home');
         },
+        openOptions() {
+            this.$refs.addoptions.togglePanel();
+        },
         onCardAdd() {
             this.cards = [{ id: uid(), front: '', back: '' }, ...this.cards];
-            console.log('add card');
         },
     },
     mounted() {

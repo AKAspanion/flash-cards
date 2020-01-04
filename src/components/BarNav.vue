@@ -2,7 +2,7 @@
     <v-speed-dial
         bottom
         right
-        absolute
+        fixed
         direction="top"
         v-if="showBarNav"
         v-model="navModel"
