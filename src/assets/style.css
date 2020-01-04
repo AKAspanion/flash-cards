@@ -2,7 +2,7 @@ body {
   overflow: hidden;
 }
 
-/* global card css overrride */
+/* global card css override */
 .v-card {
   border-radius: 24px !important;
 }
@@ -13,5 +13,18 @@ body {
 }
 
 .v-speed-dial--bottom {
+  bottom: 32px !important;
+}
+
+/* global fab button override */
+.v-btn--left {
+  left: 32px !important;
+}
+
+.v-btn--right {
+  right: 32px !important;
+}
+
+.v-btn--bottom {
   bottom: 32px !important;
 }

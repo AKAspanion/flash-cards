@@ -1,6 +1,12 @@
 <template>
     <div class="action-button">
-        <v-btn v-bind="$attrs" height="48" width="150" @click="$emit('click')">
+        <v-btn
+            rounded
+            height="48"
+            width="150"
+            v-bind="$attrs"
+            @click="$emit('click')"
+        >
             <slot></slot>
         </v-btn>
     </div>

@@ -9,7 +9,9 @@
                     <slot name="left-text"></slot>
                 </div>
             </div>
-            <v-spacer></v-spacer>
+            <div class="center-slot">
+                <slot name="center"></slot>
+            </div>
             <div class="avatar-container">
                 <v-btn
                     icon
@@ -32,6 +34,9 @@ export default {};
 </script>
 
 <style scoped>
+.center-slot {
+    width: calc(100% - 128px);
+}
 .avatar-container {
     min-width: 64px;
     text-align: center;
