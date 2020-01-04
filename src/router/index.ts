@@ -82,13 +82,9 @@ router.beforeEach((to, from, next) => {
     firebase.initializeFirebase();
   }
   store.dispatch('LOADING', true);
-  if (to.name === 'login') {
-    store.dispatch('SHOW_NAVBAR', false);
-  }
   firebase.authChangeListener((user: any) => {
     store.dispatch('LOADING', false);
     if (to.matched.some((record: any) => record.meta.requireAuth)) {
-      store.dispatch('SHOW_NAVBAR', true);
       if (!user) {
         store.dispatch('UNSET_USER');
         store.dispatch('LOGOUT');
@@ -113,6 +109,5 @@ router.beforeEach((to, from, next) => {
     }
   });
 });
-
 
 export default router;

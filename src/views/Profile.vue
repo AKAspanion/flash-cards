@@ -58,9 +58,9 @@
                     </div>
                 </div>
             </div>
-            <div>
-                <v-btn @click="onSignout">Sign out</v-btn>
-            </div>
+            <btn-action rounded height="50" color="primary" @click="onSignout"
+                >Sign out</btn-action
+            >
         </v-card>
     </div>
 </template>
@@ -68,11 +68,12 @@
 <script>
 import { navigateToPath, getInitials } from '@/util';
 import BarTop from '@/components/BarTop.vue';
+import BtnAction from '@/components/BtnAction.vue';
 import FirebaseWeb from '@/firebase';
 const firebase = new FirebaseWeb();
 export default {
     name: 'Profile',
-    components: { BarTop },
+    components: { BarTop, BtnAction },
     computed: {
         currentUser() {
             return this.$store.getters.user;
@@ -93,6 +94,9 @@ export default {
 </script>
 
 <style scoped>
+.profile-container {
+    min-height: 100vh;
+}
 .profile-text {
     padding-left: 2px;
 }

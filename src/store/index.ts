@@ -17,7 +17,6 @@ export default new Vuex.Store({
       email: '',
     },
     loading: false,
-    isBarNav: false,
     isLoggedIn: false,
     landingVisited: false,
   },
@@ -33,9 +32,6 @@ export default new Vuex.Store({
     },
     setLogin(state, payload) {
       state.isLoggedIn = payload;
-    },
-    setBarNav(state, payload) {
-      state.isBarNav = payload;
     },
   },
   actions: {
@@ -87,9 +83,6 @@ export default new Vuex.Store({
         text: payload,
       });
     },
-    SHOW_NAVBAR({ commit }, payload) {
-      commit('setBarNav', payload);
-    },
     LOADING({ commit }, payload) {
       commit('setLoading', payload);
     },
@@ -97,9 +90,6 @@ export default new Vuex.Store({
   getters: {
     loading(state) {
       return state.loading;
-    },
-    barNav(state) {
-      return state.isBarNav;
     },
     user(state) {
       return state.user;

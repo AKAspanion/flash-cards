@@ -65,7 +65,7 @@ export default {
             return this.$store.getters.user;
         },
         showBarNav() {
-            return this.$store.getters.barNav;
+            return this.$route.name !== 'login';
         },
     },
     methods: {
