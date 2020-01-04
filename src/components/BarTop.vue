@@ -1,26 +1,25 @@
 <template>
-    <div class="px-5 py-2">
+    <div class="px-4 py-2">
         <v-toolbar flat height="120">
-            <div class="avatar-container">              
-                <slot name="left-button"></slot>  
-                <div class="avatar-text overline">     
-                    <slot name="left-text"></slot>     
-                </div>         
+            <div class="avatar-container">
+                <slot name="left-button"></slot>
+                <div class="avatar-text overline">
+                    <slot name="left-text"></slot>
+                </div>
             </div>
             <v-spacer></v-spacer>
-            <div class="avatar-container"> 
-                <slot name="right-button"></slot>  
-                <div class="avatar-text overline">     
-                    <slot name="right-text"></slot>     
-                </div>         
+            <div class="avatar-container">
+                <slot name="right-button"></slot>
+                <div class="avatar-text overline">
+                    <slot name="right-text"></slot>
+                </div>
             </div>
         </v-toolbar>
     </div>
 </template>
 
 <script>
-export default {
-}
+export default {};
 </script>
 
 <style scoped>

@@ -2,17 +2,15 @@
     <div class="home-container">
         <bar-top>
             <template #left-button>
-                <v-btn icon>
+                <v-btn icon @click="goToProfile">
                     <v-avatar v-if="currentUser.photoURL" size="24">
                         <v-img :src="currentUser.photoURL"></v-img>
                     </v-avatar>
-                    <v-icon v-else size="32" color="primary"
-                        >mdi-face
-                    </v-icon>
+                    <v-icon v-else size="32" color="primary">mdi-face </v-icon>
                 </v-btn>
-            </template>            
+            </template>
             <template #left-text>
-                {{currentUser.email}}
+                {{ currentUser.email }}
             </template>
             <template #right-button>
                 <v-btn icon>
@@ -31,6 +29,7 @@
 </template>
 
 <script>
+import { navigateToPath } from '@/util';
 import BarTop from '@/components/BarTop.vue';
 import CardFlashSet from '@/components/CardFlashSet.vue';
 import OptionPanel from '@/components/OptionPanel.vue';
@@ -42,10 +41,15 @@ export default {
             return this.$store.getters.user;
         },
     },
+    methods: {
+        goToProfile() {
+            navigateToPath('/profile');
+        },
+    },
 };
 </script>
 <style>
-.home-container{
+.home-container {
     min-height: 100vh;
 }
 </style>

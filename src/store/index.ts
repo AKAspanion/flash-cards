@@ -11,6 +11,7 @@ export default new Vuex.Store({
     },
     user: {
       uid: '',
+      userSince: '',
       displayName: '',
       photoURL: '',
       email: '',
@@ -55,13 +56,15 @@ export default new Vuex.Store({
       commit('setUser', {
         uid,
         email,
-        displayName,
         photoURL,
+        displayName,
+        userSince: payload.metadata.creationTime,
       });
     },
     UNSET_USER({ commit }) {
       commit('setUser', {
         uid: '',
+        userSince: '',
         displayName: '',
         photoURL: '',
         email: '',

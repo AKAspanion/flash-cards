@@ -46,6 +46,15 @@ const routes = [
     },
   },
   {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('@/views/Profile.vue'),
+    meta: {
+      requireAuth: true,
+      index: 3,
+    },
+  },
+  {
     path: '*',
     name: 'notfound',
     redirect: '/',

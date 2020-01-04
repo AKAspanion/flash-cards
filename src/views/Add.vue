@@ -5,7 +5,7 @@
                 <v-btn icon @click="goBack">
                     <v-icon size="32" color="primary">mdi-arrow-left</v-icon>
                 </v-btn>
-            </template>            
+            </template>
             <template #left-text>
                 home
             </template>
@@ -32,12 +32,12 @@ export default {
     name: 'add',
     components: {
         BarTop,
-        CardFlash
+        CardFlash,
     },
     methods: {
-        goBack(){
-            navigateToPath('/home')
-        }
+        goBack() {
+            navigateToPath('/home');
+        },
     },
 };
 </script>
