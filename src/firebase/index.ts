@@ -26,6 +26,15 @@ class FirebaseWeb {
         return flashCardSetRef.where('uid', '==', user.uid).get();
     }
 
+    public addFlashCardSet = (user: any, cardSet: any) => {
+        console.log(cardSet);
+        const flashCardSetRef = firebase.firestore().collection('flash-card-sets');
+        return flashCardSetRef.add({
+            ...cardSet,
+            uid: user.uid,
+            cards: JSON.stringify(cardSet.cards),
+        });
+    }
 
     public authChangeListener(callback: any) {
         firebase.auth().onAuthStateChanged(callback);

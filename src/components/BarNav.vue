@@ -50,12 +50,12 @@ export default {
                     path: '/add',
                     id: 2,
                 },
-                {
-                    icon: 'mdi-folder',
-                    title: 'manage folders',
-                    path: '/folder',
-                    id: 3,
-                },
+                // {
+                //     icon: 'mdi-folder',
+                //     title: 'manage folders',
+                //     path: '/folder',
+                //     id: 3,
+                // },
             ],
             navModel: false,
         };

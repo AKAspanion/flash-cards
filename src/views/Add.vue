@@ -54,7 +54,15 @@
         <btn-action color="primary" @click="onCardAdd" :disabled="loading">
             Add Card
         </btn-action>
-        <v-btn fixed fab left bottom color="primary" :disabled="loading">
+        <v-btn
+            fixed
+            fab
+            left
+            bottom
+            color="primary"
+            @click="onSubmit"
+            :disabled="loading || !cardSet.cards.length"
+        >
             <v-icon>mdi-check</v-icon>
         </v-btn>
         <option-panel
@@ -71,6 +79,10 @@ import BtnAction from '@/components/BtnAction.vue';
 import OptionPanel from '@/components/OptionPanel.vue';
 import GroupCardFlash from '@/components/GroupCardFlash.vue';
 import ContainerEmpty from '@/components/ContainerEmpty.vue';
+
+import FirebaseWeb from '@/firebase';
+const firebase = new FirebaseWeb();
+
 export default {
     name: 'add',
     components: {
@@ -85,15 +97,17 @@ export default {
             isEdit: false,
             titleEdit: false,
             cardSet: {
+                id: uid(),
                 cards: [],
-                id: '',
-                color: 'abc',
             },
         };
     },
     computed: {
         loading() {
-            this.$store.getters.loading;
+            return this.$store.getters.loading;
+        },
+        user() {
+            return this.$store.getters.user;
         },
     },
     methods: {
@@ -112,11 +126,32 @@ export default {
         setCards(params) {
             if (this.isEdit) {
                 let storeCardSets = this.$store.getters.flashCardSets;
-                this.cardSet =
-                    storeCardSets[
-                        storeCardSets.findIndex((e) => e.id === params.id)
-                    ];
+                let index = storeCardSets.findIndex((e) => e.id === params.id);
+                if (index >= 0) {
+                    this.cardSet = storeCardSets[index];
+                } else {
+                    navigateToPath('/add');
+                }
             }
+        },
+        onSubmit() {
+            firebase
+                .addFlashCardSet(this.user, {
+                    ...this.cardSet,
+                    title: this.cardSet.title || 'untitled set',
+                })
+                .then((res) => {
+                    this.$store.dispatch('ADD_FLASH_CARD_SET', {
+                        docId: res.id,
+                        ...this.cardSet,
+                        uid: this.user.uid,
+                        title: this.cardSet.title || 'untitled set',
+                    });
+                })
+                .catch((err) => {
+                    this.$store.dispatch('SHOW_SNACK', err.messsage);
+                })
+                .finally(() => {});
         },
     },
     mounted() {

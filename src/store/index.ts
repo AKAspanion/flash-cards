@@ -34,11 +34,15 @@ export default new Vuex.Store({
     setLogin(state, payload) {
       state.isLoggedIn = payload;
     },
+    landingVisited(state, payload) {
+      state.landingVisited = payload;
+    },
     setFlashCardSets(state, payload) {
       state.flashCardSets = payload;
     },
-    landingVisited(state, payload) {
-      state.landingVisited = payload;
+    addFlashCardSet(state, payload) {
+      const newSets: any = [...state.flashCardSets, payload];
+      state.flashCardSets = newSets;
     },
   },
   actions: {
@@ -95,6 +99,9 @@ export default new Vuex.Store({
     },
     SET_FLASH_CARDS({ commit }, payload) {
       commit('setFlashCardSets', payload);
+    },
+    ADD_FLASH_CARD_SET({ commit }, payload) {
+      commit('addFlashCardSet', payload);
     },
   },
   getters: {
