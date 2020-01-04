@@ -17,23 +17,30 @@
                 settings
             </template>
         </bar-top>
-        <div class="px-8">
+        <div class="flash-card-set-container px-8">
+            <template v-if="!cardSets.length">
+                <container-empty
+                    icon="mdi-cards"
+                    title="Add flashcard sets and it will appear here"
+                ></container-empty>
+            </template>
             <div class="pb-6" v-for="card in cardSets" :key="card.id">
                 <card-flash-set :card="card"></card-flash-set>
             </div>
-            <option-panel></option-panel>
         </div>
+        <option-panel></option-panel>
     </div>
 </template>
 
 <script>
 import { navigateToPath, fetchAllFlashCardSets } from '@/util';
 import BarTop from '@/components/BarTop.vue';
-import CardFlashSet from '@/components/CardFlashSet.vue';
 import OptionPanel from '@/components/OptionPanel.vue';
+import CardFlashSet from '@/components/CardFlashSet.vue';
+import ContainerEmpty from '@/components/ContainerEmpty.vue';
 export default {
     name: 'home',
-    components: { BarTop, CardFlashSet, OptionPanel },
+    components: { BarTop, CardFlashSet, OptionPanel, ContainerEmpty },
     computed: {
         currentUser() {
             return this.$store.getters.user;
@@ -68,5 +75,10 @@ export default {
 <style>
 .home-container {
     min-height: 100vh;
+}
+.flash-card-set-container {
+    height: calc(100vh - 136px);
+    padding-bottom: 64px;
+    overflow-y: scroll;
 }
 </style>

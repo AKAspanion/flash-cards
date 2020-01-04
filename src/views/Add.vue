@@ -61,14 +61,17 @@
             bottom
             color="primary"
             @click="onSubmit"
-            :disabled="loading || !cardSet.cards.length"
+            :loading="loading"
+            :disabled="!cardSet.cards.length"
         >
             <v-icon>mdi-check</v-icon>
         </v-btn>
-        <option-panel
-            ref="addoptions"
-            v-slot:default="{ toggle }"
-        ></option-panel>
+        <option-panel ref="addoptions" v-slot:default="{ toggle }">
+            option <br />
+            list <br />
+            coming <br />
+            soon <br />
+        </option-panel>
     </div>
 </template>
 
@@ -128,30 +131,60 @@ export default {
                 let storeCardSets = this.$store.getters.flashCardSets;
                 let index = storeCardSets.findIndex((e) => e.id === params.id);
                 if (index >= 0) {
-                    this.cardSet = storeCardSets[index];
+                    this.cardSet = { ...storeCardSets[index] };
                 } else {
                     navigateToPath('/add');
                 }
             }
         },
         onSubmit() {
-            firebase
-                .addFlashCardSet(this.user, {
-                    ...this.cardSet,
-                    title: this.cardSet.title || 'untitled set',
-                })
-                .then((res) => {
-                    this.$store.dispatch('ADD_FLASH_CARD_SET', {
-                        docId: res.id,
+            this.$store.dispatch('LOADING', true);
+            if (!this.isEdit) {
+                firebase
+                    .addFlashCardSet(this.user, {
                         ...this.cardSet,
-                        uid: this.user.uid,
                         title: this.cardSet.title || 'untitled set',
+                    })
+                    .then((res) => {
+                        this.$store.dispatch('ADD_FLASH_CARD_SET', {
+                            docId: res.id,
+                            ...this.cardSet,
+                            uid: this.user.uid,
+                            title: this.cardSet.title || 'untitled set',
+                        });
+                        this.$store.dispatch(
+                            'SHOW_SNACK',
+                            'Task added successully!'
+                        );
+                        navigateToPath('/home');
+                    })
+                    .catch((err) => {
+                        this.$store.dispatch('SHOW_SNACK', err.messsage);
+                    })
+                    .finally(() => {
+                        this.$store.dispatch('LOADING', false);
                     });
-                })
-                .catch((err) => {
-                    this.$store.dispatch('SHOW_SNACK', err.messsage);
-                })
-                .finally(() => {});
+            } else {
+                firebase
+                    .updateFlashCardSet(this.cardSet)
+                    .then((res) => {
+                        this.$store.dispatch(
+                            'UPDATE_FLASH_CARD_SET',
+                            this.cardSet
+                        );
+                        this.$store.dispatch(
+                            'SHOW_SNACK',
+                            'Task updated successully!'
+                        );
+                        navigateToPath('/home');
+                    })
+                    .catch((err) => {
+                        this.$store.dispatch('SHOW_SNACK', err.messsage);
+                    })
+                    .finally(() => {
+                        this.$store.dispatch('LOADING', false);
+                    });
+            }
         },
     },
     mounted() {

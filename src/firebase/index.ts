@@ -27,11 +27,18 @@ class FirebaseWeb {
     }
 
     public addFlashCardSet = (user: any, cardSet: any) => {
-        console.log(cardSet);
         const flashCardSetRef = firebase.firestore().collection('flash-card-sets');
         return flashCardSetRef.add({
             ...cardSet,
             uid: user.uid,
+            cards: JSON.stringify(cardSet.cards),
+        });
+    }
+
+    public updateFlashCardSet = (cardSet: any) => {
+        const flashCardSetRef = firebase.firestore().collection('flash-card-sets').doc(cardSet.docId);
+        return flashCardSetRef.update({
+            ...cardSet,
             cards: JSON.stringify(cardSet.cards),
         });
     }

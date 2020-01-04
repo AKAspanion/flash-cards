@@ -6,6 +6,7 @@
         direction="top"
         v-if="showBarNav"
         v-model="navModel"
+        :loading="loading"
         transition="slide-y-reverse-transition"
     >
         <template #activator>
@@ -61,6 +62,9 @@ export default {
         };
     },
     computed: {
+        loading() {
+            return this.$store.getters.loading;
+        },
         currentUser() {
             return this.$store.getters.user;
         },

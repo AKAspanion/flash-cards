@@ -44,6 +44,12 @@ export default new Vuex.Store({
       const newSets: any = [...state.flashCardSets, payload];
       state.flashCardSets = newSets;
     },
+    updateFlashCardSet(state, payload) {
+      const index = state.flashCardSets.findIndex((e: any) => e.id === payload.id);
+      const newSets: any = [...state.flashCardSets];
+      newSets[index] = payload;
+      state.flashCardSets = newSets;
+    },
   },
   actions: {
     RESET_STORE({ commit }) {
@@ -102,6 +108,9 @@ export default new Vuex.Store({
     },
     ADD_FLASH_CARD_SET({ commit }, payload) {
       commit('addFlashCardSet', payload);
+    },
+    UPDATE_FLASH_CARD_SET({ commit }, payload) {
+      commit('updateFlashCardSet', payload);
     },
   },
   getters: {

@@ -6,12 +6,30 @@
                 v-model="loginForm"
                 @submit.prevent="onLogin"
             >
-                <v-text-field label="Email" v-model="user.email"></v-text-field>
                 <v-text-field
+                    rounded
+                    outlined
+                    label="Email"
+                    v-model="user.email"
+                ></v-text-field>
+                <v-text-field
+                    rounded
+                    outlined
+                    type="password"
                     label="Password"
                     v-model="user.password"
                 ></v-text-field>
-                <v-btn type="submit" :loading="loading">Login</v-btn>
+                <div class="d-flex align-center">
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        type="submit"
+                        rounded
+                        color="primary"
+                        :loading="loading"
+                    >
+                        Login
+                    </v-btn>
+                </div>
             </v-form>
         </v-card>
     </div>
