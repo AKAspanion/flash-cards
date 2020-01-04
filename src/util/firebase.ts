@@ -1,6 +1,14 @@
 import FirebaseWeb from '../firebase';
 const firebase = new FirebaseWeb();
 
+
+export const loadData = (user: any) => {
+    return Promise.all([
+        fetchAllFlashCardSets(user),
+        fetchAllLabels(user),
+    ]);
+};
+
 export const fetchAllFlashCardSets = (user: any) => {
     return new Promise((resolve, reject) => {
         firebase

@@ -76,7 +76,7 @@
 </template>
 
 <script>
-import { navigateToPath, uid, fetchAllFlashCardSets } from '@/util';
+import { uid, loadData, navigateToPath } from '@/util';
 import BarTop from '@/components/BarTop.vue';
 import BtnAction from '@/components/BtnAction.vue';
 import OptionPanel from '@/components/OptionPanel.vue';
@@ -192,14 +192,17 @@ export default {
         this.isEdit = name === 'edit';
         if (!this.$store.getters.landingVisited) {
             this.$store.dispatch('LOADING', true);
-            fetchAllFlashCardSets(this.$store.getters.user)
+            loadData(this.user)
                 .then((data) => {
-                    this.$store.dispatch('SET_FLASH_CARDS', data);
+                    this.$store.dispatch('SET_FLASH_CARDS', data[0]);
+                    this.$store.dispatch('SET_LABELS', data[1]);
                     this.$store.dispatch('LANDING_VISITED', true);
                     this.setCards(params);
                 })
                 .catch(() => {
                     this.$store.dispatch('SET_FLASH_CARDS', []);
+                    this.$store.dispatch('SET_LABELS', []);
+                    this.$store.dispatch('LANDING_VISITED', false);
                 })
                 .finally(() => {
                     this.$store.dispatch('LOADING', false);

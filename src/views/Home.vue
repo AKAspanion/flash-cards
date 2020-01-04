@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { navigateToPath, fetchAllFlashCardSets } from '@/util';
+import { navigateToPath, loadData } from '@/util';
 import BarTop from '@/components/BarTop.vue';
 import OptionPanel from '@/components/OptionPanel.vue';
 import CardFlashSet from '@/components/CardFlashSet.vue';
@@ -77,13 +77,16 @@ export default {
     mounted() {
         if (!this.$store.getters.landingVisited) {
             this.$store.dispatch('LOADING', true);
-            fetchAllFlashCardSets(this.$store.getters.user)
+            loadData(this.currentUser)
                 .then((data) => {
-                    this.$store.dispatch('SET_FLASH_CARDS', data);
+                    this.$store.dispatch('SET_FLASH_CARDS', data[0]);
+                    this.$store.dispatch('SET_LABELS', data[1]);
                     this.$store.dispatch('LANDING_VISITED', true);
                 })
                 .catch(() => {
                     this.$store.dispatch('SET_FLASH_CARDS', []);
+                    this.$store.dispatch('SET_LABELS', []);
+                    this.$store.dispatch('LANDING_VISITED', false);
                 })
                 .finally(() => {
                     this.$store.dispatch('LOADING', false);

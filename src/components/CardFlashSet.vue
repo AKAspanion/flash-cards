@@ -1,5 +1,5 @@
 <template>
-    <v-card raised :color="dark ? '#424242' : '#e0e0e0'" height="200">
+    <v-card raised :color="dark ? '#212121' : '#e0e0e0'" height="200">
         <v-card dark :color="card.color || 'primary'" height="116" class="pa-6">
             <div class="text-uppercase">
                 {{ card.title }}

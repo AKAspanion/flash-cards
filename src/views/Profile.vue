@@ -36,7 +36,7 @@
         </div>
         <v-card
             flat
-            :color="dark ? '#616161' : '#e0e0e0'"
+            :color="dark ? '#212121' : '#e0e0e0'"
             class="pa-8 mb-n6 profile-card"
             min-height="calc(100vh - 292px)"
         >
@@ -112,7 +112,7 @@
 </template>
 
 <script>
-import { navigateToPath, getInitials, fetchAllLabels } from '@/util';
+import { navigateToPath, getInitials, loadData } from '@/util';
 import BarTop from '@/components/BarTop.vue';
 import BtnAction from '@/components/BtnAction.vue';
 import FirebaseWeb from '@/firebase';
@@ -220,17 +220,25 @@ export default {
         },
     },
     mounted() {
-        this.labelLoading = true;
-        fetchAllLabels(this.currentUser)
-            .then((data) => {
-                this.$store.dispatch('SET_LABELS', data);
-            })
-            .catch(() => {
-                this.$store.dispatch('SET_LABELS', []);
-            })
-            .finally(() => {
-                this.labelLoading = false;
-            });
+        if (!this.$store.getters.landingVisited) {
+            this.labelLoading = true;
+            this.$store.dispatch('LOADING', true);
+            loadData(this.currentUser)
+                .then((data) => {
+                    this.$store.dispatch('SET_FLASH_CARDS', data[0]);
+                    this.$store.dispatch('SET_LABELS', data[1]);
+                    this.$store.dispatch('LANDING_VISITED', true);
+                })
+                .catch(() => {
+                    this.$store.dispatch('SET_FLASH_CARDS', []);
+                    this.$store.dispatch('SET_LABELS', []);
+                    this.$store.dispatch('LANDING_VISITED', false);
+                })
+                .finally(() => {
+                    this.labelLoading = true;
+                    this.$store.dispatch('LOADING', false);
+                });
+        }
     },
 };
 </script>

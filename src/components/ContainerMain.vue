@@ -13,11 +13,6 @@ export default {
 </script>
 
 <style>
-.floating-loader {
-    position: fixed;
-    width: 100vw;
-    z-index: 100;
-}
 .slide-left-enter-active,
 .slide-left-leave-active,
 .slide-right-enter-active,

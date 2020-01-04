@@ -3,7 +3,7 @@
         v-ripple
         :dark="dark"
         class="options-card"
-        :color="dark ? '#424242' : '#e0e0e0'"
+        :color="dark ? '#212121' : '#e0e0e0'"
     >
         <div class="d-flex justify-center">
             <v-icon
