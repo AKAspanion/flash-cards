@@ -4,7 +4,7 @@ body {
 
 /* global card css override */
 .v-card {
-  border-radius: 24px !important;
+  border-radius: 28px !important;
 }
 
 /* global speed-dial override */

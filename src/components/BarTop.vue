@@ -35,6 +35,8 @@ export default {};
 
 <style scoped>
 .center-slot {
+    overflow: hidden;
+    max-height: 120px;
     width: calc(100% - 128px);
 }
 .avatar-container {

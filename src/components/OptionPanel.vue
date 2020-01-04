@@ -47,8 +47,8 @@ export default {
                 this.touchDistance =
                     this.touchStartEvent.touches[0].clientY -
                     e.touches[0].clientY;
-                let yDistance = cardValues.height - this.touchDistance - 48;
-                if (this.touchDistance <= cardValues.height - 48) {
+                let yDistance = cardValues.height - this.touchDistance - 56;
+                if (this.touchDistance <= cardValues.height - 56) {
                     card.style.transition = `none`;
                     if (!this.open && this.touchDistance >= 0) {
                         card.style.transform = `translate3d(0px, ${yDistance}px, 0px)`;
@@ -74,7 +74,7 @@ export default {
             if (!this.moving) {
                 this.open = !this.open;
                 if (!this.open) {
-                    card.style.transform = `translate3d(0px, calc(100% - 48px), 0)`;
+                    card.style.transform = `translate3d(0px, calc(100% - 56px), 0)`;
                 } else {
                     card.style.transform = `translate3d(0px, 0, 0)`;
                 }
@@ -84,7 +84,7 @@ export default {
                     card.style.transform = `translate3d(0px, 0, 0)`;
                 } else {
                     this.open = false;
-                    card.style.transform = `translate3d(0px, calc(100% - 48px), 0)`;
+                    card.style.transform = `translate3d(0px, calc(100% - 56px), 0)`;
                 }
             }
             this.touchEndEvent = e;
@@ -107,11 +107,11 @@ export default {
 .options-card {
     position: fixed;
     left: 0px;
-    bottom: -20px;
+    bottom: -28px;
     z-index: 110;
     width: 100%;
     will-change: transform;
     transition: transform 200ms ease-out;
-    transform: translate3d(0px, calc(100% - 48px), 0);
+    transform: translate3d(0px, calc(100% - 56px), 0);
 }
 </style>

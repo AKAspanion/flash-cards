@@ -8,23 +8,26 @@
                 <div class="flash-card-content">
                     <div class="d-flex align-center justify-center fill-height">
                         <span
-                            v-if="!editing"
+                            v-if="!editing && !flipped"
                             class="headline"
                             @click="editing = true"
                         >
-                            {{ detail.front || frontText }}
+                            {{ value.front || 'this is example front side' }}
                         </span>
                         <v-textarea
-                            v-else
+                            dark
+                            rounded
                             outlined
-                            autofocus
-                            auto-grow
-                            v-model="frontText"
+                            rows="10"
+                            hide-details
+                            :value="value.front"
+                            v-if="editing && !flipped"
+                            @input="update('front', $event)"
                         >
                         </v-textarea>
                     </div>
                 </div>
-                <div class="flash-card-actions d-flex align-center mt-6">
+                <div class="flash-card-actions d-flex align-center my-3">
                     <v-btn icon dark @click="$emit('delete')">
                         <v-icon>mdi-delete</v-icon>
                     </v-btn>
@@ -41,10 +44,31 @@
             <div class="flash-card-back pa-6">
                 <div class="flash-card-content">
                     <div class="d-flex align-center justify-center fill-height">
-                        {{ detail.back || backText }}
+                        <span
+                            v-if="!editing && flipped"
+                            class="headline"
+                            @click="editing = true"
+                        >
+                            {{ value.back || 'this is example back side' }}
+                        </span>
+                        <v-textarea
+                            dark
+                            rounded
+                            outlined
+                            rows="10"
+                            hide-details
+                            :value="value.back"
+                            v-if="editing && flipped"
+                            @input="update('back', $event)"
+                        >
+                        </v-textarea>
                     </div>
                 </div>
-                <div class="flash-card-actions d-flex align-center mt-6">
+                <div class="flash-card-actions d-flex align-center my-3">
+                    <v-spacer></v-spacer>
+                    <v-btn v-if="editing" icon dark @click="editing = false"
+                        ><v-icon>mdi-check</v-icon></v-btn
+                    >
                     <v-spacer></v-spacer>
                     <v-btn icon dark @click="onCardFlip">
                         <v-icon>mdi-flip-horizontal</v-icon>
@@ -57,23 +81,20 @@
 
 <script>
 export default {
-    props: {
-        detail: {
-            type: Object,
-        },
-    },
+    props: ['value'],
     data() {
         return {
             flipped: false,
             editing: false,
-            frontText: 'this is example front side',
-            backText: 'this is example back side',
         };
     },
-    components: {},
     methods: {
+        update(key, value) {
+            this.$emit('input', { ...this.value, [key]: value });
+        },
         onCardFlip() {
             this.$emit('flip');
+            this.editing = false;
             this.flipped = !this.flipped;
         },
     },
@@ -82,9 +103,10 @@ export default {
 
 <style scoped>
 .flash-card {
-    width: 80vw;
+    width: 75vw;
+    max-width: 350px;
     perspective: 1000px;
-    border-radius: 24px;
+    border-radius: 28px;
     height: calc(100vh - 320px);
 }
 
@@ -97,7 +119,7 @@ export default {
     width: 100%;
     height: 100%;
     text-align: center;
-    border-radius: 24px;
+    border-radius: 28px;
     transition: transform 0.3s;
     transform-style: preserve-3d;
 }
@@ -116,7 +138,7 @@ export default {
     position: absolute;
     width: 100%;
     height: 100%;
-    border-radius: 24px;
+    border-radius: 28px;
     backface-visibility: hidden;
 }
 

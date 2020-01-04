@@ -10,3 +10,10 @@ export const getInitials = (name: any) => {
     const initials = name.match(/\b\w/g) || [];
     return ((initials.shift() || '') + (initials.pop() || '')).toUpperCase();
 };
+
+export const uid = () => {
+    const id = () => {
+        return (Math.random()).toString(36).substring(2);
+    };
+    return `_${id()}-${id()}`;
+};

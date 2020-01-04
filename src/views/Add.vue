@@ -8,9 +8,10 @@
                 home
             </template>
             <template #center>
-                <div v-if="titleEdit" class="pb-3">
+                <div v-if="titleEdit" class="pt-1 pb-5">
                     <v-text-field
                         dense
+                        rounded
                         outlined
                         autofocus
                         hide-details
@@ -39,7 +40,10 @@
                 options
             </template>
         </bar-top>
-        <group-card-flash :cards="cards"></group-card-flash>
+        <group-card-flash
+            :value="cards"
+            @input="(e) => (cards = e)"
+        ></group-card-flash>
         <btn-action color="primary" @click="onCardAdd">Add Card</btn-action>
         <v-btn fixed fab left bottom color="primary">
             <v-icon>mdi-check</v-icon>
@@ -48,7 +52,7 @@
 </template>
 
 <script>
-import { navigateToPath } from '@/util';
+import { navigateToPath, uid } from '@/util';
 import BarTop from '@/components/BarTop.vue';
 import BtnAction from '@/components/BtnAction.vue';
 import GroupCardFlash from '@/components/GroupCardFlash.vue';
@@ -57,7 +61,18 @@ export default {
     data() {
         return {
             title: 'untitled set',
-            cards: [{ a: 1 }, { a: 2 }],
+            cards: [
+                {
+                    front: 'what is hello in hindi',
+                    back: 'namaste',
+                    id: 1,
+                },
+                {
+                    front: 'what is yes in french',
+                    back: 'qui',
+                    id: 2,
+                },
+            ],
             titleEdit: false,
         };
     },
@@ -71,8 +86,11 @@ export default {
             navigateToPath('/home');
         },
         onCardAdd() {
-            this.cards.unshift({ a: 1 });
+            this.cards = [{ id: uid(), front: '', back: '' }, ...this.cards];
             console.log('add card');
+        },
+        onCardChange() {
+            console.log(card);
         },
     },
 };

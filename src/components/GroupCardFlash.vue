@@ -1,13 +1,13 @@
 <template>
     <v-sheet class="mx-auto">
-        <v-slide-group v-model="model" center-active>
+        <v-slide-group v-model="model">
             <v-slide-item
-                :key="index"
-                v-for="(card, index) in cards"
+                :key="card.id + index"
+                v-for="(card, index) in value"
                 v-slot:default="{ active, toggle }"
             >
                 <transition name="slide-left" mode="out-in">
-                    <card-flash :detail="card" @click="toggle"></card-flash>
+                    <card-flash :value="card" @input="onUpdate"></card-flash>
                 </transition>
             </v-slide-item>
         </v-slide-group>
@@ -17,12 +17,7 @@
 <script>
 import CardFlash from '@/components/CardFlash.vue';
 export default {
-    props: {
-        cards: {
-            type: Array,
-            required: true,
-        },
-    },
+    props: ['value'],
     components: {
         CardFlash,
     },
@@ -30,6 +25,15 @@ export default {
         return {
             model: null,
         };
+    },
+    methods: {
+        onUpdate(val) {
+            let newData = [...this.value];
+            newData[newData.findIndex((obj) => obj.id == val.id)] = {
+                ...val,
+            };
+            this.$emit('input', newData);
+        },
     },
 };
 </script>
