@@ -24,14 +24,12 @@ export default Vue.extend({
         Container,
     },
     computed: {
-        loading: {
-            get() {
-                return this.$store.getters.loading;
-            },
+        loading() {
+            return this.$store.getters.loading;
         },
     },
 });
 </script>
 <style>
-@import "./assets/style.css";
+@import './assets/style.css';
 </style>
