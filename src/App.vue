@@ -13,7 +13,7 @@
                 $t('close')
             }}</v-btn>
         </v-snackbar>
-        <container />
+        <container-main />
         <bar-nav />
     </v-app>
 </template>
@@ -21,12 +21,12 @@
 <script lang="ts">
 import Vue from 'vue';
 import BarNav from '@/components/BarNav.vue';
-import Container from '@/components/Container.vue';
+import ContainerMain from '@/components/ContainerMain.vue';
 export default Vue.extend({
     name: 'App',
     components: {
         BarNav,
-        Container,
+        ContainerMain,
     },
     computed: {
         loading() {

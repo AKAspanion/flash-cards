@@ -40,6 +40,13 @@
                 options
             </template>
         </bar-top>
+        <template v-if="!cards.length">
+            <container-empty
+                icon="mdi-cards"
+                title="Add a flashcard and it will appear here"
+                style="height: calc(100vh - 256px)"
+            ></container-empty>
+        </template>
         <group-card-flash
             :value="cards"
             @input="(e) => (cards = e)"
@@ -56,25 +63,21 @@ import { navigateToPath, uid, fetchAllFlashCardSets } from '@/util';
 import BarTop from '@/components/BarTop.vue';
 import BtnAction from '@/components/BtnAction.vue';
 import GroupCardFlash from '@/components/GroupCardFlash.vue';
+import ContainerEmpty from '@/components/ContainerEmpty.vue';
 export default {
     name: 'add',
+    components: {
+        BarTop,
+        BtnAction,
+        ContainerEmpty,
+        GroupCardFlash,
+    },
     data() {
         return {
             title: 'untitled set',
             titleEdit: false,
+            cards: [],
         };
-    },
-    computed: {
-        cards() {
-            return this.$store.getters.flashCardSets.length
-                ? this.$store.getters.flashCardSets[0].cards
-                : [];
-        },
-    },
-    components: {
-        BarTop,
-        BtnAction,
-        GroupCardFlash,
     },
     methods: {
         goBack() {
@@ -83,9 +86,6 @@ export default {
         onCardAdd() {
             this.cards = [{ id: uid(), front: '', back: '' }, ...this.cards];
             console.log('add card');
-        },
-        onCardChange() {
-            console.log(card);
         },
     },
     mounted() {
