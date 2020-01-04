@@ -43,6 +43,25 @@ class FirebaseWeb {
         });
     }
 
+    public fetchAllLabelsByUID = (user: any) => {
+        const labelRef = firebase.firestore().collection('labels');
+        return labelRef.where('uid', '==', user.uid).get();
+    }
+
+    public addLabel = (user: any, label: any) => {
+        const labelRef = firebase.firestore().collection('labels');
+        return labelRef.add({
+            label,
+            uid: user.uid,
+        });
+    }
+    public updateLabel = (label: any) => {
+        const labelRef = firebase.firestore().collection('labels').doc(label.docId);
+        return labelRef.update({
+            ...label,
+        });
+    }
+
     public authChangeListener(callback: any) {
         firebase.auth().onAuthStateChanged(callback);
     }

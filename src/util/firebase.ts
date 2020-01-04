@@ -12,7 +12,6 @@ export const fetchAllFlashCardSets = (user: any) => {
                 resolve(sets);
             })
             .catch((err) => {
-                console.log(err);
                 reject('Error getting flash cards. Please try later!');
             });
     });
@@ -30,5 +29,35 @@ const parseAllFlashCardSets = (snapshot: any) => {
             });
         });
         resolve(sets);
+    });
+}
+
+export const fetchAllLabels = (user: any) => {
+    return new Promise((resolve, reject) => {
+        firebase
+            .fetchAllLabelsByUID(user)
+            .then((snapshot: any) => {
+                return parseAllLabels(snapshot);
+            })
+            .then((labels) => {
+                resolve(labels);
+            })
+            .catch((err) => {
+                reject('Error getting labels. Please try later!');
+            });
+    });
+};
+
+const parseAllLabels = (snapshot: any) => {
+    const labels: any = [];
+    return new Promise((resolve) => {
+        snapshot.forEach((doc: any) => {
+            const data: any = doc.data();
+            labels.push({
+                ...data,
+                docId: doc.id,
+            });
+        });
+        resolve(labels);
     });
 }

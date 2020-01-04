@@ -20,6 +20,7 @@ export default new Vuex.Store({
     isLoggedIn: false,
     landingVisited: false,
     flashCardSets: [],
+    labels: [],
   },
   mutations: {
     setSnackBar(state, payload) {
@@ -36,6 +37,19 @@ export default new Vuex.Store({
     },
     landingVisited(state, payload) {
       state.landingVisited = payload;
+    },
+    setLabels(state, payload) {
+      state.labels = payload;
+    },
+    addLabel(state, payload) {
+      const newLabels: any = [...state.labels, payload];
+      state.labels = newLabels;
+    },
+    updateLabel(state, payload) {
+      const index = state.labels.findIndex((e: any) => e.docId === payload.docId);
+      const newLabels: any = [...state.labels];
+      newLabels[index] = payload;
+      state.labels = newLabels;
     },
     setFlashCardSets(state, payload) {
       state.flashCardSets = payload;
@@ -103,6 +117,15 @@ export default new Vuex.Store({
     LOADING({ commit }, payload) {
       commit('setLoading', payload);
     },
+    SET_LABELS({ commit }, payload) {
+      commit('setLabels', payload);
+    },
+    ADD_LABEL({ commit }, payload) {
+      commit('addLabel', payload);
+    },
+    UPDATE_LABEL({ commit }, payload) {
+      commit('updateLabel', payload);
+    },
     SET_FLASH_CARDS({ commit }, payload) {
       commit('setFlashCardSets', payload);
     },
@@ -125,6 +148,9 @@ export default new Vuex.Store({
     },
     loggedIn(state) {
       return state.isLoggedIn;
+    },
+    labels(state) {
+      return state.labels;
     },
     flashCardSets(state) {
       return state.flashCardSets;

@@ -42,7 +42,7 @@
         >
             <div class="d-flex align-start pb-8">
                 <v-icon>mdi-calendar</v-icon>
-                <div class="px-8">
+                <div class="pl-8">
                     <div class="caption">member since</div>
                     <div class="subtitle-2">
                         {{ currentUser.userSince.slice(0, 16) }}
@@ -51,22 +51,68 @@
             </div>
             <div class="d-flex align-start">
                 <v-icon>mdi-label</v-icon>
-                <div class="px-8">
+                <div class="pl-8">
                     <div class="caption">your labels</div>
                     <div class="subtitle-2">
-                        {{ currentUser.userSince.slice(0, 16) }}
+                        <v-list-item dense class="px-0">
+                            <v-list-item-content class="py-1">
+                                <v-text-field
+                                    flat
+                                    dense
+                                    rounded
+                                    outlined
+                                    hide-details
+                                    v-model="label"
+                                    :disabled="labelLoading"
+                                    @keyup.enter="onLabelCreate"
+                                    :placeholder="$t('label.create')"
+                                >
+                                </v-text-field>
+                            </v-list-item-content>
+                            <v-list-item-action>
+                                <v-btn
+                                    icon
+                                    color="primary"
+                                    @click="onLabelCreate"
+                                    :disabled="labelLoading || !this.label"
+                                >
+                                    <v-icon>{{
+                                        !selectedLabel
+                                            ? 'mdi-plus-circle'
+                                            : 'mdi-check'
+                                    }}</v-icon>
+                                </v-btn>
+                            </v-list-item-action>
+                        </v-list-item>
+                        <div class="py-1 mt-n2">
+                            <v-chip
+                                small
+                                outlined
+                                color="primary"
+                                class="mr-3 mt-2"
+                                :key="label.docId"
+                                v-for="label in labels"
+                                @click="onLabelClick(label)"
+                                :input-value="
+                                    selectedLabel &&
+                                        label.docId === selectedLabel.docId
+                                "
+                            >
+                                {{ label.label }}
+                            </v-chip>
+                        </div>
                     </div>
                 </div>
             </div>
-            <btn-action rounded height="50" color="primary" @click="onSignout"
-                >Sign out</btn-action
-            >
+            <btn-action rounded height="50" color="primary" @click="onSignout">
+                Sign out
+            </btn-action>
         </v-card>
     </div>
 </template>
 
 <script>
-import { navigateToPath, getInitials } from '@/util';
+import { navigateToPath, getInitials, fetchAllLabels } from '@/util';
 import BarTop from '@/components/BarTop.vue';
 import BtnAction from '@/components/BtnAction.vue';
 import FirebaseWeb from '@/firebase';
@@ -74,12 +120,34 @@ const firebase = new FirebaseWeb();
 export default {
     name: 'Profile',
     components: { BarTop, BtnAction },
+    data() {
+        return {
+            selectedLabel: null,
+            labelLoading: false,
+            label: '',
+        };
+    },
     computed: {
         currentUser() {
             return this.$store.getters.user;
         },
+        labels() {
+            return this.$store.getters.labels;
+        },
         dark() {
             return this.$vuetify.theme.dark;
+        },
+    },
+    watch: {
+        selectedLabel: {
+            handler(val) {
+                if (val) {
+                    this.label = this.selectedLabel.label;
+                } else {
+                    this.label = '';
+                }
+            },
+            deep: true,
         },
     },
     methods: {
@@ -92,6 +160,77 @@ export default {
         onSignout() {
             firebase.signOut();
         },
+        onLabelCreate() {
+            this.labelLoading = true;
+            if (this.selectedLabel) {
+                if (this.selectedLabel.label !== this.label) {
+                    firebase
+                        .updateLabel({
+                            ...this.selectedLabel,
+                            label: this.label,
+                        })
+                        .then((res) => {
+                            this.$store.dispatch('UPDATE_LABEL', {
+                                ...this.selectedLabel,
+                                label: this.label,
+                            });
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                        })
+                        .finally(() => {
+                            this.resetLabel();
+                        });
+                } else {
+                    this.resetLabel();
+                }
+            } else {
+                firebase
+                    .addLabel(this.currentUser, this.label)
+                    .then((res) => {
+                        console.log(res);
+                        this.$store.dispatch('ADD_LABEL', {
+                            docId: res.id,
+                            label: this.label,
+                            uid: this.currentUser.uid,
+                        });
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    })
+                    .finally(() => {
+                        this.resetLabel();
+                    });
+            }
+        },
+        onLabelClick(label) {
+            if (
+                this.selectedLabel &&
+                this.selectedLabel.docId === label.docId
+            ) {
+                this.selectedLabel = null;
+            } else {
+                this.selectedLabel = label;
+            }
+        },
+        resetLabel() {
+            this.label = '';
+            this.labelLoading = false;
+            this.selectedLabel = null;
+        },
+    },
+    mounted() {
+        this.labelLoading = true;
+        fetchAllLabels(this.currentUser)
+            .then((data) => {
+                this.$store.dispatch('SET_LABELS', data);
+            })
+            .catch(() => {
+                this.$store.dispatch('SET_LABELS', []);
+            })
+            .finally(() => {
+                this.labelLoading = false;
+            });
     },
 };
 </script>
