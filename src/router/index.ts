@@ -36,13 +36,23 @@ const routes = [
       index: 3,
     },
   },
+
+  {
+    path: '/:id/edit',
+    name: 'edit',
+    component: () => import('@/views/Add.vue'),
+    meta: {
+      requireAuth: true,
+      index: 4,
+    },
+  },
   {
     path: '/folder',
     name: 'folder',
     component: () => import('@/views/Folder.vue'),
     meta: {
       requireAuth: true,
-      index: 3,
+      index: 5,
     },
   },
   {
@@ -51,7 +61,7 @@ const routes = [
     component: () => import('@/views/Profile.vue'),
     meta: {
       requireAuth: true,
-      index: 3,
+      index: 6,
     },
   },
   {

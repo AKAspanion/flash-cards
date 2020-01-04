@@ -18,14 +18,16 @@
             </template>
         </bar-top>
         <div class="px-8">
-            <card-flash-set></card-flash-set>
+            <div class="pb-6" v-for="card in cardSets" :key="card.id">
+                <card-flash-set :card="card"></card-flash-set>
+            </div>
             <option-panel></option-panel>
         </div>
     </div>
 </template>
 
 <script>
-import { navigateToPath } from '@/util';
+import { navigateToPath, fetchAllFlashCardSets } from '@/util';
 import BarTop from '@/components/BarTop.vue';
 import CardFlashSet from '@/components/CardFlashSet.vue';
 import OptionPanel from '@/components/OptionPanel.vue';
@@ -36,11 +38,30 @@ export default {
         currentUser() {
             return this.$store.getters.user;
         },
+        cardSets() {
+            return this.$store.getters.flashCardSets;
+        },
     },
     methods: {
         goToProfile() {
             navigateToPath('/profile');
         },
+    },
+    mounted() {
+        if (!this.$store.getters.landingVisited) {
+            this.$store.dispatch('LOADING', true);
+            fetchAllFlashCardSets(this.$store.getters.user)
+                .then((data) => {
+                    this.$store.dispatch('SET_FLASH_CARDS', data);
+                    this.$store.dispatch('LANDING_VISITED', true);
+                })
+                .catch(() => {
+                    this.$store.dispatch('SET_FLASH_CARDS', []);
+                })
+                .finally(() => {
+                    this.$store.dispatch('LOADING', false);
+                });
+        }
     },
 };
 </script>

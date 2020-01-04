@@ -15,7 +15,7 @@
                         outlined
                         autofocus
                         hide-details
-                        v-model="title"
+                        v-model="cardSet.title"
                         @keyup.enter="titleEdit = false"
                     >
                         <template #append>
@@ -30,7 +30,7 @@
                     @click="titleEdit = true"
                     class="text-center text-uppercase title pa-4 mb-4"
                 >
-                    {{ title }}
+                    {{ cardSet.title || 'untitled set' }}
                 </div>
             </template>
             <template #right-button>
@@ -40,7 +40,7 @@
                 options
             </template>
         </bar-top>
-        <template v-if="!cards.length">
+        <template v-if="!cardSet.cards.length">
             <container-empty
                 icon="mdi-cards"
                 title="Add a flashcard and it will appear here"
@@ -48,11 +48,13 @@
             ></container-empty>
         </template>
         <group-card-flash
-            :value="cards"
-            @input="(e) => (cards = e)"
+            :value="cardSet.cards"
+            @input="(e) => (cardSet.cards = e)"
         ></group-card-flash>
-        <btn-action color="primary" @click="onCardAdd">Add Card</btn-action>
-        <v-btn fixed fab left bottom color="primary">
+        <btn-action color="primary" @click="onCardAdd" :disabled="loading">
+            Add Card
+        </btn-action>
+        <v-btn fixed fab left bottom color="primary" :disabled="loading">
             <v-icon>mdi-check</v-icon>
         </v-btn>
         <option-panel
@@ -80,10 +82,19 @@ export default {
     },
     data() {
         return {
-            title: 'untitled set',
+            isEdit: false,
             titleEdit: false,
-            cards: [],
+            cardSet: {
+                cards: [],
+                id: '',
+                color: 'abc',
+            },
         };
+    },
+    computed: {
+        loading() {
+            this.$store.getters.loading;
+        },
     },
     methods: {
         goBack() {
@@ -93,16 +104,31 @@ export default {
             this.$refs.addoptions.togglePanel();
         },
         onCardAdd() {
-            this.cards = [{ id: uid(), front: '', back: '' }, ...this.cards];
+            this.cardSet.cards = [
+                { id: uid(), front: '', back: '' },
+                ...this.cardSet.cards,
+            ];
+        },
+        setCards(params) {
+            if (this.isEdit) {
+                let storeCardSets = this.$store.getters.flashCardSets;
+                this.cardSet =
+                    storeCardSets[
+                        storeCardSets.findIndex((e) => e.id === params.id)
+                    ];
+            }
         },
     },
     mounted() {
+        let { name, params } = this.$route;
+        this.isEdit = name === 'edit';
         if (!this.$store.getters.landingVisited) {
             this.$store.dispatch('LOADING', true);
             fetchAllFlashCardSets(this.$store.getters.user)
                 .then((data) => {
                     this.$store.dispatch('SET_FLASH_CARDS', data);
                     this.$store.dispatch('LANDING_VISITED', true);
+                    this.setCards(params);
                 })
                 .catch(() => {
                     this.$store.dispatch('SET_FLASH_CARDS', []);
@@ -110,6 +136,8 @@ export default {
                 .finally(() => {
                     this.$store.dispatch('LOADING', false);
                 });
+        } else {
+            this.setCards(params);
         }
     },
 };
