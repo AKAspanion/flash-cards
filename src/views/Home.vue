@@ -1,6 +1,6 @@
 <template>
     <div class="home-container">
-        <bar-top @click:left="goToProfile">
+        <bar-top @click:left="goToProfile" @click:right="openSettings">
             <template #left-button>
                 <v-avatar v-if="currentUser.photoURL" size="24">
                     <v-img :src="currentUser.photoURL"></v-img>
@@ -28,7 +28,16 @@
                 <card-flash-set :card="card"></card-flash-set>
             </div>
         </div>
-        <option-panel></option-panel>
+        <option-panel ref="settingspanel">
+            <v-list-item dense class="px-0">
+                <v-list-item-content>
+                    <v-list-item-title>Dark Theme</v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-action>
+                    <v-switch v-model="theme"></v-switch>
+                </v-list-item-action>
+            </v-list-item>
+        </option-panel>
     </div>
 </template>
 
@@ -48,10 +57,21 @@ export default {
         cardSets() {
             return this.$store.getters.flashCardSets;
         },
+        theme: {
+            get() {
+                return this.$vuetify.theme.dark;
+            },
+            set(val) {
+                this.$vuetify.theme.dark = val;
+            },
+        },
     },
     methods: {
         goToProfile() {
             navigateToPath('/profile');
+        },
+        openSettings() {
+            this.$refs.settingspanel.togglePanel();
         },
     },
     mounted() {

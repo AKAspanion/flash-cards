@@ -1,5 +1,10 @@
 <template>
-    <v-card dark v-ripple class="options-card">
+    <v-card
+        v-ripple
+        :dark="dark"
+        class="options-card"
+        :color="dark ? '#424242' : '#e0e0e0'"
+    >
         <div class="d-flex justify-center">
             <v-icon
                 @touchstart="handleMouseDown"
@@ -10,7 +15,7 @@
                 mdi-drag-horizontal
             </v-icon>
         </div>
-        <div class="pt-4 pb-12 px-8">
+        <div class="options-content pt-4 pb-12 px-8">
             <slot></slot>
         </div>
     </v-card>
@@ -30,6 +35,11 @@ export default {
             touchStartEvent: null,
             touchEndEvent: null,
         };
+    },
+    computed: {
+        dark() {
+            return this.$vuetify.theme.dark;
+        },
     },
     watch: {
         value(val) {
@@ -128,5 +138,9 @@ export default {
     will-change: transform;
     transition: transform 200ms ease-out;
     transform: translate3d(0px, calc(100% - 56px), 0);
+}
+.options-content {
+    margin: 0px auto;
+    max-width: 400px;
 }
 </style>

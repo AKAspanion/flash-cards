@@ -13,14 +13,15 @@
                             class="headline d-inline-block"
                         >
                             {{
-                                value.front || 'example front side of a flashcard'
+                                value.front ||
+                                    'example front side of a flashcard'
                             }}
                         </div>
                         <v-textarea
                             dark
                             rounded
                             outlined
-                            rows="10"
+                            rows="4"
                             hide-details
                             :value="value.front"
                             :ref="value.id + 'front'"
@@ -35,7 +36,7 @@
                         </v-textarea>
                     </div>
                 </div>
-                <div class="flash-card-actions d-flex align-center my-3">
+                <div class="flash-card-actions d-flex align-center my-2">
                     <v-btn icon dark @click="$emit('delete', value)">
                         <v-icon>mdi-trash-can</v-icon>
                     </v-btn>
@@ -53,13 +54,15 @@
                             v-if="!editing && flipped"
                             class="headline d-inline-block"
                         >
-                            {{ value.back || 'example back side of a flashcard' }}
+                            {{
+                                value.back || 'example back side of a flashcard'
+                            }}
                         </div>
                         <v-textarea
                             dark
                             rounded
                             outlined
-                            rows="10"
+                            rows="4"
                             hide-details
                             :value="value.back"
                             :ref="value.id + 'back'"
@@ -74,7 +77,7 @@
                         </v-textarea>
                     </div>
                 </div>
-                <div class="flash-card-actions d-flex align-center my-3">
+                <div class="flash-card-actions d-flex align-center my-2">
                     <v-spacer></v-spacer>
                     <v-btn icon dark @click="onCardFlip">
                         <v-icon>mdi-flip-to-front</v-icon>
@@ -142,7 +145,7 @@ export default {
 
 .flash-card-content {
     overflow-x: hidden;
-    height: calc(100% - 50px);
+    height: calc(100% - 36px);
 }
 
 .flash-card-inner--rotated {

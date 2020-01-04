@@ -36,7 +36,7 @@
         </div>
         <v-card
             flat
-            color="#f5f5f5"
+            :color="dark ? '#616161' : '#e0e0e0'"
             class="pa-8 mb-n6 profile-card"
             min-height="calc(100vh - 292px)"
         >
@@ -77,6 +77,9 @@ export default {
     computed: {
         currentUser() {
             return this.$store.getters.user;
+        },
+        dark() {
+            return this.$vuetify.theme.dark;
         },
     },
     methods: {
