@@ -9,13 +9,6 @@
 <script>
 export default {
     name: 'Container',
-    computed: {
-        loading: {
-            get() {
-                return this.$store.getters.loading;
-            },
-        },
-    },
 };
 </script>
 

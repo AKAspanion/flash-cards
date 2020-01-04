@@ -58,6 +58,9 @@
                     </div>
                 </div>
             </div>
+            <div>
+                <v-btn @click="onSignout">Sign out</v-btn>
+            </div>
         </v-card>
     </div>
 </template>
@@ -65,6 +68,8 @@
 <script>
 import { navigateToPath, getInitials } from '@/util';
 import BarTop from '@/components/BarTop.vue';
+import FirebaseWeb from '@/firebase';
+const firebase = new FirebaseWeb();
 export default {
     name: 'Profile',
     components: { BarTop },
@@ -79,6 +84,9 @@ export default {
         },
         getInitials(name) {
             getInitials(name);
+        },
+        onSignout() {
+            firebase.signOut();
         },
     },
 };

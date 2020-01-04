@@ -104,6 +104,9 @@ export default new Vuex.Store({
     user(state) {
       return state.user;
     },
+    snackBar(state) {
+      return state.snackBar;
+    },
     loggedIn(state) {
       return state.isLoggedIn;
     },

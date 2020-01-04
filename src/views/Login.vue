@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex fill fill-height align-center justify-center">
-        <v-card class="pa-4">
+        <v-card class="pa-6">
             <v-form
                 ref="formLogin"
                 v-model="loginForm"
@@ -30,22 +30,23 @@ export default {
                 password: '',
             },
             loginForm: false,
-            loading: false
+            loading: false,
         };
     },
     methods: {
         onLogin() {
             this.loading = true;
-            firebase.signInWithEmail(this.user)
-                .then(()=>{
+            firebase
+                .signInWithEmail(this.user)
+                .then(() => {
                     navigateToPath('/home');
                 })
-                .catch((err)=>{
-                    console.log(err);
+                .catch((err) => {
+                    this.$store.dispatch('SHOW_SNACK', err.message);
                 })
-                .finally(()=>{                
+                .finally(() => {
                     this.loading = false;
-                })
+                });
         },
     },
 };

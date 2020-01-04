@@ -1,13 +1,18 @@
 <template>
     <v-app>
-        <div class="floating-loader">
-            <v-progress-linear
-                v-if="loading"
-                color="primary"
-                indeterminate
-                height="4"
-            ></v-progress-linear>
-        </div>
+        <v-progress-linear
+            class="floating-loader"
+            v-if="loading"
+            color="primary"
+            indeterminate
+            height="4"
+        ></v-progress-linear>
+        <v-snackbar v-model="snackbar.model" multi-line bottom :timeout="5000">
+            {{ snackbar.text }}
+            <v-btn dark text @click="snackbar.model = false">{{
+                $t('close')
+            }}</v-btn>
+        </v-snackbar>
         <container />
         <bar-nav />
     </v-app>
@@ -26,6 +31,9 @@ export default Vue.extend({
     computed: {
         loading() {
             return this.$store.getters.loading;
+        },
+        snackbar() {
+            return this.$store.getters.snackBar;
         },
     },
 });

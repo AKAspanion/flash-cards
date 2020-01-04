@@ -66,7 +66,7 @@ const routes = [
   },
   {
     path: '/login',
-    name: 'Login',
+    name: 'login',
     component: () => import('@/views/Login.vue'),
   },
 ];
@@ -82,7 +82,7 @@ router.beforeEach((to, from, next) => {
     firebase.initializeFirebase();
   }
   store.dispatch('LOADING', true);
-  if (to.name === 'login' || to.name === 'signup') {
+  if (to.name === 'login') {
     store.dispatch('SHOW_NAVBAR', false);
   }
   firebase.authChangeListener((user: any) => {

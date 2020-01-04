@@ -38,6 +38,10 @@ class FirebaseWeb {
         return firebase.auth().createUserWithEmailAndPassword(user.email.trim(), user.password.trim());
     }
 
+    public signOut = () => {
+        return firebase.auth().signOut();
+    }
+
     public getUser = () => {
         return firebase.auth().currentUser;
     }
