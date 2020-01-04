@@ -1,5 +1,5 @@
 <template>
-    <v-sheet flat tile width="100vw" height="100vh">
+    <v-sheet flat tile width="100vw" min-height="100vh">
         <transition name="slide-left" mode="out-in">
             <router-view :key="$route.fullPath"></router-view>
         </transition>

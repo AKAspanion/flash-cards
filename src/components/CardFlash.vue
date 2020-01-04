@@ -4,7 +4,10 @@
             class="flash-card-inner"
             :class="flipped ? 'flash-card-inner--rotated' : ''"
         >
-            <div class="flash-card-front pa-6">
+            <div
+                class="flash-card-front pa-6"
+                :style="`background-color: ${value.color || '#e91e63'}`"
+            >
                 <div class="flash-card-content">
                     <div class="d-flex align-center justify-center fill-height">
                         <div
@@ -46,7 +49,10 @@
                     </v-btn>
                 </div>
             </div>
-            <div class="flash-card-back pa-6">
+            <div
+                class="flash-card-back pa-6"
+                :style="`background-color: ${value.color || '#e91e63'}`"
+            >
                 <div class="flash-card-content">
                     <div class="d-flex align-center justify-center fill-height">
                         <div
@@ -162,12 +168,10 @@ export default {
 }
 
 .flash-card-front {
-    background-color: #2980b9;
     color: white;
 }
 
 .flash-card-back {
-    background-color: #2980b9;
     color: white;
     transform: rotateY(180deg);
 }

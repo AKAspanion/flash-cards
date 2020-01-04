@@ -8,106 +8,110 @@
                 home
             </template>
         </bar-top>
-        <div class="px-8 pb-8">
-            <v-avatar
-                size="72"
-                class="ml-n1"
-                :color="!$vuetify.theme.dark ? 'white' : '#404040'"
-            >
-                <template v-if="currentUser.photoURL">
-                    <v-img :src="currentUser.photoURL"></v-img>
-                </template>
-                <template v-else>
-                    <div
-                        v-if="currentUser.displayName"
-                        class="display-1 font-weight-medium"
-                    >
-                        {{ getInitials(currentUser.displayName) }}
-                    </div>
-                    <v-icon v-else size="72" color="primary">mdi-face</v-icon>
-                </template>
-            </v-avatar>
-            <div class="text-lowercase title profile-text">
-                {{ currentUser.displayName || 'ankit pandit' }}
-            </div>
-            <div class="text-lowercase caption profile-text">
-                {{ currentUser.email || 'na' }}
-            </div>
-        </div>
-        <v-card
-            flat
-            :color="dark ? '#212121' : '#e0e0e0'"
-            class="pa-8 mb-n6 profile-card"
-            min-height="calc(100vh - 292px)"
-        >
-            <div class="d-flex align-start pb-8">
-                <v-icon>mdi-calendar</v-icon>
-                <div class="pl-8">
-                    <div class="caption">member since</div>
-                    <div class="subtitle-2">
-                        {{ currentUser.userSince.slice(0, 16) }}
-                    </div>
+        <div class="profile-content">
+            <div class="px-8 pb-8">
+                <v-avatar
+                    size="72"
+                    class="ml-n1"
+                    :color="!$vuetify.theme.dark ? 'white' : '#404040'"
+                >
+                    <template v-if="currentUser.photoURL">
+                        <v-img :src="currentUser.photoURL"></v-img>
+                    </template>
+                    <template v-else>
+                        <div
+                            v-if="currentUser.displayName"
+                            class="display-1 font-weight-medium"
+                        >
+                            {{ getInitials(currentUser.displayName) }}
+                        </div>
+                        <v-icon v-else size="72" color="primary"
+                            >mdi-face</v-icon
+                        >
+                    </template>
+                </v-avatar>
+                <div class="text-lowercase title profile-text">
+                    {{ currentUser.displayName || 'ankit pandit' }}
+                </div>
+                <div class="text-lowercase caption profile-text">
+                    {{ currentUser.email || 'na' }}
                 </div>
             </div>
-            <div class="d-flex align-start">
-                <v-icon>mdi-label</v-icon>
-                <div class="pl-8">
-                    <div class="caption">your labels</div>
-                    <div class="subtitle-2">
-                        <v-list-item dense class="px-0">
-                            <v-list-item-content class="py-1">
-                                <v-text-field
-                                    flat
-                                    dense
-                                    rounded
-                                    outlined
-                                    hide-details
-                                    v-model="label"
-                                    :disabled="labelLoading"
-                                    @keyup.enter="onLabelCreate"
-                                    :placeholder="$t('label.create')"
-                                >
-                                </v-text-field>
-                            </v-list-item-content>
-                            <v-list-item-action>
-                                <v-btn
-                                    icon
-                                    color="primary"
-                                    @click="onLabelCreate"
-                                    :disabled="labelLoading || !this.label"
-                                >
-                                    <v-icon>{{
-                                        !selectedLabel
-                                            ? 'mdi-plus-circle'
-                                            : 'mdi-check'
-                                    }}</v-icon>
-                                </v-btn>
-                            </v-list-item-action>
-                        </v-list-item>
-                        <div class="py-1 mt-n2">
-                            <v-chip
-                                small
-                                outlined
-                                color="primary"
-                                class="mr-3 mt-2"
-                                :key="label.docId"
-                                v-for="label in labels"
-                                @click="onLabelClick(label)"
-                                :input-value="
-                                    selectedLabel &&
-                                        label.docId === selectedLabel.docId
-                                "
-                            >
-                                {{ label.label }}
-                            </v-chip>
+            <v-card
+                flat
+                :color="dark ? '#212121' : '#e0e0e0'"
+                class="pa-8 profile-card"
+                min-height="calc(100vh - 292px)"
+            >
+                <div class="d-flex align-start pb-8">
+                    <v-icon>mdi-calendar</v-icon>
+                    <div class="pl-8">
+                        <div class="caption">member since</div>
+                        <div class="subtitle-2">
+                            {{ currentUser.userSince.slice(0, 16) }}
                         </div>
                     </div>
                 </div>
-            </div>
-            <btn-action rounded height="50" color="primary" @click="onSignout">
-                Sign out
-            </btn-action>
-        </v-card>
+                <div class="d-flex align-start">
+                    <v-icon>mdi-label</v-icon>
+                    <div class="pl-8">
+                        <div class="caption">your labels</div>
+                        <div class="subtitle-2">
+                            <v-list-item dense class="px-0">
+                                <v-list-item-content class="py-1">
+                                    <v-text-field
+                                        flat
+                                        dense
+                                        rounded
+                                        outlined
+                                        hide-details
+                                        v-model="label"
+                                        :disabled="labelLoading"
+                                        @keyup.enter="onLabelCreate"
+                                        :placeholder="$t('label.create')"
+                                    >
+                                    </v-text-field>
+                                </v-list-item-content>
+                                <v-list-item-action>
+                                    <v-btn
+                                        icon
+                                        color="primary"
+                                        @click="onLabelCreate"
+                                        :disabled="labelLoading || !this.label"
+                                    >
+                                        <v-icon>{{
+                                            !selectedLabel
+                                                ? 'mdi-plus-circle'
+                                                : 'mdi-check'
+                                        }}</v-icon>
+                                    </v-btn>
+                                </v-list-item-action>
+                            </v-list-item>
+                            <div class="py-1 mt-n2">
+                                <v-chip
+                                    small
+                                    outlined
+                                    color="primary"
+                                    class="mr-3 mt-2"
+                                    :key="label.docId"
+                                    v-for="label in labels"
+                                    @click="onLabelClick(label)"
+                                    :input-value="
+                                        selectedLabel &&
+                                            label.docId === selectedLabel.docId
+                                    "
+                                >
+                                    {{ label.label }}
+                                </v-chip>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </v-card>
+        </div>
+        <btn-action rounded height="50" color="primary" @click="onSignout">
+            Sign out
+        </btn-action>
     </div>
 </template>
 
@@ -247,11 +251,16 @@ export default {
 .profile-container {
     min-height: 100vh;
 }
+.profile-content {
+    height: calc(100vh - 136px);
+    overflow-y: auto;
+}
 .profile-text {
     padding-left: 2px;
 }
 .profile-card {
     border-bottom-right-radius: 0px !important;
     border-bottom-left-radius: 0px !important;
+    padding-bottom: 88px !important;
 }
 </style>

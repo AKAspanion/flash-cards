@@ -102,6 +102,6 @@ export default {
 .flash-card-set-container {
     height: calc(100vh - 136px);
     padding-bottom: 64px;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 </style>
