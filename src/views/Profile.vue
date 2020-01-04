@@ -1,10 +1,8 @@
 <template>
     <div class="profile-container">
-        <bar-top>
+        <bar-top @click:left="goBack">
             <template #left-button>
-                <v-btn icon @click="goBack">
-                    <v-icon size="32" color="primary">mdi-arrow-left</v-icon>
-                </v-btn>
+                <v-icon size="32" color="primary">mdi-arrow-left</v-icon>
             </template>
             <template #left-text>
                 home
@@ -12,7 +10,8 @@
         </bar-top>
         <div class="px-8 pb-8">
             <v-avatar
-                size="80"
+                size="72"
+                class="ml-n1"
                 :color="!$vuetify.theme.dark ? 'white' : '#404040'"
             >
                 <template v-if="currentUser.photoURL">
@@ -25,7 +24,7 @@
                     >
                         {{ getInitials(currentUser.displayName) }}
                     </div>
-                    <v-icon v-else size="80" color="primary">mdi-face</v-icon>
+                    <v-icon v-else size="72" color="primary">mdi-face</v-icon>
                 </template>
             </v-avatar>
             <div class="text-lowercase title profile-text">
@@ -39,7 +38,7 @@
             flat
             color="#f5f5f5"
             class="pa-8 mb-n6 profile-card"
-            min-height="calc(100vh - 300px)"
+            min-height="calc(100vh - 292px)"
         >
             <div class="d-flex align-start pb-8">
                 <v-icon>mdi-calendar</v-icon>

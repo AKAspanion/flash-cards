@@ -1,21 +1,17 @@
 <template>
     <div class="home-container">
-        <bar-top>
+        <bar-top @click:left="goToProfile">
             <template #left-button>
-                <v-btn icon @click="goToProfile">
-                    <v-avatar v-if="currentUser.photoURL" size="24">
-                        <v-img :src="currentUser.photoURL"></v-img>
-                    </v-avatar>
-                    <v-icon v-else size="32" color="primary">mdi-face </v-icon>
-                </v-btn>
+                <v-avatar v-if="currentUser.photoURL" size="24">
+                    <v-img :src="currentUser.photoURL"></v-img>
+                </v-avatar>
+                <v-icon v-else size="32" color="primary">mdi-face </v-icon>
             </template>
             <template #left-text>
-                {{ currentUser.email }}
+                {{ currentUser.displayName || 'na' }}
             </template>
             <template #right-button>
-                <v-btn icon>
-                    <v-icon size="32" color="primary">mdi-settings</v-icon>
-                </v-btn>
+                <v-icon size="32" color="primary">mdi-settings</v-icon>
             </template>
             <template #right-text>
                 settings

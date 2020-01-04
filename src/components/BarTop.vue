@@ -2,14 +2,23 @@
     <div class="px-4 py-2">
         <v-toolbar flat height="120">
             <div class="avatar-container">
-                <slot name="left-button"></slot>
+                <v-btn icon width="64" height="64" @click="$emit('click:left')">
+                    <slot name="left-button"></slot>
+                </v-btn>
                 <div class="avatar-text overline">
                     <slot name="left-text"></slot>
                 </div>
             </div>
             <v-spacer></v-spacer>
             <div class="avatar-container">
-                <slot name="right-button"></slot>
+                <v-btn
+                    icon
+                    width="64"
+                    height="64"
+                    @click="$emit('click:right')"
+                >
+                    <slot name="right-button"></slot>
+                </v-btn>
                 <div class="avatar-text overline">
                     <slot name="right-text"></slot>
                 </div>
