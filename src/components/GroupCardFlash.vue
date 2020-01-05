@@ -7,6 +7,7 @@
                 v-slot:default="{ active, toggle }"
             >
                 <card-flash
+                    :color="color"
                     :value="card"
                     @input="onUpdate"
                     @delete="onDelete"
@@ -19,7 +20,7 @@
 <script>
 import CardFlash from '@/components/CardFlash.vue';
 export default {
-    props: ['value'],
+    props: ['value', 'color'],
     components: {
         CardFlash,
     },

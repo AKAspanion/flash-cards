@@ -6,7 +6,7 @@
         >
             <div
                 class="flash-card-front pa-6"
-                :style="`background-color: ${value.color || '#e91e63'}`"
+                :style="`background-color: ${color || '#e91e63'}`"
             >
                 <div class="flash-card-content">
                     <div class="d-flex align-center justify-center fill-height">
@@ -24,7 +24,7 @@
                             dark
                             rounded
                             outlined
-                            rows="4"
+                            rows="3"
                             hide-details
                             :value="value.front"
                             :ref="value.id + 'front'"
@@ -51,7 +51,7 @@
             </div>
             <div
                 class="flash-card-back pa-6"
-                :style="`background-color: ${value.color || '#e91e63'}`"
+                :style="`background-color: ${color || '#e91e63'}`"
             >
                 <div class="flash-card-content">
                     <div class="d-flex align-center justify-center fill-height">
@@ -68,7 +68,7 @@
                             dark
                             rounded
                             outlined
-                            rows="4"
+                            rows="3"
                             hide-details
                             :value="value.back"
                             :ref="value.id + 'back'"
@@ -96,7 +96,7 @@
 
 <script>
 export default {
-    props: ['value'],
+    props: ['value', 'color'],
     data() {
         return {
             flipped: false,

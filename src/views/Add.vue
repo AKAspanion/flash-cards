@@ -48,8 +48,8 @@
             ></container-empty>
         </template>
         <group-card-flash
-            :value="cardSet.cards"
-            @input="(e) => (cardSet.cards = e)"
+            :color="cardSet.color"
+            v-model="cardSet.cards"
         ></group-card-flash>
         <btn-action color="primary" @click="onCardAdd" :disabled="loading">
             Add Card
@@ -67,10 +67,12 @@
             <v-icon>mdi-check</v-icon>
         </v-btn>
         <option-panel ref="addoptions" v-slot:default="{ toggle }">
-            option <br />
-            list <br />
-            coming <br />
-            soon <br />
+            <v-list-item class="px-0">
+                <v-list-item-content> Color </v-list-item-content>
+                <v-list-item-action>
+                    <color-palette v-model="cardSet.color"></color-palette>
+                </v-list-item-action>
+            </v-list-item>
         </option-panel>
     </div>
 </template>
@@ -82,6 +84,7 @@ import BtnAction from '@/components/BtnAction.vue';
 import OptionPanel from '@/components/OptionPanel.vue';
 import GroupCardFlash from '@/components/GroupCardFlash.vue';
 import ContainerEmpty from '@/components/ContainerEmpty.vue';
+import ColorPalette from '@/components/ColorPalette.vue';
 
 import FirebaseWeb from '@/firebase';
 const firebase = new FirebaseWeb();
@@ -92,6 +95,7 @@ export default {
         BarTop,
         BtnAction,
         OptionPanel,
+        ColorPalette,
         ContainerEmpty,
         GroupCardFlash,
     },
@@ -102,8 +106,14 @@ export default {
             cardSet: {
                 id: uid(),
                 cards: [],
+                color: '#E91E63',
             },
         };
+    },
+    watch: {
+        color(val) {
+            this.cardSet.color = val;
+        },
     },
     computed: {
         loading() {
@@ -143,14 +153,14 @@ export default {
                 firebase
                     .addFlashCardSet(this.user, {
                         ...this.cardSet,
-                        title: this.cardSet.title || 'untitled set',
+                        title: this.cardSet.title || '',
                     })
                     .then((res) => {
                         this.$store.dispatch('ADD_FLASH_CARD_SET', {
                             docId: res.id,
                             ...this.cardSet,
                             uid: this.user.uid,
-                            title: this.cardSet.title || 'untitled set',
+                            title: this.cardSet.title || '',
                         });
                         this.$store.dispatch(
                             'SHOW_SNACK',

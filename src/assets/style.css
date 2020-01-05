@@ -28,3 +28,8 @@ body {
 .v-btn--bottom {
   bottom: 32px !important;
 }
+
+/* global menu css override */
+.v-menu__content {
+  border-radius: 28px !important;
+}
