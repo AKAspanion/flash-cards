@@ -1,5 +1,5 @@
 <template>
-    <v-card flat class="flash-card mx-8 mr-0">
+    <v-card flat class="flash-card ma-8 mr-0">
         <div
             class="flash-card-inner"
             :class="flipped ? 'flash-card-inner--rotated' : ''"
@@ -28,6 +28,7 @@
                             rounded
                             outlined
                             hide-details
+                            color="white"
                             :value="value.front"
                             :ref="value.id + 'front'"
                             v-if="editing && !flipped"
@@ -90,6 +91,7 @@
                             rounded
                             outlined
                             hide-details
+                            color="white"
                             :value="value.back"
                             :ref="value.id + 'back'"
                             v-if="editing && flipped"
@@ -155,7 +157,7 @@ export default {
     max-width: 350px;
     perspective: 1000px;
     border-radius: 28px;
-    height: calc(100vh - 256px);
+    height: calc(100vh - 320px);
 }
 
 .flash-card:last-of-type {

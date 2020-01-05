@@ -34,7 +34,7 @@
                     <v-list-item-title>Dark Theme</v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
-                    <v-switch v-model="theme"></v-switch>
+                    <v-switch v-model="theme" color="primary"></v-switch>
                 </v-list-item-action>
             </v-list-item>
         </option-panel>
