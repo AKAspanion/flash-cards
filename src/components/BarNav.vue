@@ -1,36 +1,40 @@
 <template>
-    <v-speed-dial
-        bottom
-        right
-        fixed
-        direction="top"
-        v-if="showBarNav"
-        v-model="navModel"
-        :loading="loading"
-        transition="slide-y-reverse-transition"
-    >
-        <template #activator>
-            <v-btn v-model="navModel" dark fab color="primary">
-                <v-icon
-                    :class="navModel ? 'rotated-fab' : 'rotated-fab--active'"
-                >
-                    mdi-chevron-left
-                </v-icon>
-            </v-btn>
-        </template>
-        <v-btn
-            fab
-            dark
-            small
-            color="accent"
-            :key="action.id"
-            @click="onActionClick(action)"
-            v-for="action in actionButtons"
+    <v-fab-transition>
+        <v-speed-dial
+            right
+            fixed
+            bottom
+            direction="top"
+            v-if="showBarNav"
+            v-model="navModel"
+            :loading="loading"
+            transition="slide-y-reverse-transition"
         >
-            <v-icon small>{{ action.icon }}</v-icon>
-            <div class="fab--tooltip">{{ action.title }}</div>
-        </v-btn>
-    </v-speed-dial>
+            <template #activator>
+                <v-btn v-model="navModel" dark fab color="primary">
+                    <v-icon
+                        :class="
+                            navModel ? 'rotated-fab' : 'rotated-fab--active'
+                        "
+                    >
+                        mdi-chevron-left
+                    </v-icon>
+                </v-btn>
+            </template>
+            <v-btn
+                fab
+                dark
+                small
+                color="accent"
+                :key="action.id"
+                @click="onActionClick(action)"
+                v-for="action in actionButtons"
+            >
+                <v-icon small>{{ action.icon }}</v-icon>
+                <div class="fab--tooltip">{{ action.title }}</div>
+            </v-btn>
+        </v-speed-dial>
+    </v-fab-transition>
 </template>
 
 <script>
@@ -59,6 +63,7 @@ export default {
                 // },
             ],
             navModel: false,
+            invisibleRoutes: ['login', 'profile', 'view'],
         };
     },
     computed: {
@@ -69,7 +74,7 @@ export default {
             return this.$store.getters.user;
         },
         showBarNav() {
-            return this.$route.name !== 'login';
+            return !this.invisibleRoutes.includes(this.$route.name);
         },
     },
     methods: {

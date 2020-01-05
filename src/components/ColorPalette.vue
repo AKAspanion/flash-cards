@@ -1,7 +1,7 @@
 <template>
     <v-menu v-model="menu" :close-on-content-click="false">
         <template #activator="{on}">
-            <v-btn :color="value" icon v-on="on">
+            <v-btn :color="value" small icon v-on="on">
                 <v-icon>
                     mdi-palette
                 </v-icon>

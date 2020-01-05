@@ -68,6 +68,19 @@
             <v-icon>mdi-check</v-icon>
         </v-btn>
         <option-panel ref="addoptions" v-slot:default="{ toggle }">
+            <v-list-item class="px-0" v-if="isEdit">
+                <v-list-item-content> Move to bin </v-list-item-content>
+                <v-list-item-action>
+                    <v-btn
+                        icon
+                        small
+                        :color="cardSet.color"
+                        @click="onDeleteClick"
+                    >
+                        <v-icon>mdi-trash-can</v-icon>
+                    </v-btn>
+                </v-list-item-action>
+            </v-list-item>
             <v-list-item class="px-0">
                 <v-list-item-content> Color </v-list-item-content>
                 <v-list-item-action>
@@ -134,6 +147,7 @@ export default {
                 cards: [],
                 labels: [],
                 color: '#E91E63',
+                trashed: false,
             },
         };
     },
@@ -161,6 +175,11 @@ export default {
     methods: {
         goBack() {
             navigateToPath('/home');
+        },
+        onDeleteClick() {
+            this.cardSet.trashed = true;
+            this.openOptions();
+            this.onSubmit();
         },
         openOptions() {
             this.$refs.addoptions.togglePanel();

@@ -2,7 +2,10 @@
     <v-card raised :color="dark ? '#212121' : '#e0e0e0'" height="190">
         <v-card dark :color="card.color || 'primary'" height="108" class="pa-6">
             <div class="d-flex text-uppercase mb-3">
-                <div class="text-truncate">
+                <div
+                    class="text-truncate"
+                    :title="card.title || 'untitled set'"
+                >
                     {{ card.title || 'untitled set' }}
                 </div>
                 <v-spacer></v-spacer>
@@ -33,6 +36,9 @@
                 <div class="caption">100%</div>
             </div>
             <v-spacer></v-spacer>
+            <v-chip small :color="card.color" outlined @click="onView">
+                browse
+            </v-chip>
         </div>
     </v-card>
 </template>
@@ -61,6 +67,9 @@ export default {
     methods: {
         onEdit() {
             navigateToPath(`/${this.card.id}/edit`);
+        },
+        onView() {
+            navigateToPath(`/${this.card.id}/view`);
         },
     },
 };

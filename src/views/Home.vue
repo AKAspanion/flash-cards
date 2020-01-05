@@ -31,10 +31,82 @@
         <option-panel ref="settingspanel">
             <v-list-item dense class="px-0">
                 <v-list-item-content>
-                    <v-list-item-title>Dark Theme</v-list-item-title>
+                    <v-list-item-title>Language</v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
-                    <v-switch v-model="theme" color="primary"></v-switch>
+                    <v-btn-toggle
+                        dark
+                        rounded
+                        mandatory
+                        v-model="$i18n.locale"
+                        background-color="primary"
+                    >
+                        <v-btn
+                            text
+                            x-small
+                            v-for="(lang, i) in langs"
+                            :key="`Lang${i}`"
+                            :value="lang"
+                            >{{ lang }}</v-btn
+                        >
+                    </v-btn-toggle>
+                </v-list-item-action>
+            </v-list-item>
+            <v-list-item dense class="px-0">
+                <v-list-item-content>
+                    <v-list-item-title>Theme</v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-action>
+                    <v-btn-toggle
+                        dark
+                        rounded
+                        mandatory
+                        v-model="theme"
+                        background-color="primary"
+                    >
+                        <v-btn x-small text :value="false">
+                            <v-icon x-small>mdi-white-balance-sunny</v-icon>
+                        </v-btn>
+                        <v-btn x-small text :value="true">
+                            <v-icon x-small style="transform: rotate(-45deg)"
+                                >mdi-moon-waning-crescent</v-icon
+                            >
+                        </v-btn>
+                    </v-btn-toggle>
+                </v-list-item-action>
+            </v-list-item>
+            <v-list-item dense class="px-0">
+                <v-list-item-content>
+                    <v-list-item-title>Labels</v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-action>
+                    <v-btn
+                        icon
+                        small
+                        color="primary"
+                        @click="goToFromMenu('/profile')"
+                    >
+                        <v-icon>
+                            mdi-label-variant
+                        </v-icon>
+                    </v-btn>
+                </v-list-item-action>
+            </v-list-item>
+            <v-list-item dense class="px-0">
+                <v-list-item-content>
+                    <v-list-item-title>Bin</v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-action>
+                    <v-btn
+                        icon
+                        small
+                        color="primary"
+                        @click="goToFromMenu('/bin')"
+                    >
+                        <v-icon>
+                            mdi-trash-can
+                        </v-icon>
+                    </v-btn>
                 </v-list-item-action>
             </v-list-item>
         </option-panel>
@@ -50,12 +122,17 @@ import ContainerEmpty from '@/components/ContainerEmpty.vue';
 export default {
     name: 'home',
     components: { BarTop, CardFlashSet, OptionPanel, ContainerEmpty },
+    data() {
+        return {
+            langs: ['en', 'hi'],
+        };
+    },
     computed: {
         currentUser() {
             return this.$store.getters.user;
         },
         cardSets() {
-            return this.$store.getters.flashCardSets;
+            return this.$store.getters.flashCardSets.filter((c) => !c.trashed);
         },
         theme: {
             get() {
@@ -69,6 +146,12 @@ export default {
     methods: {
         goToProfile() {
             navigateToPath('/profile');
+        },
+        goToFromMenu(path) {
+            this.openSettings();
+            setTimeout(() => {
+                navigateToPath(path);
+            }, 300);
         },
         openSettings() {
             this.$refs.settingspanel.togglePanel();

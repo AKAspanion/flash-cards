@@ -53,7 +53,7 @@
                     </div>
                 </div>
                 <div class="d-flex align-start">
-                    <v-icon>mdi-label</v-icon>
+                    <v-icon>mdi-label-variant</v-icon>
                     <div class="pl-8">
                         <div class="caption">your labels</div>
                         <div class="subtitle-2">

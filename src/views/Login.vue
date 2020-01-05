@@ -1,5 +1,8 @@
 <template>
-    <div class="d-flex fill fill-height align-center justify-center">
+    <div
+        class="d-flex fill-height align-center justify-center"
+        style="height: 100vh;"
+    >
         <v-card class="pa-6">
             <v-form
                 ref="formLogin"
