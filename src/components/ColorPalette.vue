@@ -3,7 +3,7 @@
         <template #activator="{on}">
             <v-btn :color="value" icon v-on="on">
                 <v-icon>
-                    mdi-face
+                    mdi-palette
                 </v-icon>
             </v-btn>
         </template>

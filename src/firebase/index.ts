@@ -32,6 +32,7 @@ class FirebaseWeb {
             ...cardSet,
             uid: user.uid,
             cards: JSON.stringify(cardSet.cards),
+            labels: cardSet.labels,
         });
     }
 

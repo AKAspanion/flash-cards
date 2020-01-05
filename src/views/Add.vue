@@ -48,6 +48,7 @@
             ></container-empty>
         </template>
         <group-card-flash
+            :labels="setLabels"
             :color="cardSet.color"
             v-model="cardSet.cards"
         ></group-card-flash>
@@ -72,6 +73,31 @@
                 <v-list-item-action>
                     <color-palette v-model="cardSet.color"></color-palette>
                 </v-list-item-action>
+            </v-list-item>
+            <v-list-item class="px-0">
+                <v-list-item-content> Label </v-list-item-content>
+                <div
+                    class="d-flex justify-end"
+                    style="width: calc(100% - 48px)"
+                >
+                    <v-chip-group
+                        multiple
+                        v-model="cardSet.labels"
+                        active-class="primary--text"
+                    >
+                        <v-chip
+                            small
+                            filter
+                            outlined
+                            :key="label.docId"
+                            :value="label.docId"
+                            :color="cardSet.color"
+                            v-for="label in labels"
+                        >
+                            {{ label.label }}
+                        </v-chip>
+                    </v-chip-group>
+                </div>
             </v-list-item>
         </option-panel>
     </div>
@@ -106,6 +132,7 @@ export default {
             cardSet: {
                 id: uid(),
                 cards: [],
+                labels: [],
                 color: '#E91E63',
             },
         };
@@ -121,6 +148,14 @@ export default {
         },
         user() {
             return this.$store.getters.user;
+        },
+        labels() {
+            return this.$store.getters.labels;
+        },
+        setLabels() {
+            return this.labels.filter((label) =>
+                this.cardSet.labels.includes(label.docId)
+            );
         },
     },
     methods: {

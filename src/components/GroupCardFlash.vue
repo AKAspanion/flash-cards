@@ -9,6 +9,7 @@
                 <card-flash
                     :color="color"
                     :value="card"
+                    :labels="labels"
                     @input="onUpdate"
                     @delete="onDelete"
                 ></card-flash>
@@ -20,7 +21,7 @@
 <script>
 import CardFlash from '@/components/CardFlash.vue';
 export default {
-    props: ['value', 'color'],
+    props: ['value', 'color', 'labels'],
     components: {
         CardFlash,
     },
