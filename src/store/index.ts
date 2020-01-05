@@ -64,6 +64,9 @@ export default new Vuex.Store({
       newSets[index] = payload;
       state.flashCardSets = newSets;
     },
+    deleteFlashCardSet(state, payload) {
+      state.flashCardSets = [...state.flashCardSets.filter((c: any) => c.docId !== payload.docId)];
+    },
   },
   actions: {
     RESET_STORE({ commit }) {
@@ -134,6 +137,9 @@ export default new Vuex.Store({
     },
     UPDATE_FLASH_CARD_SET({ commit }, payload) {
       commit('updateFlashCardSet', payload);
+    },
+    DELETE_FLASH_CARD_SET({ commit }, payload) {
+      commit('deleteFlashCardSet', payload);
     },
   },
   getters: {

@@ -44,6 +44,11 @@ class FirebaseWeb {
         });
     }
 
+    public deleteFlashCardSet = (cardSet: any) => {
+        const flashCardSetRef = firebase.firestore().collection('flash-card-sets').doc(cardSet.docId);
+        return flashCardSetRef.delete();
+    }
+
     public fetchAllLabelsByUID = (user: any) => {
         const labelRef = firebase.firestore().collection('labels');
         return labelRef.where('uid', '==', user.uid).get();

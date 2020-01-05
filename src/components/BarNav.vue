@@ -7,11 +7,16 @@
             direction="top"
             v-if="showBarNav"
             v-model="navModel"
-            :loading="loading"
             transition="slide-y-reverse-transition"
         >
             <template #activator>
-                <v-btn v-model="navModel" dark fab color="primary">
+                <v-btn
+                    v-model="navModel"
+                    :loading="loading"
+                    dark
+                    fab
+                    color="primary"
+                >
                     <v-icon
                         :class="
                             navModel ? 'rotated-fab' : 'rotated-fab--active'

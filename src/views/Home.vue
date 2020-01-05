@@ -18,12 +18,11 @@
             </template>
         </bar-top>
         <div class="flash-card-set-container px-8">
-            <template v-if="!cardSets.length">
-                <container-empty
-                    icon="mdi-cards"
-                    title="Add flashcard sets and it will appear here"
-                ></container-empty>
-            </template>
+            <container-empty
+                icon="mdi-cards"
+                v-if="!cardSets.length"
+                title="Add flashcard sets and it will appear here"
+            ></container-empty>
             <div class="pb-6" v-for="card in cardSets" :key="card.id">
                 <card-flash-set :card="card"></card-flash-set>
             </div>

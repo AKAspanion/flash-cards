@@ -9,8 +9,14 @@
                     {{ card.title || 'untitled set' }}
                 </div>
                 <v-spacer></v-spacer>
-                <div class="ml-2">
-                    <v-chip small outlined @click="onEdit" dark>
+                <div class="ml-2" v-if="!bin">
+                    <v-chip
+                        small
+                        outlined
+                        dark
+                        @click="onEdit"
+                        :disabled="disabled"
+                    >
                         <v-icon small>mdi-pencil</v-icon>
                     </v-chip>
                 </div>
@@ -24,6 +30,7 @@
                     class="mr-1"
                     text-color="white"
                     :key="label.docId"
+                    :disabled="disabled"
                     v-for="label in labels"
                 >
                     {{ label.label }}
@@ -31,14 +38,41 @@
             </div>
         </v-card>
         <div class="d-flex align-center pa-6">
-            <div>
-                <div class="overline">learned</div>
-                <div class="caption">100%</div>
-            </div>
-            <v-spacer></v-spacer>
-            <v-chip small :color="card.color" outlined @click="onView">
-                browse
-            </v-chip>
+            <template v-if="bin">
+                <v-btn
+                    icon
+                    :color="card.color"
+                    :disabled="disabled"
+                    @click="$emit('delete', card)"
+                >
+                    <v-icon>mdi-trash-can</v-icon>
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-btn
+                    icon
+                    :color="card.color"
+                    :disabled="disabled"
+                    @click="$emit('restore', card)"
+                >
+                    <v-icon>mdi-restore</v-icon>
+                </v-btn>
+            </template>
+            <template v-else>
+                <div>
+                    <div class="overline">learned</div>
+                    <div class="caption">100%</div>
+                </div>
+                <v-spacer></v-spacer>
+                <v-chip
+                    small
+                    outlined
+                    @click="onView"
+                    :color="card.color"
+                    :disabled="disabled"
+                >
+                    browse
+                </v-chip>
+            </template>
         </div>
     </v-card>
 </template>
@@ -51,6 +85,14 @@ export default {
         card: {
             type: Object,
             required: true,
+        },
+        bin: {
+            type: Boolean,
+            default: false,
+        },
+        disabled: {
+            type: Boolean,
+            default: false,
         },
     },
     computed: {

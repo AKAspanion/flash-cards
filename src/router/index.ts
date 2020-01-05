@@ -56,6 +56,15 @@ const routes = [
     },
   },
   {
+    path: '/bin',
+    name: 'bin',
+    component: () => import('@/views/Bin.vue'),
+    meta: {
+      requireAuth: true,
+      index: 5,
+    },
+  },
+  {
     path: '/:id/view',
     name: 'view',
     component: () => import('@/views/View.vue'),
