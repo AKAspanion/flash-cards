@@ -186,7 +186,7 @@ export default {
         },
         onCardAdd() {
             this.cardSet.cards = [
-                { id: uid(), front: '', back: '' },
+                { id: uid(), front: '', back: '', learned: false },
                 ...this.cardSet.cards,
             ];
         },
@@ -218,7 +218,7 @@ export default {
                         });
                         this.$store.dispatch(
                             'SHOW_SNACK',
-                            'Task added successully!'
+                            'Flashcard added successully!'
                         );
                         navigateToPath('/home');
                     })
@@ -238,7 +238,7 @@ export default {
                         );
                         this.$store.dispatch(
                             'SHOW_SNACK',
-                            'Task updated successully!'
+                            'Flashcard updated successully!'
                         );
                         navigateToPath('/home');
                     })

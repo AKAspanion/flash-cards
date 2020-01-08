@@ -7,39 +7,123 @@
             <template #left-text>
                 home
             </template>
+            <template #right-button>
+                {{`${learnedCards}/${cardSet.cards.length}`}}
+            </template>
+            <template #right-text>
+                learned
+            </template>
         </bar-top>
+        <div>
+            <group-card-flash
+                :browse="true"
+                :labels="setLabels"
+                :color="cardSet.color"
+                v-model="cardSet.cards"
+            ></group-card-flash>
+        </div>
+        <btn-action color="primary" @click="onSubmit">submit</btn-action>
     </div>
 </template>
 
 <script>
-import { navigateToPath, getInitials, loadData } from '@/util';
+import { navigateToPath, loadData } from '@/util';
 import BarTop from '@/components/BarTop.vue';
+import BtnAction from '@/components/BtnAction.vue';
+import GroupCardFlash from '@/components/GroupCardFlash.vue';
+
+import FirebaseWeb from '@/firebase';
+const firebase = new FirebaseWeb();
+
 export default {
-    components: { BarTop },
+    components: { BarTop, BtnAction, GroupCardFlash },
+    data() {
+        return {
+            dataLoading: false,
+            cardSet: {
+                color: '',
+                labels: [],
+                cards: []
+            },
+        }
+    },
+    computed:{        
+        currentUser() {
+            return this.$store.getters.user;
+        },
+        labels() {
+            return this.$store.getters.labels;
+        },
+        setLabels() {
+            return this.labels.filter((label) =>
+                this.cardSet.labels.includes(label.docId)
+            );
+        },
+        learnedCards(){
+            return this.cardSet.cards.reduce((total, value) => {
+                return total += value.learned ? 1:0; 
+            }, 0)
+        }
+    },
     methods: {
         goBack() {
             navigateToPath('/home');
         },
+        setCards(params) {
+            let storeCardSets = this.$store.getters.flashCardSets;
+            let index = storeCardSets.findIndex((e) => e.id === params.id);
+            if (index >= 0) {
+                this.cardSet = { ...storeCardSets[index] };
+            } else {
+                this.goBack();
+            }
+        },
+        onSubmit(){
+            firebase
+                .updateFlashCardSet(this.cardSet)
+                .then((res) => {
+                    this.$store.dispatch(
+                        'UPDATE_FLASH_CARD_SET',
+                        this.cardSet
+                    );
+                    this.$store.dispatch(
+                        'SHOW_SNACK',
+                        'Flashcard updated successully!'
+                    );
+                    navigateToPath('/home');
+                })
+                .catch((err) => {
+                    this.$store.dispatch('SHOW_SNACK', err.messsage);
+                })
+                .finally(() => {
+                    this.$store.dispatch('LOADING', false);
+                });
+        }
     },
     mounted() {
+        let { params } = this.$route;
         if (!this.$store.getters.landingVisited) {
-            this.labelLoading = true;
+            this.dataLoading = true;
             this.$store.dispatch('LOADING', true);
             loadData(this.currentUser)
                 .then((data) => {
                     this.$store.dispatch('SET_FLASH_CARDS', data[0]);
                     this.$store.dispatch('SET_LABELS', data[1]);
                     this.$store.dispatch('LANDING_VISITED', true);
+                    this.setCards(params);
                 })
-                .catch(() => {
+                .catch((err) => {
+                    console.log(err);
                     this.$store.dispatch('SET_FLASH_CARDS', []);
                     this.$store.dispatch('SET_LABELS', []);
                     this.$store.dispatch('LANDING_VISITED', false);
                 })
                 .finally(() => {
-                    this.labelLoading = true;
+                    this.dataLoading = true;
                     this.$store.dispatch('LOADING', false);
                 });
+        }else{
+            this.setCards(params);
         }
     },
 };

@@ -1,5 +1,9 @@
 <template>
-    <v-card flat class="flash-card ma-8 mr-0">
+    <v-card 
+        flat 
+        class="flash-card ma-8 mr-0" 
+        :style="`height: ${browse? 'calc(100vh - 288px)':'calc(100vh - 320px)'}`"
+    >
         <div
             class="flash-card-inner"
             :class="flipped ? 'flash-card-inner--rotated' : ''"
@@ -59,7 +63,10 @@
                     </v-chip>
                 </div>
                 <div class="flash-card-actions d-flex align-center mb-2">
-                    <v-btn icon dark @click="$emit('delete', value)">
+                    <v-btn v-if="browse" icon dark @click="onLearnCheck">
+                        <v-icon>{{value.learned ? 'mdi-close':'mdi-check'}}</v-icon>
+                    </v-btn>
+                    <v-btn v-else icon dark @click="$emit('delete', value)">
                         <v-icon>mdi-trash-can</v-icon>
                     </v-btn>
                     <v-spacer></v-spacer>
@@ -121,11 +128,12 @@
 
 <script>
 export default {
-    props: ['value', 'color', 'labels'],
+    props: ['value', 'color', 'labels', 'browse'],
     data() {
         return {
             flipped: false,
             editing: false,
+            flippedOnce: false
         };
     },
     methods: {
@@ -133,16 +141,29 @@ export default {
             this.$emit('input', { ...this.value, [key]: value });
         },
         onTextClick() {
-            this.editing = true;
-            setTimeout(() => {
-                this.$nextTick(() => {
-                    this.$refs[
-                        `${this.value.id}${this.flipped ? 'back' : 'front'}`
-                    ].focus();
-                });
-            }, 50);
+            if(this.browse) {
+                return;
+            }else{
+                this.editing = true;
+                setTimeout(() => {
+                    this.$nextTick(() => {
+                        this.$refs[
+                            `${this.value.id}${this.flipped ? 'back' : 'front'}`
+                        ].focus();
+                    });
+                }, 50);
+            }
+        },
+        onLearnCheck(){
+            if(!this.flippedOnce){
+                this.update('learned', !this.value.learned);
+            }
         },
         onCardFlip() {
+            if(this.browse){
+                this.update('learned', false);
+                this.flippedOnce = true;
+            }
             this.$emit('flip');
             this.editing = false;
             this.flipped = !this.flipped;
