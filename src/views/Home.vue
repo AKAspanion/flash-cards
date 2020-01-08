@@ -18,7 +18,7 @@
             </template>
         </bar-top>
         <div class="flash-card-set-container px-8">
-            <template v-if="loading">
+            <template v-if="pageLoading">
                 <shimmer-card-flash-set
                     v-for="i in 3"
                     class="mb-6"
@@ -140,19 +140,12 @@ export default {
     data() {
         return {
             langs: ['en', 'hi'],
+            pageLoading: false,
         };
     },
     computed: {
         user() {
             return this.$store.getters.user;
-        },
-        loading: {
-            get() {
-                return this.$store.getters.loading;
-            },
-            set(val) {
-                this.$store.dispatch('LOADING', val);
-            },
         },
         flashCardSets() {
             return this.$store.getters.flashCardSets.filter((c) => !c.trashed);
@@ -195,7 +188,8 @@ export default {
     },
     mounted() {
         if (!this.$store.getters.landingVisited) {
-            this.loading = true;
+            this.pageLoading = true;
+            this.$store.dispatch('LOADING', true);
             loadData(this.user)
                 .then((data) => {
                     this.$store.dispatch('SET_FLASH_CARDS', data[0]);
@@ -208,7 +202,8 @@ export default {
                     this.$store.dispatch('LANDING_VISITED', false);
                 })
                 .finally(() => {
-                    this.loading = false;
+                    this.pageLoading = false;
+                    this.$store.dispatch('LOADING', false);
                 });
         }
         this.langModel = localStorage.getItem('lang') == 'hi' ? 'hi' : 'en';
