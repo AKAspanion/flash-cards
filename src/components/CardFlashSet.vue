@@ -1,7 +1,7 @@
 <template>
-    <v-card raised :color="dark ? '#212121' : '#e0e0e0'" height="190">
-        <v-card dark :color="card.color || 'primary'" height="108" class="pa-6">
-            <div class="d-flex text-uppercase mb-3">
+    <v-card raised :color="dark ? '#212121' : '#e0e0e0'" height="182">
+        <v-card dark :color="card.color || 'primary'" height="100" class="pa-6">
+            <div class="d-flex text-uppercase mb-2">
                 <div
                     class="text-truncate"
                     :title="card.title || 'untitled set'"
@@ -21,7 +21,7 @@
                     </v-chip>
                 </div>
             </div>
-            <div class="mt-3">
+            <div>
                 <v-chip
                     dark
                     small
@@ -60,7 +60,7 @@
             <template v-else>
                 <div>
                     <div class="overline">learned</div>
-                    <div class="caption">{{percentage}}%</div>
+                    <div class="caption">{{ percentage }}%</div>
                 </div>
                 <v-spacer></v-spacer>
                 <v-chip
@@ -70,7 +70,7 @@
                     :color="card.color"
                     :disabled="disabled"
                 >
-                    {{`${percentage == 100 ? 'review':'browse'}`}}
+                    {{ `${percentage == 100 ? 'review' : 'browse'}` }}
                 </v-chip>
             </template>
         </div>
@@ -105,15 +105,17 @@ export default {
                 this.card.labels.includes(label.docId)
             );
         },
-        percentage(){
+        percentage() {
             let totalCards = this.card.cards.length;
-            return totalCards ? parseInt(this.totalLearned/totalCards * 100):0;
+            return totalCards
+                ? parseInt((this.totalLearned / totalCards) * 100)
+                : 0;
         },
-        totalLearned(){
+        totalLearned() {
             return this.card.cards.reduce((total, value) => {
-                return total += value.learned ? 1:0; 
-            }, 0)
-        }
+                return (total += value.learned ? 1 : 0);
+            }, 0);
+        },
     },
     methods: {
         onEdit() {

@@ -2,13 +2,13 @@
     <div class="home-container">
         <bar-top @click:left="goToProfile" @click:right="openSettings">
             <template #left-button>
-                <v-avatar v-if="currentUser.photoURL" size="24">
-                    <v-img :src="currentUser.photoURL"></v-img>
+                <v-avatar v-if="user.photoURL" size="24">
+                    <v-img :src="user.photoURL"></v-img>
                 </v-avatar>
                 <v-icon v-else size="32" color="primary">mdi-face </v-icon>
             </template>
             <template #left-text>
-                {{ currentUser.displayName || 'na' }}
+                {{ user.displayName || 'na' }}
             </template>
             <template #right-button>
                 <v-icon size="32" color="primary">mdi-settings</v-icon>
@@ -18,14 +18,23 @@
             </template>
         </bar-top>
         <div class="flash-card-set-container px-8">
-            <container-empty
-                icon="mdi-cards"
-                v-if="!cardSets.length"
-                title="Add flashcard sets and it will appear here"
-            ></container-empty>
-            <div class="pb-6" v-for="card in cardSets" :key="card.id">
-                <card-flash-set :card="card"></card-flash-set>
-            </div>
+            <template v-if="loading">
+                <shimmer-card-flash-set
+                    v-for="i in 3"
+                    class="mb-6"
+                    :key="i"
+                ></shimmer-card-flash-set>
+            </template>
+            <template v-else>
+                <container-empty
+                    icon="mdi-cards"
+                    v-if="!flashCardSets.length"
+                    title="Add flashcard sets and it will appear here"
+                ></container-empty>
+                <div class="pb-6" v-for="card in flashCardSets" :key="card.id">
+                    <card-flash-set :card="card"></card-flash-set>
+                </div>
+            </template>
         </div>
         <option-panel ref="settingspanel">
             <v-list-item dense class="px-0">
@@ -118,19 +127,34 @@ import BarTop from '@/components/BarTop.vue';
 import OptionPanel from '@/components/OptionPanel.vue';
 import CardFlashSet from '@/components/CardFlashSet.vue';
 import ContainerEmpty from '@/components/ContainerEmpty.vue';
+import ShimmerCardFlashSet from '@/components/ShimmerCardFlashSet.vue';
 export default {
     name: 'home',
-    components: { BarTop, CardFlashSet, OptionPanel, ContainerEmpty },
+    components: {
+        BarTop,
+        CardFlashSet,
+        OptionPanel,
+        ContainerEmpty,
+        ShimmerCardFlashSet,
+    },
     data() {
         return {
             langs: ['en', 'hi'],
         };
     },
     computed: {
-        currentUser() {
+        user() {
             return this.$store.getters.user;
         },
-        cardSets() {
+        loading: {
+            get() {
+                return this.$store.getters.loading;
+            },
+            set(val) {
+                this.$store.dispatch('LOADING', val);
+            },
+        },
+        flashCardSets() {
             return this.$store.getters.flashCardSets.filter((c) => !c.trashed);
         },
         theme: {
@@ -171,8 +195,8 @@ export default {
     },
     mounted() {
         if (!this.$store.getters.landingVisited) {
-            this.$store.dispatch('LOADING', true);
-            loadData(this.currentUser)
+            this.loading = true;
+            loadData(this.user)
                 .then((data) => {
                     this.$store.dispatch('SET_FLASH_CARDS', data[0]);
                     this.$store.dispatch('SET_LABELS', data[1]);
@@ -184,11 +208,11 @@ export default {
                     this.$store.dispatch('LANDING_VISITED', false);
                 })
                 .finally(() => {
-                    this.$store.dispatch('LOADING', false);
+                    this.loading = false;
                 });
         }
         this.langModel = localStorage.getItem('lang') == 'hi' ? 'hi' : 'en';
-        this.theme = localStorage.getItem('dark') == 'false' ? false : true;
+        this.theme = localStorage.getItem('dark') == 'true' ? true : false;
     },
 };
 </script>

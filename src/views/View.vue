@@ -1,19 +1,19 @@
 <template>
-    <div>
+    <div class="view-container">
         <bar-top @click:left="goBack">
             <template #left-button>
                 <v-icon size="32" color="primary">mdi-arrow-left</v-icon>
             </template>
             <template #left-text>
                 home
-            </template>            
+            </template>
             <template #center>
                 <div class="text-center text-uppercase title pa-4 mb-4">
                     {{ cardSet.title || 'untitled set' }}
                 </div>
             </template>
             <template #right-button>
-                {{`${learnedCards}/${cardSet.cards.length}`}}
+                {{ `${learnedCards}/${cardSet.cards.length}` }}
             </template>
             <template #right-text>
                 learned
@@ -48,11 +48,11 @@ export default {
             cardSet: {
                 color: '',
                 labels: [],
-                cards: []
+                cards: [],
             },
-        }
+        };
     },
-    computed:{        
+    computed: {
         currentUser() {
             return this.$store.getters.user;
         },
@@ -64,11 +64,11 @@ export default {
                 this.cardSet.labels.includes(label.docId)
             );
         },
-        learnedCards(){
+        learnedCards() {
             return this.cardSet.cards.reduce((total, value) => {
-                return total += value.learned ? 1:0; 
-            }, 0)
-        }
+                return (total += value.learned ? 1 : 0);
+            }, 0);
+        },
     },
     methods: {
         goBack() {
@@ -83,15 +83,12 @@ export default {
                 this.goBack();
             }
         },
-        onSubmit(){
+        onSubmit() {
             this.$store.dispatch('LOADING', true);
             firebase
                 .updateFlashCardSet(this.cardSet)
                 .then((res) => {
-                    this.$store.dispatch(
-                        'UPDATE_FLASH_CARD_SET',
-                        this.cardSet
-                    );
+                    this.$store.dispatch('UPDATE_FLASH_CARD_SET', this.cardSet);
                     this.$store.dispatch(
                         'SHOW_SNACK',
                         'Flashcard updated successully!'
@@ -104,7 +101,7 @@ export default {
                 .finally(() => {
                     this.$store.dispatch('LOADING', false);
                 });
-        }
+        },
     },
     mounted() {
         let { params } = this.$route;
@@ -128,11 +125,15 @@ export default {
                     this.dataLoading = true;
                     this.$store.dispatch('LOADING', false);
                 });
-        }else{
+        } else {
             this.setCards(params);
         }
     },
 };
 </script>
 
-<style></style>
+<style scoped>
+.view-container {
+    min-height: 100vh;
+}
+</style>
