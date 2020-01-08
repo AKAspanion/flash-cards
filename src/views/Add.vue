@@ -62,8 +62,7 @@
             bottom
             color="primary"
             @click="onSubmit"
-            :loading="loading"
-            :disabled="!cardSet.cards.length"
+            :disabled="!cardSet.cards.length || loading"
         >
             <v-icon>mdi-check</v-icon>
         </v-btn>

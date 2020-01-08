@@ -84,6 +84,7 @@ export default {
             }
         },
         onSubmit(){
+            this.$store.dispatch('LOADING', true);
             firebase
                 .updateFlashCardSet(this.cardSet)
                 .then((res) => {

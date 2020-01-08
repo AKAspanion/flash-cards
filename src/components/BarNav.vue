@@ -11,11 +11,10 @@
         >
             <template #activator>
                 <v-btn
+                    :disabled="loading"
                     v-model="navModel"
-                    :loading="loading"
-                    dark
-                    fab
                     color="primary"
+                    fab
                 >
                     <v-icon
                         :class="
@@ -28,10 +27,10 @@
             </template>
             <v-btn
                 fab
-                dark
                 small
                 color="accent"
                 :key="action.id"
+                :disabled="loading"
                 @click="onActionClick(action)"
                 v-for="action in actionButtons"
             >
