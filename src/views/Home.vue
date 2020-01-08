@@ -20,8 +20,8 @@
         <div class="flash-card-set-container">
             <template v-if="pageLoading">
                 <shimmer-card-flash-set
+                    class="my-3 mx-8"
                     v-for="i in 3"
-                    class="mb-6"
                     :key="i"
                 ></shimmer-card-flash-set>
             </template>
@@ -37,7 +37,7 @@
                     </v-btn>
                 </container-empty>
                 <div
-                    class="pb-6 px-8"
+                    class="py-3 px-8"
                     v-for="card in flashCardSets"
                     :key="card.id"
                 >

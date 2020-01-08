@@ -8,11 +8,11 @@
                 home
             </template>
         </bar-top>
-        <div class="flash-card-bin-container px-8">
+        <div class="flash-card-bin-container">
             <template v-if="dataLoading">
                 <shimmer-card-flash-set
+                    class="my-3 mx-8"
                     v-for="i in 3"
-                    class="mb-6"
                     :key="i"
                 ></shimmer-card-flash-set>
             </template>
@@ -23,7 +23,7 @@
                     title="Flashcards trash bin."
                     subtitle="Deleted flashcard sets will appear here. You can restore or delete them forever."
                 ></container-empty>
-                <div class="pb-6" v-for="card in cardSets" :key="card.id">
+                <div class="my-3 mx-8" v-for="card in cardSets" :key="card.id">
                     <card-flash-set
                         bin
                         :card="card"
