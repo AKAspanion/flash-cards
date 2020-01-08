@@ -37,7 +37,7 @@
                         dark
                         rounded
                         mandatory
-                        v-model="$i18n.locale"
+                        v-model="langModel"
                         background-color="primary"
                     >
                         <v-btn
@@ -139,6 +139,19 @@ export default {
             },
             set(val) {
                 this.$vuetify.theme.dark = val;
+                localStorage.setItem(
+                    'dark',
+                    JSON.stringify(this.$vuetify.theme.dark)
+                );
+            },
+        },
+        langModel: {
+            get() {
+                return this.$i18n.locale;
+            },
+            set(val) {
+                this.$i18n.locale = val;
+                localStorage.setItem('lang', this.$i18n.locale);
             },
         },
     },
@@ -174,6 +187,8 @@ export default {
                     this.$store.dispatch('LOADING', false);
                 });
         }
+        this.langModel = localStorage.getItem('lang') == 'hi' ? 'hi' : 'en';
+        this.theme = localStorage.getItem('dark') == 'false' ? false : true;
     },
 };
 </script>
