@@ -17,7 +17,7 @@
                 settings
             </template>
         </bar-top>
-        <div class="flash-card-set-container px-8">
+        <div class="flash-card-set-container">
             <template v-if="pageLoading">
                 <shimmer-card-flash-set
                     v-for="i in 3"
@@ -29,18 +29,18 @@
                 <container-empty
                     icon="mdi-card-text"
                     v-if="!flashCardSets.length"
+                    title="Welcome to your flashcards library!"
+                    subtitle="Add flashcard sets and it will appear here."
                 >
-                    <div class="title">
-                        Welcome to your flashcards library!
-                    </div>
-                    <div class="subtitle-2 my-1 pb-6">
-                        Add flashcard sets and it will appear here.
-                    </div>
                     <v-btn rounded color="primary" @click="goToAdd">
                         Add flashcard set
                     </v-btn>
                 </container-empty>
-                <div class="pb-6" v-for="card in flashCardSets" :key="card.id">
+                <div
+                    class="pb-6 px-8"
+                    v-for="card in flashCardSets"
+                    :key="card.id"
+                >
                     <card-flash-set :card="card"></card-flash-set>
                 </div>
             </template>

@@ -20,7 +20,8 @@
                 <container-empty
                     icon="mdi-cards"
                     v-if="!cardSets.length"
-                    title="Delete flashcard sets and it will appear here"
+                    title="Flashcards trash bin."
+                    subtitle="Deleted flashcard sets will appear here. You can restore or delete them forever."
                 ></container-empty>
                 <div class="pb-6" v-for="card in cardSets" :key="card.id">
                     <card-flash-set
