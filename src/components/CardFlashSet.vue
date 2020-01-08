@@ -60,7 +60,7 @@
             <template v-else>
                 <div>
                     <div class="overline">learned</div>
-                    <div class="caption">100%</div>
+                    <div class="caption">{{percentage}}%</div>
                 </div>
                 <v-spacer></v-spacer>
                 <v-chip
@@ -70,7 +70,7 @@
                     :color="card.color"
                     :disabled="disabled"
                 >
-                    browse
+                    {{`${percentage == 100 ? 'review':'browse'}`}}
                 </v-chip>
             </template>
         </div>
@@ -105,6 +105,15 @@ export default {
                 this.card.labels.includes(label.docId)
             );
         },
+        percentage(){
+            let totalCards = this.card.cards.length;
+            return totalCards ? parseInt(this.totalLearned/totalCards * 100):0;
+        },
+        totalLearned(){
+            return this.card.cards.reduce((total, value) => {
+                return total += value.learned ? 1:0; 
+            }, 0)
+        }
     },
     methods: {
         onEdit() {

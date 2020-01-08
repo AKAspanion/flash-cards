@@ -6,6 +6,11 @@
             </template>
             <template #left-text>
                 home
+            </template>            
+            <template #center>
+                <div class="text-center text-uppercase title pa-4 mb-4">
+                    {{ cardSet.title || 'untitled set' }}
+                </div>
             </template>
             <template #right-button>
                 {{`${learnedCards}/${cardSet.cards.length}`}}
