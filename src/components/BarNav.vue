@@ -55,7 +55,7 @@ export default {
                 },
                 {
                     icon: 'mdi-card-plus',
-                    title: 'add card set',
+                    title: 'add flashcard set',
                     path: '/add',
                     id: 2,
                 },

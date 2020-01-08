@@ -27,10 +27,19 @@
             </template>
             <template v-else>
                 <container-empty
-                    icon="mdi-cards"
+                    icon="mdi-card-text"
                     v-if="!flashCardSets.length"
-                    title="Add flashcard sets and it will appear here"
-                ></container-empty>
+                >
+                    <div class="title">
+                        Welcome to your flashcards library!
+                    </div>
+                    <div class="subtitle-2 my-1 pb-6">
+                        Add flashcard sets and it will appear here.
+                    </div>
+                    <v-btn rounded color="primary" @click="goToAdd">
+                        Add flashcard set
+                    </v-btn>
+                </container-empty>
                 <div class="pb-6" v-for="card in flashCardSets" :key="card.id">
                     <card-flash-set :card="card"></card-flash-set>
                 </div>
@@ -175,6 +184,9 @@ export default {
     methods: {
         goToProfile() {
             navigateToPath('/profile');
+        },
+        goToAdd() {
+            navigateToPath('/add');
         },
         goToFromMenu(path) {
             this.openSettings();

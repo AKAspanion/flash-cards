@@ -1,8 +1,8 @@
 <template>
     <div class="d-flex align-center justify-center fill-height">
-        <div class="text-center">
-            <v-icon size="120">{{ icon }}</v-icon>
-            <div class="subtitle py-6">{{ title }}</div>
+        <div class="text-center mb-12 pb-6">
+            <v-icon size="150">{{ icon }}</v-icon>
+            <slot></slot>
         </div>
     </div>
 </template>

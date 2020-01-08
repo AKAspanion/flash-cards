@@ -1,8 +1,10 @@
 <template>
-    <v-card 
-        flat 
-        class="flash-card ma-8 mr-0" 
-        :style="`height: ${browse? 'calc(100vh - 288px)':'calc(100vh - 320px)'}`"
+    <v-card
+        flat
+        class="flash-card ma-8 mr-0"
+        :style="
+            `height: ${browse ? 'calc(100vh - 288px)' : 'calc(100vh - 320px)'}`
+        "
     >
         <div
             class="flash-card-inner"
@@ -31,6 +33,7 @@
                             dark
                             rounded
                             outlined
+                            rows="3"
                             hide-details
                             color="white"
                             :value="value.front"
@@ -64,7 +67,9 @@
                 </div>
                 <div class="flash-card-actions d-flex align-center mb-2">
                     <v-btn v-if="browse" icon dark @click="onLearnCheck">
-                        <v-icon>{{value.learned ? 'mdi-close':'mdi-check'}}</v-icon>
+                        <v-icon>{{
+                            value.learned ? 'mdi-close' : 'mdi-check'
+                        }}</v-icon>
                     </v-btn>
                     <v-btn v-else icon dark @click="$emit('delete', value)">
                         <v-icon>mdi-trash-can</v-icon>
@@ -96,6 +101,7 @@
                         <v-textarea
                             dark
                             rounded
+                            rows="3"
                             outlined
                             hide-details
                             color="white"
@@ -133,7 +139,7 @@ export default {
         return {
             flipped: false,
             editing: false,
-            flippedOnce: false
+            flippedOnce: false,
         };
     },
     methods: {
@@ -141,9 +147,9 @@ export default {
             this.$emit('input', { ...this.value, [key]: value });
         },
         onTextClick() {
-            if(this.browse) {
+            if (this.browse) {
                 return;
-            }else{
+            } else {
                 this.editing = true;
                 setTimeout(() => {
                     this.$nextTick(() => {
@@ -154,13 +160,13 @@ export default {
                 }, 50);
             }
         },
-        onLearnCheck(){
-            if(!this.flippedOnce){
+        onLearnCheck() {
+            if (!this.flippedOnce) {
                 this.update('learned', !this.value.learned);
             }
         },
         onCardFlip() {
-            if(this.browse){
+            if (this.browse) {
                 this.update('learned', false);
                 this.flippedOnce = true;
             }

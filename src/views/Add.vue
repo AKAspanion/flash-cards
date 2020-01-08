@@ -42,10 +42,19 @@
         </bar-top>
         <template v-if="!cardSet.cards.length">
             <container-empty
-                icon="mdi-cards"
-                title="Add a flashcard and it will appear here"
-                style="height: calc(100vh - 256px)"
-            ></container-empty>
+                icon="mdi-card-plus"
+                style="height: calc(100vh - 246px)"
+            >
+                <div class="px-8">
+                    <div class="title pt-4">
+                        Create new flashcard sets here.
+                    </div>
+                    <div class="subtitle-2 my-1">
+                        Use add button below to create flashcards for current
+                        set and they will appear here.
+                    </div>
+                </div>
+            </container-empty>
         </template>
         <group-card-flash
             :labels="setLabels"
