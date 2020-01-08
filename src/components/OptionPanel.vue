@@ -55,21 +55,29 @@ export default {
         },
         handleMouseMove(e) {
             this.moving = true;
-            if (this.start && !this.end && !this.open) {
+            if (this.start && !this.end) {
                 let card = document.querySelector('.options-card');
                 let cardValues = card.getBoundingClientRect();
                 this.touchDistance =
                     this.touchStartEvent.touches[0].clientY -
                     e.touches[0].clientY;
-                let yDistance = cardValues.height - this.touchDistance - 48;
-                if (
-                    this.touchDistance >= 0 &&
-                    this.touchDistance <= cardValues.height - 48
-                ) {
+                let yDistance = cardValues.height - this.touchDistance - 56;
+                if (this.touchDistance <= cardValues.height - 56) {
                     card.style.transition = `none`;
-                    card.style.transform = `translate3d(0px, ${yDistance}px, 0px)`;
+                    if (!this.open && this.touchDistance >= 0) {
+                        card.style.transform = `translate3d(0px, ${yDistance}px, 0px)`;
+                    } else if (this.open && this.touchDistance < 0) {
+                        card.style.transform = `translate3d(0px, ${-this
+                            .touchDistance}px, 0px)`;
+                    }
                 }
-                this.snap = this.touchDistance >= cardValues.height / 2 - 64;
+                if (!this.open) {
+                    this.snap =
+                        this.touchDistance >= cardValues.height / 2 - 64;
+                } else {
+                    this.snap =
+                        -this.touchDistance + 32 <= cardValues.height / 2;
+                }
             }
         },
         handleMouseUp(e) {
