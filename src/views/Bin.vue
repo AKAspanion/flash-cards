@@ -10,11 +10,13 @@
         </bar-top>
         <div class="flash-card-bin-container">
             <template v-if="dataLoading">
-                <shimmer-card-flash-set
-                    class="my-3 mx-8"
-                    v-for="i in 3"
-                    :key="i"
-                ></shimmer-card-flash-set>
+                <div class="mt-n3">
+                    <shimmer-card-flash-set
+                        class="my-6 mx-8"
+                        v-for="i in 3"
+                        :key="i"
+                    ></shimmer-card-flash-set>
+                </div>
             </template>
             <template v-else>
                 <container-empty

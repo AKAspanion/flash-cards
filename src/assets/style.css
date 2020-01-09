@@ -20,7 +20,7 @@
 
 /* global card css override */
 .v-card {
-  border-radius: 28px !important;
+  border-radius: 24px !important;
 }
 
 /* global speed-dial override */
@@ -51,5 +51,10 @@
 
 /* global menu css override */
 .v-menu__content {
-  border-radius: 28px !important;
+  border-radius: 24px !important;
+}
+
+/* global dialog css override */
+.v-dialog{
+  border-radius: 24px !important;
 }

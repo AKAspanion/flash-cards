@@ -6,6 +6,28 @@
             `height: ${browse ? 'calc(100vh - 288px)' : 'calc(100vh - 320px)'}`
         "
     >
+        <v-dialog v-model="editing" persistent>
+            <v-card class="pa-6">
+                <v-textarea
+                    rounded
+                    outlined
+                    auto-grow
+                    hide-details
+                    :color="color || '#e91e63'"
+                    :value="flipped ? value.back : value.front"
+                    :ref="`${value.id}${flipped ? 'back':'front'}`"
+                    @input="update((flipped ? 'back':'front'), $event)"
+                >
+                    <template #append>
+                        <v-btn :color="color || '#e91e63'" small icon @click="editing = false">
+                            <v-icon>
+                                mdi-check
+                            </v-icon>
+                        </v-btn>
+                    </template>
+                </v-textarea>
+            </v-card>
+        </v-dialog>
         <div
             class="flash-card-inner"
             :class="flipped ? 'flash-card-inner--rotated' : ''"
@@ -29,26 +51,6 @@
                                     'example front side of a flashcard'
                             }}
                         </div>
-                        <v-textarea
-                            dark
-                            rounded
-                            outlined
-                            rows="3"
-                            hide-details
-                            color="white"
-                            :value="value.front"
-                            :ref="value.id + 'front'"
-                            v-if="editing && !flipped"
-                            @input="update('front', $event)"
-                        >
-                            <template #append>
-                                <v-btn small icon @click="editing = false">
-                                    <v-icon>
-                                        mdi-check
-                                    </v-icon>
-                                </v-btn>
-                            </template>
-                        </v-textarea>
                     </div>
                 </div>
                 <div class="flash-card-label-container">
@@ -98,26 +100,6 @@
                                 value.back || 'example back side of a flashcard'
                             }}
                         </div>
-                        <v-textarea
-                            dark
-                            rounded
-                            rows="3"
-                            outlined
-                            hide-details
-                            color="white"
-                            :value="value.back"
-                            :ref="value.id + 'back'"
-                            v-if="editing && flipped"
-                            @input="update('back', $event)"
-                        >
-                            <template #append>
-                                <v-btn small icon @click="editing = false">
-                                    <v-icon>
-                                        mdi-check
-                                    </v-icon>
-                                </v-btn>
-                            </template>
-                        </v-textarea>
                     </div>
                 </div>
                 <div class="flash-card-label-container"></div>
