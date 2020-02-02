@@ -35,6 +35,10 @@ body {
   border-radius: 24px !important;
 }
 
+.v-btn--rounded {
+  border-radius: 24px !important;
+}
+
 /* global speed-dial override */
 .v-speed-dial--right {
   right: 32px !important;
@@ -69,4 +73,8 @@ body {
 /* global dialog css override */
 .v-dialog {
   border-radius: 24px !important;
+}
+
+.selectable {
+  cursor: pointer;
 }
