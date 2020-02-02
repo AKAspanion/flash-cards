@@ -175,7 +175,7 @@ export default {
     },
     methods: {
         goBack() {
-            navigateToPath('/home');
+            this.onSubmit();
         },
         onDeleteClick() {
             this.cardSet.trashed = true;
@@ -217,10 +217,6 @@ export default {
                             uid: this.user.uid,
                             title: this.cardSet.title || '',
                         });
-                        this.$store.dispatch(
-                            'SHOW_SNACK',
-                            'Flashcard added successully!'
-                        );
                         navigateToPath('/home');
                     })
                     .catch((err) => {
@@ -236,10 +232,6 @@ export default {
                         this.$store.dispatch(
                             'UPDATE_FLASH_CARD_SET',
                             this.cardSet
-                        );
-                        this.$store.dispatch(
-                            'SHOW_SNACK',
-                            'Flashcard updated successully!'
                         );
                         navigateToPath('/home');
                     })

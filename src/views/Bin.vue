@@ -75,10 +75,6 @@ export default {
                 .deleteFlashCardSet(e)
                 .then((res) => {
                     this.$store.dispatch('DELETE_FLASH_CARD_SET', e);
-                    this.$store.dispatch(
-                        'SHOW_SNACK',
-                        'Task deleted successully!'
-                    );
                 })
                 .catch((err) => {
                     this.$store.dispatch('SHOW_SNACK', err.messsage);
@@ -99,10 +95,6 @@ export default {
                         ...e,
                         trashed: false,
                     });
-                    this.$store.dispatch(
-                        'SHOW_SNACK',
-                        'Task restored successully!'
-                    );
                 })
                 .catch((err) => {
                     this.$store.dispatch('SHOW_SNACK', err.messsage);

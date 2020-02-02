@@ -27,7 +27,7 @@
                 v-model="cardSet.cards"
             ></group-card-flash>
         </div>
-        <btn-action color="primary" @click="onSubmit">submit</btn-action>
+        <btn-action color="primary" @click="onSubmit">done</btn-action>
     </div>
 </template>
 
@@ -72,7 +72,7 @@ export default {
     },
     methods: {
         goBack() {
-            navigateToPath('/home');
+            this.onSubmit();
         },
         setCards(params) {
             let storeCardSets = this.$store.getters.flashCardSets;
@@ -89,10 +89,6 @@ export default {
                 .updateFlashCardSet(this.cardSet)
                 .then((res) => {
                     this.$store.dispatch('UPDATE_FLASH_CARD_SET', this.cardSet);
-                    this.$store.dispatch(
-                        'SHOW_SNACK',
-                        'Flashcard updated successully!'
-                    );
                     navigateToPath('/home');
                 })
                 .catch((err) => {

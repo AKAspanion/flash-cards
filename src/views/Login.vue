@@ -1,9 +1,11 @@
 <template>
-    <div
-        class="d-flex fill-height align-center justify-center"
-        style="height: 100vh;"
-    >
-        <v-card class="pa-6">
+    <div class="login-container">
+        <div style="height:60vh"></div>
+        <v-card
+            flat
+            class="px-6 py-7 login-content"
+            :color="dark ? '#212121' : '#e0e0e0'"
+        >
             <v-form
                 ref="formLogin"
                 v-model="loginForm"
@@ -73,4 +75,14 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.login-container {
+    height: 100vh;
+    background: #e91e63;
+}
+.login-content {
+    height: 40vh;
+    border-bottom-right-radius: 0px !important;
+    border-bottom-left-radius: 0px !important;
+}
+</style>

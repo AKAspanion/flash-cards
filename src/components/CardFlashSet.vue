@@ -21,7 +21,7 @@
                     </v-chip>
                 </div>
             </div>
-            <div>
+            <v-chip-group>
                 <v-chip
                     dark
                     small
@@ -35,7 +35,7 @@
                 >
                     {{ label.label }}
                 </v-chip>
-            </div>
+            </v-chip-group>
         </v-card>
         <div class="d-flex align-center pa-6">
             <template v-if="bin">

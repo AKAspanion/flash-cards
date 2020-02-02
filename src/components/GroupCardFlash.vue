@@ -1,22 +1,16 @@
 <template>
-    <v-sheet class="mx-auto">
-        <v-slide-group v-model="model">
-            <v-slide-item
-                :key="card.id + index"
-                v-for="(card, index) in value"
-                v-slot:default="{ active, toggle }"
-            >
-                <card-flash
-                    :browse="browse"
-                    :color="color"
-                    :value="card"
-                    :labels="labels"
-                    @input="onUpdate"
-                    @delete="onDelete"
-                ></card-flash>
-            </v-slide-item>
-        </v-slide-group>
-    </v-sheet>
+    <div class="slider">
+        <section :key="card.id + index" v-for="(card, index) in value">
+            <card-flash
+                :browse="browse"
+                :color="color"
+                :value="card"
+                :labels="labels"
+                @input="onUpdate"
+                @delete="onDelete"
+            ></card-flash>
+        </section>
+    </div>
 </template>
 
 <script>
@@ -47,4 +41,27 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.slider {
+    display: flex;
+    overflow-x: scroll;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+section {
+    width: 80vw;
+    position: relative;
+    height: calc(100vh - 224px);
+    scroll-snap-align: none center;
+}
+.slider::-webkit-scrollbar {
+    width: 0 !important;
+}
+.slider {
+    overflow: -moz-scrollbars-none;
+}
+.slider {
+    -ms-overflow-style: none;
+}
+</style>

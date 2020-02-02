@@ -1,7 +1,7 @@
 <template>
     <v-card
         flat
-        class="flash-card ma-8 mr-0"
+        class="flash-card my-8"
         :style="
             `height: ${browse ? 'calc(100vh - 288px)' : 'calc(100vh - 320px)'}`
         "
@@ -15,11 +15,16 @@
                     hide-details
                     :color="color || '#e91e63'"
                     :value="flipped ? value.back : value.front"
-                    :ref="`${value.id}${flipped ? 'back':'front'}`"
-                    @input="update((flipped ? 'back':'front'), $event)"
+                    :ref="`${value.id}${flipped ? 'back' : 'front'}`"
+                    @input="update(flipped ? 'back' : 'front', $event)"
                 >
                     <template #append>
-                        <v-btn :color="color || '#e91e63'" small icon @click="editing = false">
+                        <v-btn
+                            :color="color || '#e91e63'"
+                            small
+                            icon
+                            @click="editing = false"
+                        >
                             <v-icon>
                                 mdi-check
                             </v-icon>
@@ -54,18 +59,21 @@
                     </div>
                 </div>
                 <div class="flash-card-label-container">
-                    <v-chip
-                        dark
-                        small
-                        outlined
-                        input-value
-                        class="mr-1 mt-2"
-                        text-color="white"
-                        :key="label.docId"
-                        v-for="label in labels"
-                    >
-                        {{ label.label }}
-                    </v-chip>
+                    <v-chip-group dark>
+                        <v-chip
+                            dark
+                            small
+                            outlined
+                            input-value
+                            class="mr-1"
+                            text-color="white"
+                            :key="label.docId"
+                            :disabled="disabled"
+                            v-for="label in labels"
+                        >
+                            {{ label.label }}
+                        </v-chip>
+                    </v-chip-group>
                 </div>
                 <div class="flash-card-actions d-flex align-center mb-2">
                     <v-btn v-if="browse" icon dark @click="onLearnCheck">
@@ -162,8 +170,8 @@ export default {
 
 <style scoped>
 .flash-card {
-    width: 75vw;
-    max-width: 350px;
+    width: 100vw;
+    padding: 0 5vw;
     perspective: 1000px;
     border-radius: 28px;
     height: calc(100vh - 320px);
@@ -179,7 +187,8 @@ export default {
     text-align: center;
     position: relative;
     border-radius: 28px;
-    transition: transform 0.3s;
+    will-change: transform;
+    transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     transform-style: preserve-3d;
 }
 
@@ -203,6 +212,7 @@ export default {
     width: 100%;
     height: 100%;
     border-radius: 28px;
+    will-change: transform;
     backface-visibility: hidden;
 }
 
