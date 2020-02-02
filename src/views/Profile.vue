@@ -46,7 +46,7 @@
                 <div class="d-flex align-start pb-8">
                     <v-icon>mdi-calendar</v-icon>
                     <div class="pl-8">
-                        <div class="caption">member since</div>
+                        <div class="caption">Member Since</div>
                         <div class="subtitle-2">
                             {{ currentUser.userSince.slice(0, 16) }}
                         </div>
@@ -55,7 +55,10 @@
                 <div class="d-flex align-start">
                     <v-icon>mdi-label-variant</v-icon>
                     <div class="pl-8">
-                        <div class="caption">your labels</div>
+                        <div class="caption">Your Labels</div>
+                        <div class="subtitle-2">
+                            Create new label or select one to edit
+                        </div>
                         <div class="subtitle-2">
                             <v-list-item dense class="px-0">
                                 <v-list-item-content class="py-1">
@@ -68,7 +71,9 @@
                                         v-model="label"
                                         :disabled="labelLoading"
                                         @keyup.enter="onLabelCreate"
-                                        :placeholder="$t('label.create')"
+                                        @focus="hideSignout = true"
+                                        @blur="hideSignout = false"
+                                        :placeholder="`Create new label`"
                                     >
                                     </v-text-field>
                                 </v-list-item-content>
@@ -109,7 +114,13 @@
                 </div>
             </v-card>
         </div>
-        <btn-action rounded height="50" color="primary" @click="onSignout">
+        <btn-action
+            rounded
+            height="50"
+            color="primary"
+            @click="onSignout"
+            v-if="!hideSignout"
+        >
             Sign out
         </btn-action>
     </div>
@@ -128,6 +139,7 @@ export default {
         return {
             selectedLabel: null,
             labelLoading: false,
+            hideSignout: false,
             label: '',
         };
     },

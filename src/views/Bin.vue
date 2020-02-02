@@ -20,10 +20,10 @@
             </template>
             <template v-else>
                 <container-empty
-                    icon="mdi-cards"
+                    icon="mdi-trash-can"
                     v-if="!cardSets.length"
-                    title="Flashcards trash bin."
-                    subtitle="Deleted flashcard sets will appear here. You can restore or delete them forever."
+                    title="Flashcards trash bin"
+                    subtitle="Deleted flashcard sets will appear here. You can restore or delete them forever"
                 ></container-empty>
                 <div class="my-3 mx-8" v-for="card in cardSets" :key="card.id">
                     <card-flash-set

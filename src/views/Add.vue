@@ -68,7 +68,7 @@
         >
             <v-icon>mdi-check</v-icon>
         </v-btn>
-        <option-panel ref="addoptions" v-slot:default="{ toggle }">
+        <option-panel ref="addoptions">
             <v-list-item class="px-0" v-if="isEdit">
                 <v-list-item-content> Move to bin </v-list-item-content>
                 <v-list-item-action>
@@ -175,7 +175,11 @@ export default {
     },
     methods: {
         goBack() {
-            this.onSubmit();
+            if (this.isEdit || (this.cardSet.cards.length && !this.loading)) {
+                this.onSubmit();
+            } else {
+                navigateToPath('/home');
+            }
         },
         onDeleteClick() {
             this.cardSet.trashed = true;

@@ -38,13 +38,17 @@
                         Add flashcard set
                     </v-btn>
                 </container-empty>
-                <div
-                    class="py-3 px-8"
-                    v-for="card in flashCardSets"
-                    :key="card.id"
-                >
-                    <card-flash-set :card="card"></card-flash-set>
-                </div>
+                <v-row no-gutters>
+                    <v-col
+                        md="6"
+                        lg="4"
+                        :key="card.id"
+                        class="py-3 px-8"
+                        v-for="card in flashCardSets"
+                    >
+                        <card-flash-set :card="card"></card-flash-set>
+                    </v-col>
+                </v-row>
             </template>
         </div>
         <option-panel ref="settingspanel">
