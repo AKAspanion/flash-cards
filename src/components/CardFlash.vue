@@ -3,7 +3,7 @@
         flat
         class="flash-card my-8"
         :style="
-            `height: ${browse ? 'calc(100vh - 288px)' : 'calc(100vh - 320px)'}`
+            `height: ${browse ? 'calc(100vh - 224px)' : 'calc(100vh - 320px)'}`
         "
     >
         <v-dialog v-model="editing" persistent>
@@ -129,7 +129,7 @@ export default {
         return {
             flipped: false,
             editing: false,
-            flippedOnce: false,
+            flippedCount: 0,
         };
     },
     methods: {
@@ -151,14 +151,14 @@ export default {
             }
         },
         onLearnCheck() {
-            if (!this.flippedOnce) {
+            if (!this.flippedCount) {
                 this.update('learned', !this.value.learned);
             }
         },
         onCardFlip() {
             if (this.browse) {
                 this.update('learned', false);
-                this.flippedOnce = true;
+                this.flippedCount++;
             }
             this.$emit('flip');
             this.editing = false;
@@ -171,14 +171,9 @@ export default {
 <style scoped>
 .flash-card {
     width: 100vw;
-    padding: 0 5vw;
+    padding: 0 12px;
     perspective: 1000px;
     border-radius: 28px;
-    height: calc(100vh - 320px);
-}
-
-.flash-card:last-of-type {
-    margin-right: 32px !important;
 }
 
 .flash-card-inner {

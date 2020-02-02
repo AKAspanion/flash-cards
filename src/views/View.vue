@@ -27,7 +27,6 @@
                 v-model="cardSet.cards"
             ></group-card-flash>
         </div>
-        <btn-action color="primary" @click="onSubmit">done</btn-action>
     </div>
 </template>
 
@@ -44,6 +43,7 @@ export default {
     components: { BarTop, BtnAction, GroupCardFlash },
     data() {
         return {
+            changed: 0,
             dataLoading: false,
             cardSet: {
                 color: '',
@@ -70,9 +70,21 @@ export default {
             }, 0);
         },
     },
+    watch: {
+        cardSet: {
+            handler() {
+                this.changed++;
+            },
+            deep: true,
+        },
+    },
     methods: {
         goBack() {
-            this.onSubmit();
+            if (this.changed > 1) {
+                this.onSubmit();
+            } else {
+                navigateToPath('/home');
+            }
         },
         setCards(params) {
             let storeCardSets = this.$store.getters.flashCardSets;

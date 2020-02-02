@@ -141,6 +141,7 @@ export default {
     },
     data() {
         return {
+            changed: 0,
             isEdit: false,
             titleEdit: false,
             cardSet: {
@@ -155,6 +156,12 @@ export default {
     watch: {
         color(val) {
             this.cardSet.color = val;
+        },
+        cardSet: {
+            handler() {
+                this.changed++;
+            },
+            deep: true,
         },
     },
     computed: {
@@ -175,7 +182,7 @@ export default {
     },
     methods: {
         goBack() {
-            if (this.isEdit || (this.cardSet.cards.length && !this.loading)) {
+            if (this.changed > 1) {
                 this.onSubmit();
             } else {
                 navigateToPath('/home');
