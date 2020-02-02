@@ -68,7 +68,6 @@
                             class="mr-1"
                             text-color="white"
                             :key="label.docId"
-                            :disabled="disabled"
                             v-for="label in labels"
                         >
                             {{ label.label }}
@@ -171,7 +170,7 @@ export default {
 <style scoped>
 .flash-card {
     width: 100vw;
-    padding: 0 12px;
+    padding: 0 4.25vw;
     perspective: 1000px;
     border-radius: 28px;
 }

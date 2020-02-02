@@ -38,12 +38,12 @@
                         Add flashcard set
                     </v-btn>
                 </container-empty>
-                <v-row no-gutters>
+                <v-row no-gutters class="px-4">
                     <v-col
                         md="6"
                         lg="4"
                         :key="card.id"
-                        class="py-3 px-8"
+                        class="py-3 px-4"
                         v-for="card in flashCardSets"
                     >
                         <card-flash-set :card="card"></card-flash-set>
@@ -107,7 +107,7 @@
                         icon
                         small
                         color="primary"
-                        @click="goToFromMenu('/profile')"
+                        @click.stop="goToFromMenu('/profile')"
                     >
                         <v-icon>
                             mdi-label-variant
@@ -124,7 +124,7 @@
                         icon
                         small
                         color="primary"
-                        @click="goToFromMenu('/bin')"
+                        @click.stop="goToFromMenu('/bin')"
                     >
                         <v-icon>
                             mdi-trash-can

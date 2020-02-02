@@ -76,7 +76,7 @@
                         icon
                         small
                         :color="cardSet.color"
-                        @click="onDeleteClick"
+                        @click.stop="onDeleteClick"
                     >
                         <v-icon>mdi-trash-can</v-icon>
                     </v-btn>
