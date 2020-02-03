@@ -31,7 +31,7 @@
                     </template>
                 </v-avatar>
                 <div class="text-lowercase title profile-text">
-                    {{ currentUser.displayName || 'ankit pandit' }}
+                    {{ currentUser.displayName || 'na' }}
                 </div>
                 <div class="text-lowercase caption profile-text">
                     {{ currentUser.email || 'na' }}
@@ -140,6 +140,7 @@ export default {
             selectedLabel: null,
             labelLoading: false,
             hideSignout: false,
+            displayName: '',
             label: '',
         };
     },

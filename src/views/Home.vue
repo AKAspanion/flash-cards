@@ -2,13 +2,13 @@
     <div class="home-container">
         <bar-top @click:left="goToProfile" @click:right="openSettings">
             <template #left-button>
-                <v-avatar v-if="user.photoURL" size="24">
+                <v-avatar v-if="user.photoURL" size="28">
                     <v-img :src="user.photoURL"></v-img>
                 </v-avatar>
                 <v-icon v-else size="32" color="primary">mdi-face </v-icon>
             </template>
             <template #left-text>
-                {{ user.displayName || 'na' }}
+                {{ user.displayName ? user.displayName.split(' ')[0] : 'na' }}
             </template>
             <template #right-button>
                 <v-icon size="32" color="primary">mdi-settings</v-icon>
@@ -52,7 +52,7 @@
             </template>
         </div>
         <option-panel ref="settingspanel">
-            <v-list-item dense class="px-0">
+            <v-list-item class="px-0">
                 <v-list-item-content>
                     <v-list-item-title>Language</v-list-item-title>
                 </v-list-item-content>
@@ -75,7 +75,7 @@
                     </v-btn-toggle>
                 </v-list-item-action>
             </v-list-item>
-            <v-list-item dense class="px-0">
+            <v-list-item class="px-0">
                 <v-list-item-content>
                     <v-list-item-title>Theme</v-list-item-title>
                 </v-list-item-content>
@@ -98,7 +98,7 @@
                     </v-btn-toggle>
                 </v-list-item-action>
             </v-list-item>
-            <v-list-item dense class="px-0">
+            <v-list-item class="px-0">
                 <v-list-item-content>
                     <v-list-item-title>Labels</v-list-item-title>
                 </v-list-item-content>
@@ -115,7 +115,7 @@
                     </v-btn>
                 </v-list-item-action>
             </v-list-item>
-            <v-list-item dense class="px-0">
+            <v-list-item class="px-0">
                 <v-list-item-content>
                     <v-list-item-title>Bin</v-list-item-title>
                 </v-list-item-content>

@@ -13,7 +13,7 @@
                 <v-form
                     ref="formLogin"
                     v-model="loginForm"
-                    @submit.prevent="onLogin"
+                    @submit.prevent="isSignIn ? onLogin() : onSignup()"
                 >
                     <div>
                         <v-text-field
@@ -21,47 +21,56 @@
                             flat
                             rounded
                             autofocus
-                            height="56"
+                            height="48"
                             label="Email"
                             hide-details
                             class="email-field"
                             v-model="user.email"
+                            :rules="[rules.empty.email, rules.nospace.email]"
                         ></v-text-field>
                         <v-text-field
                             solo
                             flat
                             rounded
-                            height="56"
+                            height="48"
                             hide-details
                             type="password"
                             label="Password"
                             class="password-field"
                             v-model="user.password"
+                            :rules="[
+                                rules.empty.password,
+                                rules.nospace.password,
+                            ]"
                         ></v-text-field>
                         <v-expand-transition>
                             <v-text-field
                                 solo
                                 flat
                                 rounded
-                                height="56"
+                                height="48"
                                 hide-details
                                 v-if="!isSignIn"
                                 type="password"
-                                label="Re-enter Password"
+                                label="Re-Enter Password"
                                 class="password-field"
-                                v-model="user.password"
+                                v-model="user.repassword"
+                                :rules="[
+                                    rules.empty.password,
+                                    rules.nospace.password,
+                                ]"
                             ></v-text-field>
                         </v-expand-transition>
                     </div>
                     <v-btn
-                        dark
                         block
                         rounded
                         depressed
-                        height="56"
+                        height="48"
                         type="submit"
                         color="primary"
-                        :loading="loading"
+                        :disabled="!loginForm"
+                        :loading="logingIn || signingUp"
                     >
                         {{ !isSignIn ? 'Sign up' : 'Login' }}
                     </v-btn>
@@ -69,12 +78,11 @@
             </div>
             <div class="overline py-6">OR</div>
             <div class="d-flex justify-center">
-                <v-btn icon class="ma-1">
-                    <v-icon color="rgb(59, 89, 152)">
-                        mdi-facebook
-                    </v-icon>
-                </v-btn>
-                <v-btn icon class="ma-1">
+                <v-btn
+                    icon
+                    class="ma-1"
+                    @click="isSignIn ? onGoolgeSignin() : onGoogleSignUp()"
+                >
                     <v-icon color="rgb(23, 156, 82)">
                         mdi-google
                     </v-icon>
@@ -108,9 +116,23 @@ export default {
             user: {
                 email: '',
                 password: '',
+                repassword: '',
             },
+            rules: {
+                empty: {
+                    email: (v) => !!v || this.$t('email.enter'),
+                    password: (v) => !!v || this.$t('rule.password.required'),
+                },
+                nospace: {
+                    password: (v) =>
+                        (v && !/\s/g.test(v)) || this.$t('rule.space.password'),
+                    email: (v) =>
+                        (v && !/\s/g.test(v)) || this.$t('rule.space.email'),
+                },
+            },
+            logingIn: false,
+            signingUp: false,
             loginForm: false,
-            loading: false,
             isSignIn: true,
         };
     },
@@ -118,10 +140,48 @@ export default {
         dark() {
             return this.$vuetify.theme.dark;
         },
+        passValid() {
+            let { password, repassword } = this.user;
+            return password === repassword;
+        },
     },
     methods: {
+        onGoolgeSignin() {
+            firebase.signInWithGoogle();
+        },
+        onGoogleSignUp() {
+            firebase.signUpWithGoogle();
+        },
+        onSignup() {
+            if (this.passValid) {
+                this.signingUp = true;
+                firebase
+                    .signUpWithEmail({
+                        email: this.user.email,
+                        password: this.user.password,
+                    })
+                    .then((response) => {
+                        this.$store.dispatch(
+                            'SHOW_SNACK',
+                            this.$t('toast.success.sign-up')
+                        );
+                        this.navigateToPath('/home');
+                    })
+                    .catch((err) => {
+                        this.$store.dispatch(
+                            'SHOW_SNACK',
+                            err.message || this.$t('toast.error.sign-up')
+                        );
+                    })
+                    .then(() => {
+                        this.signingUp = false;
+                    });
+            } else {
+                this.$store.dispatch('SHOW_SNACK', 'Passwords do not match!');
+            }
+        },
         onLogin() {
-            this.loading = true;
+            this.logingIn = true;
             firebase
                 .signInWithEmail(this.user)
                 .then(() => {
@@ -131,9 +191,14 @@ export default {
                     this.$store.dispatch('SHOW_SNACK', err.message);
                 })
                 .finally(() => {
-                    this.loading = false;
+                    this.logingIn = false;
                 });
         },
+    },
+    mounted() {
+        if (firebase.getUser()) {
+            navigateToPath('/home');
+        }
     },
 };
 </script>

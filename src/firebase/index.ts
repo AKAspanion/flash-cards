@@ -85,6 +85,28 @@ class FirebaseWeb {
         return firebase.auth().createUserWithEmailAndPassword(user.email.trim(), user.password.trim());
     }
 
+    public signUpWithFacebook = () => {
+        return this.signInWithFacebook();
+    }
+
+    public signUpWithGoogle = () => {
+        return this.signInWithGoogle();
+    }
+
+    public signInWithFacebook = () => {
+        let provider: any = null;
+        provider = new firebase.auth.FacebookAuthProvider();
+        firebase.auth().signInWithRedirect(provider);
+    }
+    public signInWithGoogle = () => {
+        let provider: any = null;
+        provider = new firebase.auth.GoogleAuthProvider();
+        firebase.auth().signInWithRedirect(provider);
+    }
+    public signInResult() {
+        return firebase.auth().getRedirectResult();
+    }
+
     public signOut = () => {
         return firebase.auth().signOut();
     }
