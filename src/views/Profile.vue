@@ -30,7 +30,7 @@
                         >
                     </template>
                 </v-avatar>
-                <div class="text-lowercase title profile-text">
+                <div class="text-capitalize title profile-text">
                     {{ currentUser.displayName || 'na' }}
                 </div>
                 <div class="text-lowercase caption profile-text">
@@ -119,7 +119,7 @@
             height="50"
             color="primary"
             @click="onSignout"
-            v-if="!hideSignout"
+            v-if="hideSignoutBtn"
         >
             Sign out
         </btn-action>
@@ -145,6 +145,9 @@ export default {
         };
     },
     computed: {
+        hideSignoutBtn() {
+            return this.$vuetify.breakpoint.xsOnly ? !this.hideSignout : true;
+        },
         currentUser() {
             return this.$store.getters.user;
         },

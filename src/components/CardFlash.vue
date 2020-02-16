@@ -6,7 +6,7 @@
             `height: ${browse ? 'calc(100vh - 224px)' : 'calc(100vh - 320px)'}`
         "
     >
-        <v-dialog v-model="editing" persistent>
+        <v-dialog v-model="editing">
             <v-card class="pa-6">
                 <v-textarea
                     rounded
@@ -17,13 +17,16 @@
                     :value="flipped ? value.back : value.front"
                     :ref="`${value.id}${flipped ? 'back' : 'front'}`"
                     @input="update(flipped ? 'back' : 'front', $event)"
+                    :placeholder="
+                        `Enter text for ${flipped ? 'back' : 'front'} side`
+                    "
                 >
                     <template #append>
                         <v-btn
-                            :color="color || '#e91e63'"
-                            small
                             icon
+                            small
                             @click="editing = false"
+                            :color="color || '#e91e63'"
                         >
                             <v-icon>
                                 mdi-check
@@ -84,6 +87,13 @@
                         <v-icon>mdi-trash-can</v-icon>
                     </v-btn>
                     <v-spacer></v-spacer>
+                    <div
+                        class="caption number-icon"
+                        :style="`color: ${color || '#e91e63'}`"
+                    >
+                        {{ number }}
+                    </div>
+                    <v-spacer></v-spacer>
                     <v-btn icon dark @click="onCardFlip">
                         <v-icon>mdi-flip-to-back</v-icon>
                     </v-btn>
@@ -123,7 +133,7 @@
 
 <script>
 export default {
-    props: ['value', 'color', 'labels', 'browse'],
+    props: ['value', 'color', 'labels', 'browse', 'number'],
     data() {
         return {
             flipped: false,
@@ -217,5 +227,13 @@ export default {
 .flash-card-back {
     color: white;
     transform: rotateY(180deg);
+}
+
+.number-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: white;
+    padding-top: 0.5px;
 }
 </style>

@@ -2,6 +2,7 @@
     <div class="group-card-slider">
         <section :key="card.id + index" v-for="(card, index) in value">
             <card-flash
+                :number="index + 1"
                 :browse="browse"
                 :color="color"
                 :value="card"

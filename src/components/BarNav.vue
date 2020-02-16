@@ -11,6 +11,7 @@
         >
             <template #activator>
                 <v-btn
+                    :class="loading ? 'elevation-0' : ''"
                     :disabled="loading"
                     v-model="navModel"
                     color="primary"
@@ -32,7 +33,7 @@
                 :key="action.id"
                 :disabled="loading"
                 @click="onActionClick(action)"
-                v-for="action in actionButtons"
+                v-for="action in loading ? [] : actionButtons"
             >
                 <v-icon small>{{ action.icon }}</v-icon>
                 <div class="fab--tooltip">{{ action.title }}</div>

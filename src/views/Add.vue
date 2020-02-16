@@ -44,7 +44,7 @@
             <container-empty
                 icon="mdi-card-plus"
                 style="height: calc(100vh - 246px)"
-                title="Create new flashcard sets here."
+                title="Add new flashcards here."
                 subtitle="Use add button below to create flashcards for current set and they will appear here."
             >
             </container-empty>
@@ -64,6 +64,7 @@
             bottom
             color="primary"
             @click="onSubmit"
+            :class="loading ? 'elevation-0' : ''"
             :disabled="!cardSet.cards.length || loading"
         >
             <v-icon>mdi-check</v-icon>
@@ -92,25 +93,30 @@
                 <v-list-item-content> Label </v-list-item-content>
                 <div
                     class="d-flex justify-end"
-                    style="width: calc(100% - 48px)"
+                    style="width: calc(100% - 64px)"
                 >
-                    <v-chip-group
-                        multiple
-                        v-model="cardSet.labels"
-                        active-class="primary--text"
-                    >
-                        <v-chip
-                            small
-                            filter
-                            outlined
-                            :key="label.docId"
-                            :value="label.docId"
-                            :color="cardSet.color"
-                            v-for="label in labels"
+                    <template v-if="cardSet.labels && cardSet.labels.length">
+                        <v-chip-group
+                            multiple
+                            v-model="cardSet.labels"
+                            active-class="primary--text"
                         >
-                            {{ label.label }}
-                        </v-chip>
-                    </v-chip-group>
+                            <v-chip
+                                small
+                                filter
+                                outlined
+                                :key="label.docId"
+                                :value="label.docId"
+                                :color="cardSet.color"
+                                v-for="label in labels"
+                            >
+                                {{ label.label }}
+                            </v-chip>
+                        </v-chip-group>
+                    </template>
+                    <template v-else>
+                        <span class="px-3">-</span>
+                    </template>
                 </div>
             </v-list-item>
         </option-panel>
