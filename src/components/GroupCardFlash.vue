@@ -18,6 +18,25 @@
         <section>
             <div class="dummy-section"></div>
         </section>
+        <!-- TODO review -->
+        <!-- <v-btn
+            icon
+            large
+            color="primary"
+            @click="slideCard('right')"
+            class="group-card-btn group-card-btn--right"
+        >
+            <v-icon>mdi-chevron-right</v-icon>
+        </v-btn>
+        <v-btn
+            icon
+            large
+            color="primary"
+            @click="slideCard('left')"
+            class="group-card-btn group-card-btn--left"
+        >
+            <v-icon>mdi-chevron-left</v-icon>
+        </v-btn> -->
     </div>
 </template>
 
@@ -49,6 +68,20 @@ export default {
         onDelete(val) {
             let newData = this.value.filter((obj) => obj.id !== val.id);
             this.$emit('input', newData);
+        },
+        slideCard(type) {
+            let container = document.querySelector('.group-card-slider');
+            switch (type) {
+                case 'left':
+                    container.scrollLeft -= 500;
+                    break;
+                case 'right':
+                    container.scrollLeft += 500;
+                    break;
+
+                default:
+                    break;
+            }
         },
     },
 };
@@ -82,5 +115,15 @@ section:first-child {
 }
 .group-card-slider {
     -ms-overflow-style: none;
+}
+.group-card-btn {
+    position: absolute;
+    bottom: 38px;
+}
+.group-card-btn--right {
+    left: calc(50% + 99px);
+}
+.group-card-btn--left {
+    left: calc(50% - 144px);
 }
 </style>

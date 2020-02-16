@@ -59,7 +59,7 @@
             </template>
             <template v-else>
                 <div>
-                    <div class="overline">learned</div>
+                    <div class="overline">memorized</div>
                     <div class="caption">{{ percentage }}%</div>
                 </div>
                 <v-spacer></v-spacer>

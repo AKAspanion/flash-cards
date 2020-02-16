@@ -38,10 +38,17 @@
         </v-dialog>
         <div
             class="flash-card-inner"
-            :class="flipped ? 'flash-card-inner--rotated' : ''"
+            :class="[
+                flipped ? 'flash-card-inner--rotated' : '',
+                browse
+                    ? `flash-card-bordered--${
+                          value.learned ? 'success' : 'error'
+                      }`
+                    : '',
+            ]"
         >
             <div
-                class="flash-card-front pa-6"
+                class="flash-card-front pa-6 "
                 :style="`background-color: ${color || '#e91e63'}`"
             >
                 <div class="flash-card-content">
@@ -87,10 +94,7 @@
                         <v-icon>mdi-trash-can</v-icon>
                     </v-btn>
                     <v-spacer></v-spacer>
-                    <div
-                        class="caption number-icon"
-                        :style="`color: ${color || '#e91e63'}`"
-                    >
+                    <div class="caption number-icon">
                         {{ number }}
                     </div>
                     <v-spacer></v-spacer>
@@ -230,10 +234,23 @@ export default {
 }
 
 .number-icon {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
-    background: white;
-    padding-top: 0.5px;
+    box-sizing: border-box;
+    border: 1.5px solid white;
+}
+
+.flash-card-bordered--success {
+    box-sizing: border-box;
+    border-bottom: 4px solid #4caf50;
+    border-bottom-left-radius: 32px !important;
+    border-bottom-right-radius: 32px !important;
+}
+.flash-card-bordered--error {
+    box-sizing: border-box;
+    border-bottom: 4px solid #212121;
+    border-bottom-left-radius: 32px !important;
+    border-bottom-right-radius: 32px !important;
 }
 </style>

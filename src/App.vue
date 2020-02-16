@@ -37,6 +37,11 @@ export default Vue.extend({
             return this.$store.getters.snackBar;
         },
     },
+    mounted() {
+        this.$i18n.locale = localStorage.getItem('lang') == 'hi' ? 'hi' : 'en';
+        this.$vuetify.theme.dark =
+            localStorage.getItem('dark') == 'true' ? true : false;
+    },
 });
 </script>
 <style>

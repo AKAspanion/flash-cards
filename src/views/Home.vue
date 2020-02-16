@@ -224,8 +224,6 @@ export default {
                     this.$store.dispatch('LOADING', false);
                 });
         }
-        this.langModel = localStorage.getItem('lang') == 'hi' ? 'hi' : 'en';
-        this.theme = localStorage.getItem('dark') == 'true' ? true : false;
     },
 };
 </script>
