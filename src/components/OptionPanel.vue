@@ -2,6 +2,7 @@
     <v-card
         v-ripple
         :dark="dark"
+        id="optionspanel"
         class="options-card"
         :color="dark ? '#212121' : '#e0e0e0'"
     >
@@ -108,8 +109,26 @@ export default {
             this.snap = false;
         },
         handleClick(e) {
+            this.componentclickEvent = e;
             if (!this.touchEndEvent) {
-                this.toggleOpen();
+                this.togglePanel();
+            }
+        },
+        docClickHandler(event) {
+            var panel = document.getElementById('optionspanel'),
+                target = event.target;
+            do {
+                if (
+                    target == panel ||
+                    (target.className &&
+                        target.className.search('v-btn') !== -1)
+                ) {
+                    return;
+                }
+                target = target.parentNode;
+            } while (target);
+            if (this.open) {
+                this.togglePanel();
             }
         },
         toggleOpen() {
@@ -124,6 +143,12 @@ export default {
                 card.style.transform = `translate3d(0px, calc(100% - 56px), 0)`;
             }
         },
+    },
+    created() {
+        document.addEventListener('click', this.docClickHandler, false);
+    },
+    destroyed() {
+        document.removeEventListener('click', this.docClickHandler, false);
     },
 };
 </script>

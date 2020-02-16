@@ -115,7 +115,6 @@ export default {
                     this.$store.dispatch('LANDING_VISITED', true);
                 })
                 .catch((err) => {
-                    console.log(err);
                     this.$store.dispatch('SET_FLASH_CARDS', []);
                     this.$store.dispatch('SET_LABELS', []);
                     this.$store.dispatch('LANDING_VISITED', false);

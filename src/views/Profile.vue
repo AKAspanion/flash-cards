@@ -193,7 +193,7 @@ export default {
                             });
                         })
                         .catch((err) => {
-                            console.log(err);
+                            //TODO
                         })
                         .finally(() => {
                             this.resetLabel();
@@ -205,7 +205,6 @@ export default {
                 firebase
                     .addLabel(this.currentUser, this.label)
                     .then((res) => {
-                        console.log(res);
                         this.$store.dispatch('ADD_LABEL', {
                             docId: res.id,
                             label: this.label,
@@ -213,7 +212,7 @@ export default {
                         });
                     })
                     .catch((err) => {
-                        console.log(err);
+                        //TODO
                     })
                     .finally(() => {
                         this.resetLabel();
