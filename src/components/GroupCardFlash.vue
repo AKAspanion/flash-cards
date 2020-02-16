@@ -1,6 +1,10 @@
 <template>
     <div class="group-card-slider">
-        <section :key="card.id + index" v-for="(card, index) in value">
+        <section
+            :key="card.id + index"
+            v-for="(card, index) in value"
+            :style="`width: ${mobile ? '82.5' : '70.5'}vw;`"
+        >
             <card-flash
                 :number="index + 1"
                 :browse="browse"
@@ -29,6 +33,11 @@ export default {
             model: null,
         };
     },
+    computed: {
+        mobile() {
+            return this.$vuetify.breakpoint.xsOnly;
+        },
+    },
     methods: {
         onUpdate(val) {
             let newData = [...this.value];
@@ -54,7 +63,6 @@ export default {
     -webkit-overflow-scrolling: touch;
 }
 section {
-    width: 82.5vw;
     position: relative;
     height: calc(100vh - 160px);
     scroll-snap-align: none center;

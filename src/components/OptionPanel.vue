@@ -12,6 +12,7 @@
                 @touchmove="handleMouseMove"
                 @touchend="handleMouseUp"
                 @click="handleClick"
+                :disabled="loading"
             >
                 mdi-drag-horizontal
             </v-icon>
@@ -40,6 +41,9 @@ export default {
     computed: {
         dark() {
             return this.$vuetify.theme.dark;
+        },
+        loading() {
+            return this.$store.getters.loading;
         },
     },
     watch: {
