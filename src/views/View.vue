@@ -5,7 +5,7 @@
                 <v-icon size="32" color="primary">mdi-arrow-left</v-icon>
             </template>
             <template #left-text>
-                home
+                {{ $t('common.home') }}
             </template>
             <template #center>
                 <div class="text-center text-uppercase title pa-4 mb-4">
@@ -16,7 +16,7 @@
                 {{ `${learnedCards}/${cardSet.cards.length}` }}
             </template>
             <template #right-text>
-                learned
+                {{ $t('common.memorized') }}
             </template>
         </bar-top>
         <div>

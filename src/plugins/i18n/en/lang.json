@@ -1,1 +1,49 @@
-{}
+{
+  "common": {
+    "home": "Home",
+    "options": "Options",
+    "color": "Color",
+    "bin": "Bin",
+    "label": "Label",
+    "labels": "Labels",
+    "settings": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "signout": "Sign Out",
+    "memorized": "Memorized"
+  },
+  "home": {
+    "set": {
+      "add": "Add flashcard set"
+    }
+  },
+  "add": {
+    "set": {
+      "notitle": "untitled set"
+    },
+    "card": "Add card",
+    "move-to-bin": "Move to bin"
+  },
+  "profile": {
+    "member": "Member Since",
+    "label" : {
+      "title":"Your Labels",
+      "create":"Create new label",
+      "subtitle":"Create new label or select one to edit"
+    }
+  },
+  "empty": {
+    "home": {
+      "title": "Welcome to your flashcards library!",
+      "subtitle": "Add flashcard sets and it will appear here."
+    },
+    "add": {
+      "title": "Add new flashcards here",
+      "subtitle": "Use add button below to create flashcards for current set and they will appear here."
+    },
+    "bin": {
+      "title": "Flashcards trash bin",
+      "subtitle": "Deleted flashcard sets will appear here. You can restore or delete them."
+    }
+  }
+}

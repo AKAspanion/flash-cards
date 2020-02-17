@@ -5,7 +5,7 @@
                 <v-icon size="32" color="primary">mdi-arrow-left</v-icon>
             </template>
             <template #left-text>
-                home
+                {{ $t('common.home') }}
             </template>
         </bar-top>
         <div class="profile-content">
@@ -30,7 +30,7 @@
                         >
                     </template>
                 </v-avatar>
-                <div class="text-capitalize title profile-text">
+                <div class="text-lowercase title profile-text">
                     {{ currentUser.displayName || 'na' }}
                 </div>
                 <div class="text-lowercase caption profile-text">
@@ -46,7 +46,7 @@
                 <div class="d-flex align-start pb-8">
                     <v-icon>mdi-calendar</v-icon>
                     <div class="pl-8">
-                        <div class="caption">Member Since</div>
+                        <div class="caption">{{ $t('profile.member') }}</div>
                         <div class="subtitle-2">
                             {{ currentUser.userSince.slice(0, 16) }}
                         </div>
@@ -55,9 +55,9 @@
                 <div class="d-flex align-start">
                     <v-icon>mdi-label-variant</v-icon>
                     <div class="pl-8">
-                        <div class="caption">Your Labels</div>
+                        <div class="caption">{{ $t('profile.label.title') }}</div>
                         <div class="subtitle-2">
-                            Create new label or select one to edit
+                            {{ $t('profile.label.subtitle') }}
                         </div>
                         <div class="subtitle-2">
                             <v-list-item dense class="px-0">
@@ -73,7 +73,7 @@
                                         @keyup.enter="onLabelCreate"
                                         @focus="hideSignout = true"
                                         @blur="hideSignout = false"
-                                        :placeholder="`Create new label`"
+                                        :placeholder="$t('profile.label.create')"
                                     >
                                     </v-text-field>
                                 </v-list-item-content>

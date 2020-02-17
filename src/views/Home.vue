@@ -14,7 +14,7 @@
                 <v-icon size="32" color="primary">mdi-settings</v-icon>
             </template>
             <template #right-text>
-                settings
+                {{$t('common.settings')}}
             </template>
         </bar-top>
         <div class="flash-card-set-container">
@@ -31,11 +31,11 @@
                 <container-empty
                     icon="mdi-card-text"
                     v-if="!flashCardSets.length"
-                    title="Welcome to your flashcards library!"
-                    subtitle="Add flashcard sets and it will appear here."
+                    :title="$t('empty.home.title')"
+                    :subtitle="$t('empty.home.subtitle')"
                 >
                     <v-btn rounded color="primary" @click="goToAdd">
-                        Add flashcard set
+                        {{$t('home.set.add')}}
                     </v-btn>
                 </container-empty>
                 <v-row no-gutters class="px-4">
@@ -54,7 +54,7 @@
         <option-panel ref="settingspanel">
             <v-list-item class="px-0">
                 <v-list-item-content>
-                    <v-list-item-title>Language</v-list-item-title>
+                    <v-list-item-title>{{$t('common.language')}}</v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
                     <v-btn-toggle
@@ -70,14 +70,14 @@
                             v-for="(lang, i) in langs"
                             :key="`Lang${i}`"
                             :value="lang"
-                            >{{ lang }}</v-btn
+                            >{{ lang === 'hi' ? 'ही':lang }}</v-btn
                         >
                     </v-btn-toggle>
                 </v-list-item-action>
             </v-list-item>
             <v-list-item class="px-0">
                 <v-list-item-content>
-                    <v-list-item-title>Theme</v-list-item-title>
+                    <v-list-item-title>{{$t('common.theme')}}</v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
                     <v-btn-toggle
@@ -100,7 +100,7 @@
             </v-list-item>
             <v-list-item class="px-0">
                 <v-list-item-content>
-                    <v-list-item-title>Labels</v-list-item-title>
+                    <v-list-item-title>{{$t('common.labels')}}</v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
                     <v-btn
@@ -117,7 +117,7 @@
             </v-list-item>
             <v-list-item class="px-0">
                 <v-list-item-content>
-                    <v-list-item-title>Bin</v-list-item-title>
+                    <v-list-item-title>{{$t('common.bin')}}</v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
                     <v-btn

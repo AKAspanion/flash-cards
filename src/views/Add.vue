@@ -5,7 +5,7 @@
                 <v-icon size="32" color="primary">mdi-arrow-left</v-icon>
             </template>
             <template #left-text>
-                home
+                {{$t('common.home')}}
             </template>
             <template #center>
                 <div v-if="titleEdit" class="pt-1 pb-5">
@@ -30,22 +30,22 @@
                     @click="titleEdit = true"
                     class="text-center text-uppercase title pa-4 mb-4"
                 >
-                    {{ cardSet.title || 'untitled set' }}
+                    {{ cardSet.title || $t('add.set.notitle') }}
                 </div>
             </template>
             <template #right-button>
                 <v-icon size="32" color="primary">mdi-dots-vertical</v-icon>
             </template>
             <template #right-text>
-                options
+                {{$t('common.options')}}
             </template>
         </bar-top>
         <template v-if="!cardSet.cards.length">
             <container-empty
                 icon="mdi-card-plus"
+                :title="$t('empty.add.title')"
+                :subtitle="$t('empty.add.subtitle')"
                 style="height: calc(100vh - 246px)"
-                title="Add new flashcards here."
-                subtitle="Use add button below to create flashcards for current set and they will appear here."
             >
             </container-empty>
         </template>
@@ -55,7 +55,7 @@
             v-model="cardSet.cards"
         ></group-card-flash>
         <btn-action color="primary" @click="onCardAdd" :disabled="loading">
-            Add Card
+            {{$t('add.card')}}
         </btn-action>
         <v-btn
             fixed
@@ -71,7 +71,7 @@
         </v-btn>
         <option-panel ref="addoptions">
             <v-list-item class="px-0" v-if="isEdit">
-                <v-list-item-content> Move to bin </v-list-item-content>
+                <v-list-item-content> {{$t('add.move-to-bin')}} </v-list-item-content>
                 <v-list-item-action>
                     <v-btn
                         icon
@@ -84,13 +84,13 @@
                 </v-list-item-action>
             </v-list-item>
             <v-list-item class="px-0">
-                <v-list-item-content> Color </v-list-item-content>
+                <v-list-item-content> {{$t('common.color')}} </v-list-item-content>
                 <v-list-item-action>
                     <color-palette v-model="cardSet.color"></color-palette>
                 </v-list-item-action>
             </v-list-item>
             <v-list-item class="px-0">
-                <v-list-item-content> Label </v-list-item-content>
+                <v-list-item-content> {{$t('common.label')}} </v-list-item-content>
                 <div
                     class="d-flex justify-end"
                     style="width: calc(100% - 64px)"

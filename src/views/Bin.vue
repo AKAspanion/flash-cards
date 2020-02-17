@@ -5,7 +5,7 @@
                 <v-icon size="32" color="primary">mdi-arrow-left</v-icon>
             </template>
             <template #left-text>
-                home
+                {{$t('common.home')}}
             </template>
         </bar-top>
         <div class="flash-card-bin-container">
@@ -22,8 +22,8 @@
                 <container-empty
                     icon="mdi-trash-can"
                     v-if="!cardSets.length"
-                    title="Flashcards trash bin"
-                    subtitle="Deleted flashcard sets will appear here. You can restore or delete them forever"
+                    :title="$t('empty.bin.title')"
+                    :subtitle="$t('empty.bin.subtitle')"
                 ></container-empty>
                 <div class="my-3 mx-8" v-for="card in cardSets" :key="card.id">
                     <card-flash-set
