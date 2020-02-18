@@ -6,7 +6,7 @@
             `height: ${browse ? 'calc(100vh - 224px)' : 'calc(100vh - 320px)'}`
         "
     >
-        <v-dialog v-model="editing" max-width="50vw">
+        <v-dialog v-model="editing" :max-width="$vuetify.breakpoint.smAndUp ? '50vw':''">
             <v-card class="pa-6">
                 <v-textarea
                     rounded
