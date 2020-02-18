@@ -20,11 +20,17 @@
         <div class="flash-card-set-container">
             <template v-if="pageLoading">
                 <div class="mt-n3">
-                    <shimmer-card-flash-set
-                        class="my-6 mx-8"
-                        v-for="i in 3"
-                        :key="i"
-                    ></shimmer-card-flash-set>
+                    <v-row no-gutters class="px-4 pb-5">
+                        <v-col
+                            md="6"
+                            lg="4"
+                            :key="i"
+                            class="pa-0"
+                            v-for="i in loaderCardLength"
+                        >
+                            <shimmer-card-flash-set class="my-6 mx-4"></shimmer-card-flash-set>
+                        </v-col>
+                    </v-row>
                 </div>
             </template>
             <template v-else>
@@ -42,6 +48,8 @@
                     <v-col
                         md="6"
                         lg="4"
+                        sm="6"
+                        cols="12"
                         :key="card.id"
                         class="py-3 px-4"
                         v-for="card in flashCardSets"
@@ -164,6 +172,16 @@ export default {
         },
         flashCardSets() {
             return this.$store.getters.flashCardSets.filter((c) => !c.trashed);
+        },
+        loaderCardLength(){
+            switch (this.$vuetify.breakpoint.name) {
+                case 'xs': return 3;
+                case 'sm': return 4;
+                case 'md': return 4;
+                case 'lg': return 6;
+                case 'xl': return 9;
+                default: return 3;
+            }
         },
         theme: {
             get() {
