@@ -1,5 +1,5 @@
 <template>
-    <div class="group-card-slider">
+    <div class="group-card-slider" id="cardslidercontainer">
         <section
             :key="card.id + index"
             v-for="(card, index) in value"
@@ -18,25 +18,6 @@
         <section>
             <div class="dummy-section"></div>
         </section>
-        <!-- TODO review -->
-        <!-- <v-btn
-            icon
-            large
-            color="primary"
-            @click="slideCard('right')"
-            class="group-card-btn group-card-btn--right"
-        >
-            <v-icon>mdi-chevron-right</v-icon>
-        </v-btn>
-        <v-btn
-            icon
-            large
-            color="primary"
-            @click="slideCard('left')"
-            class="group-card-btn group-card-btn--left"
-        >
-            <v-icon>mdi-chevron-left</v-icon>
-        </v-btn> -->
     </div>
 </template>
 
@@ -50,6 +31,7 @@ export default {
     data() {
         return {
             model: null,
+            scrolling: false
         };
     },
     computed: {
@@ -69,21 +51,30 @@ export default {
             let newData = this.value.filter((obj) => obj.id !== val.id);
             this.$emit('input', newData);
         },
-        slideCard(type) {
-            let container = document.querySelector('.group-card-slider');
-            switch (type) {
-                case 'left':
-                    container.scrollLeft -= 500;
-                    break;
-                case 'right':
-                    container.scrollLeft += 500;
-                    break;
-
-                default:
-                    break;
-            }
-        },
+        handleScroll(event){
+            if(this.scrolling) return;
+            let container = document.getElementById('cardslidercontainer');
+            container.scrollLeft += event.deltaY * 5;
+            this.scrolling = true;
+            setTimeout(()=>{
+                this.scrolling = false;
+            }, 500)
+        }
     },
+    created(){
+        if(!this.mobile){
+            this.$nextTick(()=>{
+                let container = document.getElementById('cardslidercontainer');
+                container.addEventListener('wheel', this.handleScroll, false);
+            })
+        }
+    },
+    destroyed(){
+        if(!this.mobile){
+            let container = document.getElementById('cardslidercontainer');
+            container.removeEventListener('wheel', this.handleScroll, false);  
+        }  
+    }
 };
 </script>
 
