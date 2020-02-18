@@ -140,6 +140,23 @@
                     </v-btn>
                 </v-list-item-action>
             </v-list-item>
+            <v-list-item class="px-0">
+                <v-list-item-content>
+                    <v-list-item-title>{{$t('common.about')}}</v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-action>
+                    <v-btn
+                        icon
+                        small
+                        color="primary"
+                        @click.stop="goToFromMenu('/info')"
+                    >
+                        <v-icon>
+                            mdi-information
+                        </v-icon>
+                    </v-btn>
+                </v-list-item-action>
+            </v-list-item>
         </option-panel>
     </div>
 </template>

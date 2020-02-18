@@ -1,6 +1,8 @@
 {
   "common": {
     "home": "Home",
+    "close": "Close",
+    "about": "About",
     "options": "Options",
     "color": "Color",
     "bin": "Bin",

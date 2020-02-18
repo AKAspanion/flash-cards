@@ -11,7 +11,7 @@
         <v-snackbar v-model="snackbar.model" multi-line bottom :timeout="5000">
             {{ snackbar.text }}
             <v-btn dark text @click="snackbar.model = false">{{
-                $t('close')
+                $t('common.close')
             }}</v-btn>
         </v-snackbar>
         <container-main />
