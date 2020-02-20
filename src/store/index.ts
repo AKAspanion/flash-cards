@@ -12,6 +12,7 @@ export default new Vuex.Store({
     user: {
       uid: '',
       userSince: '',
+      lastLogin: '',
       displayName: '',
       photoURL: '',
       email: '',
@@ -89,12 +90,14 @@ export default new Vuex.Store({
         photoURL,
         displayName,
         userSince: payload.metadata.creationTime,
+        lastLogin: payload.metadata.lastSignInTime,
       });
     },
     UNSET_USER({ commit }) {
       commit('setUser', {
         uid: '',
         userSince: '',
+        lastLogin: '',
         displayName: '',
         photoURL: '',
         email: '',
@@ -106,6 +109,7 @@ export default new Vuex.Store({
     },
     LOGOUT({ commit }) {
       commit('setLogin', false);
+      commit('landingVisited', false);
       localStorage.setItem('isLoggedIn', JSON.stringify(false));
     },
     LANDING_VISITED({ commit }, payload) {

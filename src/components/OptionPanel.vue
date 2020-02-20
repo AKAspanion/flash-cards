@@ -160,10 +160,10 @@ export default {
 <style scoped>
 .options-card {
     position: fixed;
-    left: 0px;
+    left: 12px;
     bottom: -28px;
     z-index: 110;
-    width: 100%;
+    width: calc(100% - 24px);
     will-change: transform;
     transition: transform 200ms ease-out;
     transform: translate3d(0px, calc(100% - 56px), 0);

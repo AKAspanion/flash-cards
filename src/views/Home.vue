@@ -14,7 +14,7 @@
                 <v-icon size="32" color="primary">mdi-settings</v-icon>
             </template>
             <template #right-text>
-                {{$t('common.settings')}}
+                {{ $t('common.settings') }}
             </template>
         </bar-top>
         <div class="flash-card-set-container">
@@ -28,7 +28,9 @@
                             class="pa-0"
                             v-for="i in loaderCardLength"
                         >
-                            <shimmer-card-flash-set class="my-6 mx-4"></shimmer-card-flash-set>
+                            <shimmer-card-flash-set
+                                class="mt-6 mx-4"
+                            ></shimmer-card-flash-set>
                         </v-col>
                     </v-row>
                 </div>
@@ -41,7 +43,7 @@
                     :subtitle="$t('empty.home.subtitle')"
                 >
                     <v-btn rounded color="primary" @click="goToAdd">
-                        {{$t('home.set.add')}}
+                        {{ $t('home.set.add') }}
                     </v-btn>
                 </container-empty>
                 <v-row no-gutters class="px-4">
@@ -62,7 +64,9 @@
         <option-panel ref="settingspanel">
             <v-list-item class="px-0">
                 <v-list-item-content>
-                    <v-list-item-title>{{$t('common.language')}}</v-list-item-title>
+                    <v-list-item-title>{{
+                        $t('common.language')
+                    }}</v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
                     <v-btn-toggle
@@ -78,14 +82,16 @@
                             v-for="(lang, i) in langs"
                             :key="`Lang${i}`"
                             :value="lang"
-                            >{{ lang === 'hi' ? 'ही':lang }}</v-btn
+                            >{{ lang === 'hi' ? 'ही' : lang }}</v-btn
                         >
                     </v-btn-toggle>
                 </v-list-item-action>
             </v-list-item>
             <v-list-item class="px-0">
                 <v-list-item-content>
-                    <v-list-item-title>{{$t('common.theme')}}</v-list-item-title>
+                    <v-list-item-title>{{
+                        $t('common.theme')
+                    }}</v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
                     <v-btn-toggle
@@ -108,7 +114,9 @@
             </v-list-item>
             <v-list-item class="px-0">
                 <v-list-item-content>
-                    <v-list-item-title>{{$t('common.labels')}}</v-list-item-title>
+                    <v-list-item-title>{{
+                        $t('common.labels')
+                    }}</v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
                     <v-btn
@@ -125,7 +133,9 @@
             </v-list-item>
             <v-list-item class="px-0">
                 <v-list-item-content>
-                    <v-list-item-title>{{$t('common.bin')}}</v-list-item-title>
+                    <v-list-item-title>{{
+                        $t('common.bin')
+                    }}</v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
                     <v-btn
@@ -142,7 +152,9 @@
             </v-list-item>
             <v-list-item class="px-0">
                 <v-list-item-content>
-                    <v-list-item-title>{{$t('common.about')}}</v-list-item-title>
+                    <v-list-item-title>{{
+                        $t('common.about')
+                    }}</v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
                     <v-btn
@@ -190,14 +202,20 @@ export default {
         flashCardSets() {
             return this.$store.getters.flashCardSets.filter((c) => !c.trashed);
         },
-        loaderCardLength(){
+        loaderCardLength() {
             switch (this.$vuetify.breakpoint.name) {
-                case 'xs': return 3;
-                case 'sm': return 4;
-                case 'md': return 4;
-                case 'lg': return 6;
-                case 'xl': return 9;
-                default: return 3;
+                case 'xs':
+                    return 3;
+                case 'sm':
+                    return 4;
+                case 'md':
+                    return 4;
+                case 'lg':
+                    return 6;
+                case 'xl':
+                    return 9;
+                default:
+                    return 3;
             }
         },
         theme: {

@@ -28,10 +28,11 @@
   },
   "profile": {
     "member": "Member Since",
-    "label" : {
-      "title":"Your Labels",
-      "create":"Create new label",
-      "subtitle":"Create new label or select one to edit"
+    "login": "Last Login",
+    "label": {
+      "title": "Your Labels",
+      "create": "Create new label",
+      "subtitle": "Create new label or select one to edit"
     }
   },
   "empty": {

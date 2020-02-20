@@ -10,38 +10,91 @@
         </bar-top>
         <div class="profile-content">
             <div class="px-8 pb-8">
-                <v-avatar
-                    size="72"
-                    class="ml-n1"
-                    :color="!$vuetify.theme.dark ? 'white' : '#404040'"
-                >
-                    <template v-if="currentUser.photoURL">
-                        <v-img :src="currentUser.photoURL"></v-img>
+                <div class="d-flex align-center profile-avatar">
+                    <v-avatar
+                        size="72"
+                        class="ml-n1"
+                        :color="!$vuetify.theme.dark ? 'white' : '#404040'"
+                    >
+                        <template v-if="currentUser.photoURL">
+                            <v-img :src="currentUser.photoURL"></v-img>
+                        </template>
+                        <template v-else>
+                            <v-icon size="72" color="primary">
+                                mdi-face
+                            </v-icon>
+                        </template>
+                    </v-avatar>
+                    <template v-if="!editingUrl">
+                        <v-icon
+                            class="mx-1 mb-n1"
+                            :small="!editingUrl"
+                            @click="
+                                editingUrl = true;
+                                editingName = false;
+                            "
+                        >
+                            mdi-pencil
+                        </v-icon>
                     </template>
                     <template v-else>
-                        <div
-                            v-if="currentUser.displayName"
-                            class="display-1 font-weight-medium"
-                        >
-                            {{ getInitials(currentUser.displayName) }}
-                        </div>
-                        <v-icon v-else size="72" color="primary"
-                            >mdi-face</v-icon
-                        >
+                        <v-text-field
+                            dense
+                            rounded
+                            outlined
+                            autofocus
+                            hide-details
+                            class="pl-3"
+                            v-model="user.photoURL"
+                            append-icon="mdi-check"
+                            placeholder="Enter your photo url"
+                            @click:append="onUserEdit()"
+                        ></v-text-field>
                     </template>
-                </v-avatar>
-                <div class="text-lowercase title profile-text">
-                    {{ currentUser.displayName || 'na' }}
                 </div>
-                <div class="text-lowercase caption profile-text">
+                <div class="d-flex title profile-text">
+                    <template v-if="!editingName">
+                        <div class="pt-3 pb-1">
+                            {{ currentUser.displayName || 'na' }}
+                        </div>
+                        <v-icon
+                            class="mx-1 mb-n3"
+                            :small="!editingName"
+                            @click="
+                                editingName = true;
+                                editingUrl = false;
+                            "
+                        >
+                            mdi-pencil
+                        </v-icon>
+                    </template>
+                    <template v-else>
+                        <v-text-field
+                            dense
+                            rounded
+                            outlined
+                            autofocus
+                            hide-details
+                            class="pt-2"
+                            v-model="user.displayName"
+                            append-icon="mdi-check"
+                            placeholder="Enter your name"
+                            @click:append="onUserEdit()"
+                        ></v-text-field>
+                    </template>
+                </div>
+                <div
+                    class="text-lowercase caption profile-text"
+                    :class="editingName ? 'mt-2' : 'mt-n2'"
+                >
                     {{ currentUser.email || 'na' }}
                 </div>
             </div>
             <v-card
                 flat
-                :color="dark ? '#212121' : '#e0e0e0'"
                 class="pa-8 profile-card"
-                min-height="calc(100vh - 292px)"
+                :color="dark ? '#212121' : '#e0e0e0'"
+                min-height="calc(100vh - 300px)"
             >
                 <div class="d-flex align-start pb-8">
                     <v-icon>mdi-calendar</v-icon>
@@ -52,10 +105,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="d-flex align-start">
+                <div class="d-flex align-start pb-8">
                     <v-icon>mdi-label-variant</v-icon>
                     <div class="pl-8">
-                        <div class="caption">{{ $t('profile.label.title') }}</div>
+                        <div class="caption">
+                            {{ $t('profile.label.title') }}
+                        </div>
                         <div class="subtitle-2">
                             {{ $t('profile.label.subtitle') }}
                         </div>
@@ -73,7 +128,9 @@
                                         @keyup.enter="onLabelCreate"
                                         @focus="hideSignout = true"
                                         @blur="hideSignout = false"
-                                        :placeholder="$t('profile.label.create')"
+                                        :placeholder="
+                                            $t('profile.label.create')
+                                        "
                                     >
                                     </v-text-field>
                                 </v-list-item-content>
@@ -112,6 +169,15 @@
                         </div>
                     </div>
                 </div>
+                <div class="d-flex align-start pb-8">
+                    <v-icon>mdi-clock</v-icon>
+                    <div class="pl-8">
+                        <div class="caption">{{ $t('profile.login') }}</div>
+                        <div class="subtitle-2">
+                            {{ currentUser.lastLogin.slice(0, 16) }}
+                        </div>
+                    </div>
+                </div>
             </v-card>
         </div>
         <btn-action
@@ -127,7 +193,7 @@
 </template>
 
 <script>
-import { navigateToPath, getInitials, loadData } from '@/util';
+import { navigateToPath, loadData } from '@/util';
 import BarTop from '@/components/BarTop.vue';
 import BtnAction from '@/components/BtnAction.vue';
 import FirebaseWeb from '@/firebase';
@@ -137,11 +203,17 @@ export default {
     components: { BarTop, BtnAction },
     data() {
         return {
+            editingUrl: false,
+            editingName: false,
             selectedLabel: null,
             labelLoading: false,
             hideSignout: false,
-            displayName: '',
+            editLoading: false,
             label: '',
+            user: {
+                displayName: '',
+                photoURL: '',
+            },
         };
     },
     computed: {
@@ -156,6 +228,11 @@ export default {
         },
         dark() {
             return this.$vuetify.theme.dark;
+        },
+        userSame() {
+            return (
+                JSON.stringify(this.currentUser) === JSON.stringify(this.user)
+            );
         },
     },
     watch: {
@@ -173,9 +250,6 @@ export default {
     methods: {
         goBack() {
             navigateToPath('/home');
-        },
-        getInitials(name) {
-            getInitials(name);
         },
         onSignout() {
             firebase.signOut();
@@ -232,6 +306,23 @@ export default {
                 this.selectedLabel = label;
             }
         },
+        onUserEdit() {
+            this.editLoading = true;
+            firebase
+                .updateUserProfile(this.user)
+                .then(() => {})
+                .catch(() => {
+                    this.$store.dispatch(
+                        'SHOW_SNACK',
+                        this.$t('toast.error.name.edit')
+                    );
+                })
+                .finally(() => {
+                    this.editingUrl = false;
+                    this.editingName = false;
+                    this.editLoading = false;
+                });
+        },
         resetLabel() {
             this.label = '';
             this.labelLoading = false;
@@ -258,6 +349,7 @@ export default {
                     this.$store.dispatch('LOADING', false);
                 });
         }
+        this.user = this.currentUser;
     },
 };
 </script>
@@ -272,10 +364,14 @@ export default {
 }
 .profile-text {
     padding-left: 2px;
+    transition: all 0.3s ease-in-out;
 }
 .profile-card {
     border-bottom-right-radius: 0px !important;
     border-bottom-left-radius: 0px !important;
     padding-bottom: 88px !important;
+}
+.profile-avatar {
+    min-height: 72px;
 }
 </style>

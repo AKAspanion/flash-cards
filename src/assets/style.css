@@ -78,3 +78,11 @@ body {
 .selectable {
   cursor: pointer;
 }
+
+*::-webkit-scrollbar {
+  width: 0 !important;
+}
+
+* {
+  overflow: -moz-scrollbars-none;
+}
