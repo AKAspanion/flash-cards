@@ -5,13 +5,23 @@
             :id="id"
             class="pa-6"
             height="100"
-            style="z-index: 5"
+            style="z-index: 2"
             :color="card.color || 'primary'"
             @touchstart="handleMouseDown"
             @touchmove="handleMouseMove"
             @touchend="handleMouseUp"
         >
             <div class="d-flex text-uppercase mb-2">
+                <v-scroll-x-transition>
+                    <v-icon
+                        class="mr-1"
+                        color="yellow"
+                        v-if="card.fav"
+                        @click="$emit('star')"
+                    >
+                        mdi-star
+                    </v-icon>
+                </v-scroll-x-transition>
                 <div
                     class="text-truncate"
                     :title="card.title || 'untitled set'"
@@ -74,13 +84,7 @@
                     <div class="caption">{{ percentage }}%</div>
                 </div>
                 <v-spacer></v-spacer>
-                <v-chip
-                    small
-                    outlined
-                    @click="onView"
-                    :color="card.color"
-                    :disabled="disabled"
-                >
+                <v-chip small outlined @click="onView" :disabled="disabled">
                     {{ `${percentage == 100 ? 'review' : 'browse'}` }}
                 </v-chip>
             </template>

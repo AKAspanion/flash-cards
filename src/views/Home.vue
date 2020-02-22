@@ -18,7 +18,7 @@
                 {{ user.displayName ? user.displayName.split(' ')[0] : 'na' }}
             </template>
             <template #right-button>
-                <v-menu :close-on-content-click="false" nudge-top="16">
+                <v-menu :close-on-content-click="false" nudge-top="17">
                     <template #activator="{ on }">
                         <v-icon
                             v-on="on"
@@ -47,26 +47,28 @@
             </template>
             <div class="mx-4">
                 <v-chip
-                    small
-                    close
-                    outlined
-                    class="mr-3"
+                    v-bind="searchChipAttrs"
                     v-if="sanitizedSearchText"
                     @click:close="searchText = ''"
                 >
-                    <v-icon left>mdi-magnify</v-icon>
+                    <v-icon left small>mdi-magnify</v-icon>
                     {{ sanitizedSearchText.toLowerCase() }}
                 </v-chip>
                 <v-chip
-                    small
-                    close
-                    outlined
-                    class="mr-3"
                     v-if="filterLabel"
+                    v-bind="searchChipAttrs"
                     @click:close="filterLabel = null"
                 >
-                    <v-icon left>mdi-label-variant</v-icon>
+                    <v-icon left small>mdi-label-variant</v-icon>
                     {{ filterLabel.label }}
+                </v-chip>
+                <v-chip
+                    v-if="starFilter"
+                    v-bind="searchChipAttrs"
+                    @click:close="starFilter = false"
+                >
+                    <v-icon left small>mdi-star</v-icon>
+                    {{ `Favourite` }}
                 </v-chip>
             </div>
         </bar-top>
@@ -129,6 +131,7 @@
                         <card-flash-set
                             :card="card"
                             @fav="onFav"
+                            @star="onStar"
                             @delete="onDelete"
                             @label="onLabelClick"
                         ></card-flash-set>
@@ -139,9 +142,9 @@
         <option-panel ref="settingspanel">
             <v-list-item class="px-0">
                 <v-list-item-content>
-                    <v-list-item-title>{{
-                        $t('common.language')
-                    }}</v-list-item-title>
+                    <v-list-item-title>
+                        {{ $t('common.language') }}
+                    </v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
                     <v-btn-toggle
@@ -164,9 +167,9 @@
             </v-list-item>
             <v-list-item class="px-0">
                 <v-list-item-content>
-                    <v-list-item-title>{{
-                        $t('common.theme')
-                    }}</v-list-item-title>
+                    <v-list-item-title>
+                        {{ $t('common.theme') }}
+                    </v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
                     <v-btn-toggle
@@ -189,9 +192,9 @@
             </v-list-item>
             <v-list-item class="px-0">
                 <v-list-item-content>
-                    <v-list-item-title>{{
-                        $t('common.bin')
-                    }}</v-list-item-title>
+                    <v-list-item-title>
+                        {{ $t('common.bin') }}
+                    </v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
                     <v-btn
@@ -208,9 +211,9 @@
             </v-list-item>
             <v-list-item class="px-0">
                 <v-list-item-content>
-                    <v-list-item-title>{{
-                        $t('common.labels')
-                    }}</v-list-item-title>
+                    <v-list-item-title>
+                        {{ $t('common.labels') }}
+                    </v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
                     <v-btn
@@ -227,9 +230,9 @@
             </v-list-item>
             <v-list-item class="px-0">
                 <v-list-item-content>
-                    <v-list-item-title>{{
-                        $t('common.about')
-                    }}</v-list-item-title>
+                    <v-list-item-title>
+                        {{ $t('common.about') }}
+                    </v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
                     <v-btn
@@ -255,6 +258,10 @@ import OptionPanel from '@/components/OptionPanel.vue';
 import CardFlashSet from '@/components/CardFlashSet.vue';
 import ContainerEmpty from '@/components/ContainerEmpty.vue';
 import ShimmerCardFlashSet from '@/components/ShimmerCardFlashSet.vue';
+
+import FirebaseWeb from '@/firebase';
+const firebase = new FirebaseWeb();
+
 export default {
     name: 'home',
     components: {
@@ -269,8 +276,15 @@ export default {
             langs: ['en', 'hi'],
             pageLoading: false,
             filterLabel: null,
+            starFilter: false,
             searchText: '',
             imgErr: false,
+            searchChipAttrs: {
+                small: true,
+                close: true,
+                outlined: true,
+                class: 'mr-3',
+            },
         };
     },
     computed: {
@@ -294,11 +308,16 @@ export default {
                     return found;
                 });
             }
-            return sets.filter(
+            if (this.starFilter) {
+                sets = sets.filter((c) => !!c.fav);
+            }
+            sets = sets.filter(
                 (c) =>
                     !c.trashed &&
                     c.title.toUpperCase().includes(this.sanitizedSearchText)
             );
+            sets.sort((s1, s2) => s1.title.localeCompare(s2.title));
+            return sets;
         },
         loaderCardLength() {
             switch (this.$vuetify.breakpoint.name) {
@@ -339,11 +358,14 @@ export default {
         },
     },
     methods: {
+        onStar() {
+            this.starFilter = true;
+        },
         onFav(val) {
-            console.log(val);
+            this.updateFlashCardSet({ ...val, fav: !val.fav });
         },
         onDelete(val) {
-            console.log(val);
+            this.updateFlashCardSet({ ...val, trashed: true });
         },
         onLabelClick(label) {
             this.filterLabel = label;
@@ -371,6 +393,20 @@ export default {
                     }
                 }, 250);
             });
+        },
+        updateFlashCardSet(cardSet) {
+            this.$store.dispatch('LOADING', true);
+            firebase
+                .updateFlashCardSet(cardSet)
+                .then((res) => {
+                    this.$store.dispatch('UPDATE_FLASH_CARD_SET', cardSet);
+                })
+                .catch((err) => {
+                    this.$store.dispatch('SHOW_SNACK', err.messsage);
+                })
+                .finally(() => {
+                    this.$store.dispatch('LOADING', false);
+                });
         },
     },
     mounted() {
