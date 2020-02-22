@@ -17,7 +17,7 @@
                 mdi-drag-horizontal
             </v-icon>
         </div>
-        <div class="options-content pt-4 pb-12 px-8">
+        <div class="options-content pt-4 pb-12 px-5">
             <slot></slot>
         </div>
     </v-card>
@@ -66,6 +66,9 @@ export default {
                 this.touchDistance =
                     this.touchStartEvent.touches[0].clientY -
                     e.touches[0].clientY;
+                let velocity =
+                    Math.abs(this.touchDistance) /
+                    (e.timeStamp - this.touchStartEvent.timeStamp);
                 let yDistance = cardValues.height - this.touchDistance - 56;
                 if (this.touchDistance <= cardValues.height - 56) {
                     card.style.transition = `none`;
@@ -78,10 +81,14 @@ export default {
                 }
                 if (!this.open) {
                     this.snap =
-                        this.touchDistance >= cardValues.height / 2 - 64;
+                        velocity > 0.5
+                            ? true
+                            : this.touchDistance >= cardValues.height / 2 - 64;
                 } else {
                     this.snap =
-                        -this.touchDistance + 32 <= cardValues.height / 2;
+                        velocity > 0.5
+                            ? false
+                            : -this.touchDistance + 32 <= cardValues.height / 2;
                 }
             }
         },

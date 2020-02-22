@@ -31,7 +31,7 @@ export default {
     data() {
         return {
             model: null,
-            scrolling: false
+            scrolling: false,
         };
     },
     computed: {
@@ -51,30 +51,30 @@ export default {
             let newData = this.value.filter((obj) => obj.id !== val.id);
             this.$emit('input', newData);
         },
-        handleScroll(event){
-            if(this.scrolling) return;
+        handleScroll(event) {
+            if (this.scrolling) return;
             let container = document.getElementById('cardslidercontainer');
             container.scrollLeft += event.deltaY * 5;
             this.scrolling = true;
-            setTimeout(()=>{
+            setTimeout(() => {
                 this.scrolling = false;
-            }, 500)
-        }
+            }, 500);
+        },
     },
-    created(){
-        if(!this.mobile){
-            this.$nextTick(()=>{
+    created() {
+        if (!this.mobile) {
+            this.$nextTick(() => {
                 let container = document.getElementById('cardslidercontainer');
                 container.addEventListener('wheel', this.handleScroll, false);
-            })
+            });
         }
     },
-    destroyed(){
-        if(!this.mobile){
+    destroyed() {
+        if (!this.mobile) {
             let container = document.getElementById('cardslidercontainer');
-            container.removeEventListener('wheel', this.handleScroll, false);  
-        }  
-    }
+            container.removeEventListener('wheel', this.handleScroll, false);
+        }
+    },
 };
 </script>
 
@@ -92,11 +92,11 @@ section {
     scroll-snap-align: none center;
 }
 .dummy-section {
-    width: 32px !important;
+    width: 40px !important;
     height: calc(100vh - 160px);
 }
 section:first-child {
-    margin-left: 32px;
+    margin-left: 40px;
 }
 .group-card-slider::-webkit-scrollbar {
     width: 0 !important;
