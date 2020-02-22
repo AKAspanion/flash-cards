@@ -12,7 +12,7 @@
             <div class="px-8 pb-8">
                 <div class="d-flex align-center profile-avatar">
                     <v-avatar
-                        size="72"
+                        size="88"
                         class="ml-n1"
                         @click="
                             editingUrl = true;
@@ -34,7 +34,7 @@
                             @error="imageErr = true"
                             :src="currentUser.photoURL || 'a'"
                         ></v-img>
-                        <v-icon v-show="imageErr" size="72" color="primary">
+                        <v-icon v-show="imageErr" size="88" color="primary">
                             mdi-face
                         </v-icon>
                     </v-avatar>

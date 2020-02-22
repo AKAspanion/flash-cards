@@ -128,6 +128,8 @@
                     >
                         <card-flash-set
                             :card="card"
+                            @fav="onFav"
+                            @delete="onDelete"
                             @label="onLabelClick"
                         ></card-flash-set>
                     </v-col>
@@ -337,6 +339,12 @@ export default {
         },
     },
     methods: {
+        onFav(val) {
+            console.log(val);
+        },
+        onDelete(val) {
+            console.log(val);
+        },
         onLabelClick(label) {
             this.filterLabel = label;
         },
@@ -396,5 +404,6 @@ export default {
     height: calc(100vh - 136px);
     padding-bottom: 64px;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 </style>

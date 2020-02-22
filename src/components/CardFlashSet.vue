@@ -1,6 +1,16 @@
 <template>
     <v-card raised :color="dark ? '#212121' : '#e0e0e0'" height="182">
-        <v-card dark :color="card.color || 'primary'" height="100" class="pa-6">
+        <v-card
+            dark
+            :id="id"
+            class="pa-6"
+            height="100"
+            style="z-index: 5"
+            :color="card.color || 'primary'"
+            @touchstart="handleMouseDown"
+            @touchmove="handleMouseMove"
+            @touchend="handleMouseUp"
+        >
             <div class="d-flex text-uppercase mb-2">
                 <div
                     class="text-truncate"
@@ -75,6 +85,18 @@
                 </v-chip>
             </template>
         </div>
+        <v-icon
+            :color="card.color || 'primary'"
+            class="cardflash-set-hidden-icon cardflash-set-hidden-icon--left"
+        >
+            mdi-star
+        </v-icon>
+        <v-icon
+            :color="card.color || 'primary'"
+            class="cardflash-set-hidden-icon cardflash-set-hidden-icon--right"
+        >
+            mdi-trash-can
+        </v-icon>
     </v-card>
 </template>
 
@@ -96,10 +118,17 @@ export default {
             default: false,
         },
     },
+    data() {
+        return {
+            leftTriggered: false,
+            rightTriggered: false,
+            touchStartEvent: null,
+            id: `set${new Date().getTime()}`,
+        };
+    },
     computed: {
         dark() {
             return this.$vuetify.theme.dark;
-            ``;
         },
         labels() {
             return this.$store.getters.labels.filter((label) =>
@@ -125,8 +154,53 @@ export default {
         onView() {
             navigateToPath(`/${this.card.id}/view`);
         },
+        handleMouseDown(e) {
+            this.touchStartEvent = e;
+        },
+        handleMouseMove(e) {
+            let cardDOM = document.getElementById(this.id);
+            let touchDistance =
+                this.touchStartEvent.touches[0].clientX - e.touches[0].clientX;
+            cardDOM.style.transition = `none`;
+            if (Math.abs(touchDistance) <= 100) {
+                cardDOM.style.transform = `translate3d(${-touchDistance}px, 0px, 0px)`;
+            }
+            let triggerPoint = Math.abs(touchDistance) >= 50;
+            let triggerNegative = touchDistance < 0;
+            if (triggerNegative) {
+                this.leftTriggered = triggerPoint;
+            } else {
+                this.rightTriggered = triggerPoint;
+            }
+        },
+        handleMouseUp(e) {
+            if (this.leftTriggered) {
+                this.$emit('fav', this.card);
+            }
+            if (this.rightTriggered) {
+                this.$emit('delete', this.card);
+            }
+            let cardDOM = document.getElementById(this.id);
+            cardDOM.style.transition = `transform 200ms ease-out`;
+            cardDOM.style.transform = `translate3d(0px, 0px, 0px)`;
+            this.leftTriggered = false;
+            this.rightTriggered = false;
+            this.touchStartEvent = null;
+        },
     },
 };
 </script>
 
-<style></style>
+<style scoped>
+.cardflash-set-hidden-icon {
+    position: absolute;
+    z-index: 1;
+    top: 38px;
+}
+.cardflash-set-hidden-icon--left {
+    left: 38px;
+}
+.cardflash-set-hidden-icon--right {
+    right: 38px;
+}
+</style>
