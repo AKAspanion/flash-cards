@@ -12,7 +12,7 @@
             @touchend="handleMouseUp"
         >
             <div class="d-flex text-uppercase mb-2">
-                <v-scroll-x-transition>
+                <v-scale-transition origin="center center">
                     <v-icon
                         class="mr-1"
                         color="yellow"
@@ -21,7 +21,7 @@
                     >
                         mdi-star
                     </v-icon>
-                </v-scroll-x-transition>
+                </v-scale-transition>
                 <div
                     class="text-truncate"
                     :title="card.title || 'untitled set'"
@@ -81,7 +81,11 @@
             <template v-else>
                 <div>
                     <div class="overline">memorized</div>
-                    <div class="caption">{{ percentage }}%</div>
+                    <div class="caption d-flex align-center">
+                        <div>{{ ratio }}</div>
+                        <div class="mx-2">-</div>
+                        <div>{{ percentage }}%</div>
+                    </div>
                 </div>
                 <v-spacer></v-spacer>
                 <v-chip small outlined @click="onView" :disabled="disabled">
@@ -138,6 +142,9 @@ export default {
             return this.$store.getters.labels.filter((label) =>
                 this.card.labels.includes(label.docId)
             );
+        },
+        ratio() {
+            return `${this.totalLearned} / ${this.card.cards.length}`;
         },
         percentage() {
             let totalCards = this.card.cards.length;

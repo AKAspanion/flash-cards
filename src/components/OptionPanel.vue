@@ -6,14 +6,14 @@
         class="options-card"
         :color="dark ? '#212121' : '#e0e0e0'"
     >
-        <div class="d-flex justify-center">
-            <v-icon
-                @touchstart="handleMouseDown"
-                @touchmove="handleMouseMove"
-                @touchend="handleMouseUp"
-                @click="handleClick"
-                :disabled="loading"
-            >
+        <div
+            class="d-flex justify-center"
+            @touchstart="handleMouseDown"
+            @touchmove="handleMouseMove"
+            @touchend="handleMouseUp"
+            @click="handleClick"
+        >
+            <v-icon :disabled="loading">
                 mdi-drag-horizontal
             </v-icon>
         </div>

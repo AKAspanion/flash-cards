@@ -47,26 +47,6 @@ import { navigateToPath } from '@/util';
 export default {
     data() {
         return {
-            actionButtons: [
-                {
-                    icon: 'mdi-home',
-                    title: 'home',
-                    path: '/home',
-                    id: 1,
-                },
-                {
-                    icon: 'mdi-card-plus',
-                    title: 'add flashcard set',
-                    path: '/add',
-                    id: 2,
-                },
-                // {
-                //     icon: 'mdi-folder',
-                //     title: 'manage folders',
-                //     path: '/folder',
-                //     id: 3,
-                // },
-            ],
             navModel: false,
             invisibleRoutes: ['login', 'profile', 'view'],
         };
@@ -80,6 +60,28 @@ export default {
         },
         showBarNav() {
             return !this.invisibleRoutes.includes(this.$route.name);
+        },
+        actionButtons() {
+            return [
+                {
+                    title: this.$t('common.home'),
+                    icon: 'mdi-home',
+                    path: '/home',
+                    id: 1,
+                },
+                {
+                    title: this.$t('home.set.add'),
+                    icon: 'mdi-card-plus',
+                    path: '/add',
+                    id: 2,
+                },
+                // {
+                //     icon: 'mdi-folder',
+                //     title: 'manage folders',
+                //     path: '/folder',
+                //     id: 3,
+                // },
+            ];
         },
     },
     methods: {

@@ -68,7 +68,7 @@
                     @click:close="starFilter = false"
                 >
                     <v-icon left small>mdi-star</v-icon>
-                    {{ `Favourite` }}
+                    {{ $t('common.favourite') }}
                 </v-chip>
             </div>
         </bar-top>

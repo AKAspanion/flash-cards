@@ -14,6 +14,7 @@
     "theme": "Theme",
     "signout": "Sign Out",
     "learned": "Learned",
+    "favourite": "Favourite",
     "memorized": "Memorized"
   },
   "home": {
@@ -26,7 +27,8 @@
       "notitle": "untitled set"
     },
     "card": "Add card",
-    "move-to-bin": "Move to bin"
+    "move-to-bin": "Move to bin",
+    "mark-as-fav": "Mark favourite"
   },
   "profile": {
     "member": "Member Since",

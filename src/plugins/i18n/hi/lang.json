@@ -3,7 +3,7 @@
     "home": "होम",
     "close": "बंद करे",
     "about": "बारे में",
-    "search": "Search",
+    "search": "खोजे",
     "options": "विकल्प",
     "color": "रंग",
     "bin": "बिन",
@@ -13,7 +13,8 @@
     "language": "भाषा",
     "theme": "थीम",
     "signout": "साइन आउट",
-    "learned": "Learned",
+    "learned": "सीखा",
+    "favourite": "पसंदीदा",
     "memorized": "याद किया"
   },
   "home": {
@@ -26,7 +27,8 @@
       "notitle": "अनामांकित सेट"
     },
     "card": "कार्ड जोड़ें",
-    "move-to-bin": "बिन ले जाएँ"
+    "move-to-bin": "बिन ले जाएँ",
+    "mark-as-fav": "पसंदीदा चिह्नित करें"
   },
   "profile": {
     "member": "कब से सदस्ये",
@@ -43,8 +45,8 @@
       "subtitle": "फ्लैशकार्ड सेट जोड़ें और वो यहां दिखाई देंगे।"
     },
     "filter": {
-      "title": "No results found",
-      "subtitle": "Make sure filter is correct or try a different filter."
+      "title": "कोई परिणाम नहीं मिला",
+      "subtitle": "सुनिश्चित करें कि फ़िल्टर सही है या किसी अन्य फ़िल्टर को आज़माएँ।"
     },
     "add": {
       "title": "यहां नए फ्लैशकार्ड जोड़ें",
