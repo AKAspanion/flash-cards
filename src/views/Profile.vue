@@ -14,30 +14,31 @@
                     <v-avatar
                         size="72"
                         class="ml-n1"
+                        @click="
+                            editingUrl = true;
+                            editingName = false;
+                        "
                         :color="!$vuetify.theme.dark ? 'white' : '#404040'"
                     >
-                        <template v-if="currentUser.photoURL">
-                            <v-img :src="currentUser.photoURL"></v-img>
-                        </template>
-                        <template v-else>
-                            <v-icon size="72" color="primary">
-                                mdi-face
-                            </v-icon>
-                        </template>
-                    </v-avatar>
-                    <template v-if="!editingUrl">
-                        <v-icon
-                            class="mx-1 mb-n1"
-                            :small="!editingUrl"
-                            @click="
-                                editingUrl = true;
-                                editingName = false;
-                            "
-                        >
-                            mdi-pencil
+                        <v-img
+                            v-if="editingUrl"
+                            v-show="!imageErr"
+                            :src="user.photoURL || 'a'"
+                            @load="imageErr = false"
+                            @error="imageErr = true"
+                        ></v-img>
+                        <v-img
+                            v-else
+                            v-show="!imageErr"
+                            @load="imageErr = false"
+                            @error="imageErr = true"
+                            :src="currentUser.photoURL || 'a'"
+                        ></v-img>
+                        <v-icon v-show="imageErr" size="72" color="primary">
+                            mdi-face
                         </v-icon>
-                    </template>
-                    <template v-else>
+                    </v-avatar>
+                    <template v-if="editingUrl">
                         <v-text-field
                             dense
                             rounded
@@ -50,23 +51,24 @@
                             placeholder="Enter your photo url"
                             @click:append="onUserEdit()"
                         ></v-text-field>
+                        <v-btn icon class="ml-3" @click="resetEdit('url')">
+                            <v-icon>
+                                mdi-close
+                            </v-icon>
+                        </v-btn>
                     </template>
                 </div>
                 <div class="d-flex title profile-text">
                     <template v-if="!editingName">
-                        <div class="pt-3 pb-1">
-                            {{ currentUser.displayName || 'na' }}
-                        </div>
-                        <v-icon
-                            class="mx-1 mb-n3"
-                            :small="!editingName"
+                        <div
+                            class="pt-3 pb-1"
                             @click="
                                 editingName = true;
                                 editingUrl = false;
                             "
                         >
-                            mdi-pencil
-                        </v-icon>
+                            {{ currentUser.displayName || 'na' }}
+                        </div>
                     </template>
                     <template v-else>
                         <v-text-field
@@ -81,6 +83,15 @@
                             placeholder="Enter your name"
                             @click:append="onUserEdit()"
                         ></v-text-field>
+                        <v-btn
+                            icon
+                            class="ml-3 mt-2"
+                            @click="resetEdit('name')"
+                        >
+                            <v-icon>
+                                mdi-close
+                            </v-icon>
+                        </v-btn>
                     </template>
                 </div>
                 <div
@@ -96,12 +107,16 @@
                 :color="dark ? '#212121' : '#e0e0e0'"
                 min-height="calc(100vh - 300px)"
             >
-                <div class="d-flex align-start pb-8">
-                    <v-icon>mdi-calendar</v-icon>
+                <div
+                    :key="i"
+                    v-for="(time, i) in timeMeta"
+                    class="d-flex align-start pb-8"
+                >
+                    <v-icon>{{ time.icon }}</v-icon>
                     <div class="pl-8">
-                        <div class="caption">{{ $t('profile.member') }}</div>
+                        <div class="caption">{{ $t(time.name) }}</div>
                         <div class="subtitle-2">
-                            {{ currentUser.userSince.slice(0, 16) }}
+                            {{ currentUser[time.key].slice(0, 16) }}
                         </div>
                     </div>
                 </div>
@@ -169,15 +184,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="d-flex align-start pb-8">
-                    <v-icon>mdi-clock</v-icon>
-                    <div class="pl-8">
-                        <div class="caption">{{ $t('profile.login') }}</div>
-                        <div class="subtitle-2">
-                            {{ currentUser.lastLogin.slice(0, 16) }}
-                        </div>
-                    </div>
-                </div>
             </v-card>
         </div>
         <btn-action
@@ -210,10 +216,23 @@ export default {
             hideSignout: false,
             editLoading: false,
             label: '',
+            imageErr: false,
             user: {
                 displayName: '',
                 photoURL: '',
             },
+            timeMeta: [
+                {
+                    icon: 'mdi-calendar-star',
+                    name: 'profile.member',
+                    key: 'creationTime',
+                },
+                {
+                    icon: 'mdi-clock',
+                    name: 'profile.login',
+                    key: 'lastSignInTime',
+                },
+            ],
         };
     },
     computed: {
@@ -310,8 +329,13 @@ export default {
             this.editLoading = true;
             firebase
                 .updateUserProfile(this.user)
-                .then(() => {})
-                .catch(() => {
+                .then(() => {
+                    this.$store.dispatch('SET_LOCAL_USER', {
+                        ...this.user,
+                    });
+                })
+                .catch((e) => {
+                    console.log(e);
                     this.$store.dispatch(
                         'SHOW_SNACK',
                         this.$t('toast.error.name.edit')
@@ -327,6 +351,20 @@ export default {
             this.label = '';
             this.labelLoading = false;
             this.selectedLabel = null;
+        },
+        resetEdit(type) {
+            switch (type) {
+                case 'url':
+                    this.editingUrl = false;
+                    this.user.photoURL = this.currentUser.photoURL;
+                    break;
+                case 'name':
+                    this.editingName = false;
+                    this.user.displayName = this.currentUser.displayName;
+                    break;
+                default:
+                    break;
+            }
         },
     },
     mounted() {
@@ -349,7 +387,7 @@ export default {
                     this.$store.dispatch('LOADING', false);
                 });
         }
-        this.user = this.currentUser;
+        this.user = { ...this.currentUser };
     },
 };
 </script>

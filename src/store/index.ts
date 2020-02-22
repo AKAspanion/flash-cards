@@ -11,8 +11,8 @@ export default new Vuex.Store({
     },
     user: {
       uid: '',
-      userSince: '',
-      lastLogin: '',
+      creationTime: '',
+      lastSignInTime: '',
       displayName: '',
       photoURL: '',
       email: '',
@@ -83,21 +83,33 @@ export default new Vuex.Store({
       localStorage.setItem('isLoggedIn', JSON.stringify(false));
     },
     SET_USER({ commit }, payload) {
-      const { uid, displayName, photoURL, email } = payload;
+      const { uid, displayName, photoURL, email, metadata } = payload;
+      const { creationTime, lastSignInTime } = metadata;
       commit('setUser', {
         uid,
         email,
         photoURL,
         displayName,
-        userSince: payload.metadata.creationTime,
-        lastLogin: payload.metadata.lastSignInTime,
+        creationTime,
+        lastSignInTime,
+      });
+    },
+    SET_LOCAL_USER({ commit }, payload) {
+      const { uid, displayName, photoURL, email, creationTime, lastSignInTime } = payload;
+      commit('setUser', {
+        uid,
+        email,
+        photoURL,
+        displayName,
+        creationTime,
+        lastSignInTime,
       });
     },
     UNSET_USER({ commit }) {
       commit('setUser', {
         uid: '',
-        userSince: '',
-        lastLogin: '',
+        creationTime: '',
+        lastSignInTime: '',
         displayName: '',
         photoURL: '',
         email: '',

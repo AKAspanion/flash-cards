@@ -3,9 +3,16 @@
         <bar-top @click:left="goToProfile" @click:right="openSettings">
             <template #left-button>
                 <v-avatar v-if="user.photoURL" size="28">
-                    <v-img :src="user.photoURL"></v-img>
+                    <v-img
+                        v-show="!imgErr"
+                        @load="imgErr = false"
+                        @error="imgErr = true"
+                        :src="user.photoURL || 'a'"
+                    ></v-img>
+                    <v-icon v-show="imgErr" size="32" color="primary">
+                        mdi-face
+                    </v-icon>
                 </v-avatar>
-                <v-icon v-else size="32" color="primary">mdi-face </v-icon>
             </template>
             <template #left-text>
                 {{ user.displayName ? user.displayName.split(' ')[0] : 'na' }}
@@ -115,25 +122,6 @@
             <v-list-item class="px-0">
                 <v-list-item-content>
                     <v-list-item-title>{{
-                        $t('common.labels')
-                    }}</v-list-item-title>
-                </v-list-item-content>
-                <v-list-item-action>
-                    <v-btn
-                        icon
-                        small
-                        color="primary"
-                        @click.stop="goToFromMenu('/profile')"
-                    >
-                        <v-icon>
-                            mdi-label-variant
-                        </v-icon>
-                    </v-btn>
-                </v-list-item-action>
-            </v-list-item>
-            <v-list-item class="px-0">
-                <v-list-item-content>
-                    <v-list-item-title>{{
                         $t('common.bin')
                     }}</v-list-item-title>
                 </v-list-item-content>
@@ -146,6 +134,25 @@
                     >
                         <v-icon>
                             mdi-trash-can
+                        </v-icon>
+                    </v-btn>
+                </v-list-item-action>
+            </v-list-item>
+            <v-list-item class="px-0">
+                <v-list-item-content>
+                    <v-list-item-title>{{
+                        $t('common.labels')
+                    }}</v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-action>
+                    <v-btn
+                        icon
+                        small
+                        color="primary"
+                        @click.stop="goToFromMenu('/profile')"
+                    >
+                        <v-icon>
+                            mdi-label-variant
                         </v-icon>
                     </v-btn>
                 </v-list-item-action>
@@ -193,6 +200,7 @@ export default {
         return {
             langs: ['en', 'hi'],
             pageLoading: false,
+            imgErr: false,
         };
     },
     computed: {
