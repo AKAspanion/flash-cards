@@ -16,7 +16,7 @@
                 {{ `${learnedCards}/${cardSet.cards.length}` }}
             </template>
             <template #right-text>
-                {{ $t('common.memorized') }}
+                {{ $t('common.learned') }}
             </template>
         </bar-top>
         <div>

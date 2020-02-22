@@ -3,6 +3,7 @@
     "home": "Home",
     "close": "Close",
     "about": "About",
+    "search": "Search",
     "options": "Options",
     "color": "Color",
     "bin": "Bin",
@@ -12,6 +13,7 @@
     "language": "Language",
     "theme": "Theme",
     "signout": "Sign Out",
+    "learned": "Learned",
     "memorized": "Memorized"
   },
   "home": {
@@ -39,6 +41,10 @@
     "home": {
       "title": "Welcome to your flashcards library!",
       "subtitle": "Add flashcard sets and it will appear here."
+    },
+    "filter": {
+      "title": "No results found",
+      "subtitle": "Make sure filter is correct or try a different filter."
     },
     "add": {
       "title": "Add new flashcards here",

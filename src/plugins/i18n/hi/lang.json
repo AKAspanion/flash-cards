@@ -3,6 +3,7 @@
     "home": "होम",
     "close": "बंद करे",
     "about": "बारे में",
+    "search": "Search",
     "options": "विकल्प",
     "color": "रंग",
     "bin": "बिन",
@@ -12,6 +13,7 @@
     "language": "भाषा",
     "theme": "थीम",
     "signout": "साइन आउट",
+    "learned": "Learned",
     "memorized": "याद किया"
   },
   "home": {
@@ -39,6 +41,10 @@
     "home": {
       "title": "अपने फ्लैशकार्ड संग्रह में आपका स्वागत है!",
       "subtitle": "फ्लैशकार्ड सेट जोड़ें और वो यहां दिखाई देंगे।"
+    },
+    "filter": {
+      "title": "No results found",
+      "subtitle": "Make sure filter is correct or try a different filter."
     },
     "add": {
       "title": "यहां नए फ्लैशकार्ड जोड़ें",

@@ -1,6 +1,6 @@
 <template>
     <div class="home-container">
-        <bar-top @click:left="goToProfile" @click:right="openSettings">
+        <bar-top @click:left="goToProfile" @click:right="openSearch">
             <template #left-button>
                 <v-avatar v-if="user.photoURL" size="28">
                     <v-img
@@ -18,13 +18,40 @@
                 {{ user.displayName ? user.displayName.split(' ')[0] : 'na' }}
             </template>
             <template #right-button>
-                <v-icon size="32" color="primary">mdi-settings</v-icon>
+                <v-menu
+                    :close-on-content-click="false"
+                    nudge-left="184"
+                    nudge-top="16"
+                >
+                    <template #activator="{ on }">
+                        <v-icon v-on="on" size="32" color="primary">
+                            mdi-magnify
+                        </v-icon>
+                    </template>
+                    <v-card class="pa-2">
+                        <v-text-field
+                            dense
+                            outlined
+                            hide-details
+                            ref="searchbox"
+                            v-model="searchText"
+                        >
+                        </v-text-field>
+                    </v-card>
+                </v-menu>
             </template>
             <template #right-text>
-                {{ $t('common.settings') }}
+                {{ $t('common.search') }}
             </template>
         </bar-top>
         <div class="flash-card-set-container">
+            <template v-if="sanitizedSearchText">
+                <div class="mx-8">
+                    <v-chip outlined close @click:close="searchText = ''">
+                        {{ sanitizedSearchText }}
+                    </v-chip>
+                </div>
+            </template>
             <template v-if="pageLoading">
                 <div class="mt-n3">
                     <v-row no-gutters class="px-4 pb-5">
@@ -44,12 +71,29 @@
             </template>
             <template v-else>
                 <container-empty
-                    icon="mdi-card-text"
+                    :icon="
+                        sanitizedSearchText
+                            ? 'mdi-card-bulleted-off-outline'
+                            : 'mdi-card-bulleted-outline'
+                    "
                     v-if="!flashCardSets.length"
-                    :title="$t('empty.home.title')"
-                    :subtitle="$t('empty.home.subtitle')"
+                    :title="
+                        sanitizedSearchText
+                            ? $t('empty.filter.title')
+                            : $t('empty.home.title')
+                    "
+                    :subtitle="
+                        sanitizedSearchText
+                            ? $t('empty.filter.subtitle')
+                            : $t('empty.home.subtitle')
+                    "
                 >
-                    <v-btn rounded color="primary" @click="goToAdd">
+                    <v-btn
+                        v-if="!sanitizedSearchText"
+                        rounded
+                        color="primary"
+                        @click="goToAdd"
+                    >
                         {{ $t('home.set.add') }}
                     </v-btn>
                 </container-empty>
@@ -200,6 +244,7 @@ export default {
         return {
             langs: ['en', 'hi'],
             pageLoading: false,
+            searchText: '',
             imgErr: false,
         };
     },
@@ -207,8 +252,15 @@ export default {
         user() {
             return this.$store.getters.user;
         },
+        sanitizedSearchText() {
+            return this.searchText ? this.searchText.trim().toUpperCase() : '';
+        },
         flashCardSets() {
-            return this.$store.getters.flashCardSets.filter((c) => !c.trashed);
+            return this.$store.getters.flashCardSets.filter(
+                (c) =>
+                    !c.trashed &&
+                    c.title.toUpperCase().includes(this.sanitizedSearchText)
+            );
         },
         loaderCardLength() {
             switch (this.$vuetify.breakpoint.name) {
@@ -263,6 +315,15 @@ export default {
         },
         openSettings() {
             this.$refs.settingspanel.togglePanel();
+        },
+        openSearch() {
+            this.$nextTick(() => {
+                setTimeout(() => {
+                    if (this.$refs.searchbox) {
+                        this.$refs.searchbox.focus();
+                    }
+                }, 250);
+            });
         },
     },
     mounted() {
