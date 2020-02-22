@@ -32,6 +32,7 @@
                     :key="label.docId"
                     :disabled="disabled"
                     v-for="label in labels"
+                    @click="$emit('label', label)"
                 >
                     {{ label.label }}
                 </v-chip>

@@ -26,6 +26,7 @@
                 </div>
             </div>
         </v-toolbar>
+        <slot></slot>
     </div>
 </template>
 

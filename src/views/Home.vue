@@ -2,7 +2,7 @@
     <div class="home-container">
         <bar-top @click:left="goToProfile" @click:right="openSearch">
             <template #left-button>
-                <v-avatar v-if="user.photoURL" size="28">
+                <v-avatar v-if="user.photoURL" size="32">
                     <v-img
                         v-show="!imgErr"
                         @load="imgErr = false"
@@ -18,13 +18,14 @@
                 {{ user.displayName ? user.displayName.split(' ')[0] : 'na' }}
             </template>
             <template #right-button>
-                <v-menu
-                    :close-on-content-click="false"
-                    nudge-left="184"
-                    nudge-top="16"
-                >
+                <v-menu :close-on-content-click="false" nudge-top="16">
                     <template #activator="{ on }">
-                        <v-icon v-on="on" size="32" color="primary">
+                        <v-icon
+                            v-on="on"
+                            size="32"
+                            color="primary"
+                            :disabled="!flashCardSets.length"
+                        >
                             mdi-magnify
                         </v-icon>
                     </template>
@@ -35,6 +36,7 @@
                             hide-details
                             ref="searchbox"
                             v-model="searchText"
+                            prepend-inner-icon="mdi-magnify"
                         >
                         </v-text-field>
                     </v-card>
@@ -43,15 +45,32 @@
             <template #right-text>
                 {{ $t('common.search') }}
             </template>
+            <div class="mx-4">
+                <v-chip
+                    small
+                    close
+                    outlined
+                    class="mr-3"
+                    v-if="sanitizedSearchText"
+                    @click:close="searchText = ''"
+                >
+                    <v-icon left>mdi-magnify</v-icon>
+                    {{ sanitizedSearchText.toLowerCase() }}
+                </v-chip>
+                <v-chip
+                    small
+                    close
+                    outlined
+                    class="mr-3"
+                    v-if="filterLabel"
+                    @click:close="filterLabel = null"
+                >
+                    <v-icon left>mdi-label-variant</v-icon>
+                    {{ filterLabel.label }}
+                </v-chip>
+            </div>
         </bar-top>
         <div class="flash-card-set-container">
-            <template v-if="sanitizedSearchText">
-                <div class="mx-8">
-                    <v-chip outlined close @click:close="searchText = ''">
-                        {{ sanitizedSearchText }}
-                    </v-chip>
-                </div>
-            </template>
             <template v-if="pageLoading">
                 <div class="mt-n3">
                     <v-row no-gutters class="px-4 pb-5">
@@ -107,7 +126,10 @@
                         class="py-3 px-4"
                         v-for="card in flashCardSets"
                     >
-                        <card-flash-set :card="card"></card-flash-set>
+                        <card-flash-set
+                            :card="card"
+                            @label="onLabelClick"
+                        ></card-flash-set>
                     </v-col>
                 </v-row>
             </template>
@@ -244,6 +266,7 @@ export default {
         return {
             langs: ['en', 'hi'],
             pageLoading: false,
+            filterLabel: null,
             searchText: '',
             imgErr: false,
         };
@@ -256,7 +279,20 @@ export default {
             return this.searchText ? this.searchText.trim().toUpperCase() : '';
         },
         flashCardSets() {
-            return this.$store.getters.flashCardSets.filter(
+            let sets = this.$store.getters.flashCardSets;
+            if (this.filterLabel) {
+                sets = sets.filter((c) => {
+                    let found = false;
+                    for (let i = 0; i < c.labels.length; i++) {
+                        if (this.filterLabel.docId === c.labels[i]) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    return found;
+                });
+            }
+            return sets.filter(
                 (c) =>
                     !c.trashed &&
                     c.title.toUpperCase().includes(this.sanitizedSearchText)
@@ -301,6 +337,9 @@ export default {
         },
     },
     methods: {
+        onLabelClick(label) {
+            this.filterLabel = label;
+        },
         goToProfile() {
             navigateToPath('/profile');
         },
