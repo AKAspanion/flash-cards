@@ -35,15 +35,15 @@ export default Vue.extend({
         };
     },
     computed: {
-        loading() {
+        loading(): boolean {
             return this.$store.getters.loading;
         },
-        snackbar() {
+        snackbar(): any {
             return this.$store.getters.snackBar;
         },
     },
     methods: {
-        resetSnackBar() {
+        resetSnackBar(): void {
             clearTimeout(this.snackbarTimer);
             this.$store.dispatch('SNACK_BTN_CLICK', true);
             this.snackbarTimer = setTimeout(() => {
