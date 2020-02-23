@@ -166,9 +166,11 @@ export default {
             navigateToPath(`/${this.card.id}/view`);
         },
         handleMouseDown(e) {
+            if(this.bin) return;
             this.touchStartEvent = e;
         },
         handleMouseMove(e) {
+            if(this.bin) return;
             let cardDOM = document.getElementById(this.id);
             let touchDistance =
                 this.touchStartEvent.touches[0].clientX - e.touches[0].clientX;
@@ -185,6 +187,7 @@ export default {
             }
         },
         handleMouseUp(e) {
+            if(this.bin) return;
             if (this.leftTriggered) {
                 this.$emit('fav', this.card);
             }

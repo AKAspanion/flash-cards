@@ -5,9 +5,11 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    snackBtnCLick: false,
     snackBar: {
       model: false,
       text: '',
+      btn: '',
     },
     user: {
       uid: '',
@@ -24,6 +26,9 @@ export default new Vuex.Store({
     labels: [],
   },
   mutations: {
+    setSnackBtnCLick(state, payload) {
+      state.snackBtnCLick = payload;
+    },
     setSnackBar(state, payload) {
       state.snackBar = payload;
     },
@@ -131,7 +136,19 @@ export default new Vuex.Store({
       commit('setSnackBar', {
         model: true,
         text: payload,
+        btn: '',
       });
+    },
+    SHOW_BTN_SNACK({ commit }, payload) {
+      const { text, btn } = payload;
+      commit('setSnackBar', {
+        model: true,
+        text,
+        btn,
+      });
+    },
+    SNACK_BTN_CLICK({ commit }, payload) {
+      commit('setSnackBtnCLick', payload);
     },
     LOADING({ commit }, payload) {
       commit('setLoading', payload);
@@ -180,5 +197,8 @@ export default new Vuex.Store({
     landingVisited(state) {
       return state.landingVisited;
     },
+    snackBtnCLicked(state) {
+      return state.snackBtnCLick;
+    }
   },
 });

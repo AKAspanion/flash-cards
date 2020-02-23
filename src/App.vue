@@ -10,9 +10,9 @@
         </div>
         <v-snackbar v-model="snackbar.model" multi-line bottom :timeout="5000">
             {{ snackbar.text }}
-            <v-btn dark text @click="snackbar.model = false">{{
-                $t('common.close')
-            }}</v-btn>
+            <v-btn dark text @click="resetSnackBar">
+                {{ snackbar.btn || $t('common.close') }}
+            </v-btn>
         </v-snackbar>
         <container-main />
         <bar-nav />
@@ -29,12 +29,29 @@ export default Vue.extend({
         BarNav,
         ContainerMain,
     },
+    data() {
+        return {
+            snackbarTimer: 0,
+        };
+    },
     computed: {
         loading() {
             return this.$store.getters.loading;
         },
         snackbar() {
             return this.$store.getters.snackBar;
+        },
+    },
+    methods: {
+        resetSnackBar() {
+            clearTimeout(this.snackbarTimer);
+            this.$store.dispatch('SNACK_BTN_CLICK', true);
+            this.snackbarTimer = setTimeout(() => {
+                this.$store.dispatch('SNACK_BTN_CLICK', false);
+            }, 100);
+            this.snackbar.model = false;
+            this.snackbar.text = '';
+            this.snackbar.btn = '';
         },
     },
     mounted() {

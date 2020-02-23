@@ -31,8 +31,14 @@ export default {
     data() {
         return {
             model: null,
+            cardOnFocus: 0,
             scrolling: false,
         };
+    },
+    watch: {
+        cardOnFocus(val) {
+            this.$emit('focused', val);
+        },
     },
     computed: {
         mobile() {
@@ -48,32 +54,44 @@ export default {
             this.$emit('input', newData);
         },
         onDelete(val) {
+            let index = this.value.findIndex((obj) => obj.id === val.id);
             let newData = this.value.filter((obj) => obj.id !== val.id);
             this.$emit('input', newData);
+            this.$emit('delete', {
+                val,
+                index,
+            });
         },
         handleScroll(event) {
             if (this.scrolling) return;
-            let container = document.getElementById('cardslidercontainer');
-            container.scrollLeft += event.deltaY * 5;
+            event.target.scrollLeft += event.deltaY * 5;
             this.scrolling = true;
             setTimeout(() => {
                 this.scrolling = false;
             }, 500);
         },
+        handleFocusCount(event) {
+            let containerLeft = event.target.scrollLeft;
+            let sectionWidth = event.target.children[0].getBoundingClientRect()
+                .width;
+            this.cardOnFocus = containerLeft
+                ? Math.ceil(containerLeft / sectionWidth)
+                : 0;
+        },
     },
     created() {
-        if (!this.mobile) {
-            this.$nextTick(() => {
-                let container = document.getElementById('cardslidercontainer');
+        this.$nextTick(() => {
+            let container = document.getElementById('cardslidercontainer');
+            container.addEventListener('scroll', this.handleFocusCount, false);
+            if (!this.mobile) {
                 container.addEventListener('wheel', this.handleScroll, false);
-            });
-        }
+            }
+        });
     },
     destroyed() {
-        if (!this.mobile) {
-            let container = document.getElementById('cardslidercontainer');
-            container.removeEventListener('wheel', this.handleScroll, false);
-        }
+        let container = document.getElementById('cardslidercontainer');
+        container.removeEventListener('scroll', this.handleFocusCount, false);
+        container.removeEventListener('wheel', this.handleScroll, false);
     },
 };
 </script>
@@ -92,11 +110,11 @@ section {
     scroll-snap-align: none center;
 }
 .dummy-section {
-    width: 40px !important;
+    width: 36px !important;
     height: calc(100vh - 160px);
 }
 section:first-child {
-    margin-left: 40px;
+    margin-left: 36px;
 }
 .group-card-slider::-webkit-scrollbar {
     width: 0 !important;

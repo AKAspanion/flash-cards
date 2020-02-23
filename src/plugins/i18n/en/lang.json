@@ -12,6 +12,7 @@
     "settings": "Settings",
     "language": "Language",
     "theme": "Theme",
+    "restore": "Restore",
     "signout": "Sign Out",
     "learned": "Learned",
     "favourite": "Favourite",
@@ -27,6 +28,7 @@
       "notitle": "untitled set"
     },
     "card": "Add card",
+    "card-delete": "Card deleted",
     "move-to-bin": "Move to bin",
     "mark-as-fav": "Mark favourite"
   },

@@ -8,35 +8,41 @@
                 {{ $t('common.home') }}
             </template>
             <template #center>
-                <div v-if="titleEdit" class="pt-1 pb-5">
-                    <v-text-field
-                        dense
-                        rounded
-                        outlined
-                        autofocus
-                        hide-details
-                        v-model="cardSet.title"
-                        @keyup.enter="titleEdit = false"
-                    >
-                        <template #append>
-                            <v-icon @click="titleEdit = false">
-                                mdi-check
-                            </v-icon>
-                        </template>
-                    </v-text-field>
-                </div>
-                <div
-                    v-else
-                    @click="titleEdit = true"
-                    class="d-flex justify-center text-center text-uppercase title pa-4 mb-4"
-                >
+                <div class="d-flex align-center justify-center">
                     <v-scale-transition origin="center center">
-                        <v-icon class="mr-1" color="yellow" v-if="cardSet.fav">
+                        <v-icon
+                            class="mr-1 mb-5"
+                            color="yellow"
+                            v-if="cardSet.fav"
+                        >
                             mdi-star
                         </v-icon>
                     </v-scale-transition>
-                    <div>
-                        {{ cardSet.title || $t('add.set.notitle') }}
+                    <div v-if="titleEdit" class="pt-1 pb-5">
+                        <v-text-field
+                            dense
+                            rounded
+                            outlined
+                            autofocus
+                            hide-details
+                            v-model="cardSet.title"
+                            @keyup.enter="titleEdit = false"
+                        >
+                            <template #append>
+                                <v-icon @click="titleEdit = false">
+                                    mdi-check
+                                </v-icon>
+                            </template>
+                        </v-text-field>
+                    </div>
+                    <div
+                        v-else
+                        @click="titleEdit = true"
+                        class="d-flex justify-center text-center text-uppercase title py-4 mb-4"
+                    >
+                        <div>
+                            {{ cardSet.title || $t('add.set.notitle') }}
+                        </div>
                     </div>
                 </div>
             </template>
@@ -60,6 +66,8 @@
             :labels="setLabels"
             :color="cardSet.color"
             v-model="cardSet.cards"
+            @delete="onCardDelete"
+            @focused="(val) => (focusedIndex = val)"
         ></group-card-flash>
         <btn-action color="primary" @click="onCardAdd" :disabled="loading">
             {{ $t('add.card') }}
@@ -174,6 +182,8 @@ export default {
             changed: 0,
             isEdit: false,
             titleEdit: false,
+            deletedCard: null,
+            focusedIndex: 0,
             cardSet: {
                 id: uid(),
                 cards: [],
@@ -194,6 +204,11 @@ export default {
             },
             deep: true,
         },
+        snackBtnCLicked(val) {
+            if (val) {
+                this.restoreCard();
+            }
+        },
     },
     computed: {
         loading() {
@@ -210,6 +225,9 @@ export default {
                 this.cardSet.labels.includes(label.docId)
             );
         },
+        snackBtnCLicked() {
+            return this.$store.getters.snackBtnCLicked;
+        },
     },
     methods: {
         goBack() {
@@ -218,6 +236,13 @@ export default {
             } else {
                 navigateToPath('/home');
             }
+        },
+        onCardDelete(data) {
+            this.deletedCard = data;
+            this.$store.dispatch('SHOW_BTN_SNACK', {
+                text: this.$t('add.card-delete'),
+                btn: this.$t('common.restore'),
+            });
         },
         onDeleteClick() {
             this.cardSet.trashed = true;
@@ -228,10 +253,23 @@ export default {
             this.$refs.addoptions.togglePanel();
         },
         onCardAdd() {
-            this.cardSet.cards = [
-                { id: uid(), front: '', back: '', learned: false },
-                ...this.cardSet.cards,
-            ];
+            let index = this.focusedIndex || 0;
+            this.cardSet.cards.splice(index, 0, {
+                id: uid(),
+                front: '',
+                back: '',
+                learned: false,
+            });
+        },
+        restoreCard() {
+            if (this.deletedCard) {
+                this.cardSet.cards.splice(
+                    this.deletedCard.index,
+                    0,
+                    this.deletedCard.val
+                );
+                this.deletedCard = null;
+            }
         },
         setCards(params) {
             if (this.isEdit) {
