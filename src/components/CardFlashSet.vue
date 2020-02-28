@@ -128,6 +128,7 @@ export default {
     },
     data() {
         return {
+            scrolledY: 'no',
             leftTriggered: false,
             rightTriggered: false,
             touchStartEvent: null,
@@ -175,6 +176,24 @@ export default {
             if (this.bin) {
                 return;
             }
+            const yDist = Math.abs(
+                this.touchStartEvent.touches[0].clientY -
+                    e.changedTouches[0].clientY
+            );
+            const xDist = Math.abs(
+                this.touchStartEvent.touches[0].clientX -
+                    e.changedTouches[0].clientX
+            );
+            if (this.scrolledY === 'no') {
+                if (yDist > xDist) {
+                    this.scrolledY = 'yes';
+                } else {
+                    this.scrolledY = 'ohno';
+                }
+            }
+            if (this.scrolledY === 'yes') {
+                return;
+            }
             const cardDOM = document.getElementById(this.id);
             const touchDistance =
                 this.touchStartEvent.touches[0].clientX - e.touches[0].clientX;
@@ -206,6 +225,7 @@ export default {
             this.leftTriggered = false;
             this.rightTriggered = false;
             this.touchStartEvent = null;
+            this.scrolledY = 'no';
         },
     },
 };

@@ -85,6 +85,8 @@
                 <v-btn
                     icon
                     class="ma-1"
+                    name="google signin"
+                    title="google signin"
                     @click="isSignIn ? onGoolgeSignin() : onGoogleSignUp()"
                 >
                     <v-icon color="rgb(23, 156, 82)">
@@ -100,7 +102,7 @@
                 }}
                 <span
                     @click="isSignIn = !isSignIn"
-                    class="primary--text selectable"
+                    class="login-link-text selectable"
                 >
                     {{ isSignIn ? 'Sign up' : 'Login' }}
                 </span>
@@ -237,5 +239,8 @@ export default {
     border-top-left-radius: 24px !important;
     border-bottom-right-radius: 0px !important;
     border-bottom-left-radius: 0px !important;
+}
+.login-link-text {
+    color: #ba124b;
 }
 </style>
