@@ -127,7 +127,7 @@ export default {
         },
         docClickHandler(event) {
             const panel = document.getElementById('optionspanel');
-            const target = event.target;
+            let target = event.target;
             do {
                 if (
                     target === panel ||

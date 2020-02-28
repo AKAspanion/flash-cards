@@ -1,5 +1,7 @@
-import * as firebase from 'firebase';
-import store from '@/store';
+import * as firebase from 'firebase/app';
+
+import 'firebase/auth';
+import 'firebase/firestore';
 
 class FirebaseWeb {
     private firebaseConfig: any = {
