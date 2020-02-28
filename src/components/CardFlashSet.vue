@@ -94,13 +94,13 @@
             </template>
         </div>
         <v-icon
-            :color="card.color || 'primary'"
+            :color="leftTriggered ? card.color || 'primary' : ''"
             class="cardflash-set-hidden-icon cardflash-set-hidden-icon--left"
         >
             mdi-star
         </v-icon>
         <v-icon
-            :color="card.color || 'primary'"
+            :color="rightTriggered ? card.color || 'primary' : ''"
             class="cardflash-set-hidden-icon cardflash-set-hidden-icon--right"
         >
             mdi-trash-can
@@ -182,7 +182,7 @@ export default {
             if (Math.abs(touchDistance) <= 100) {
                 cardDOM.style.transform = `translate3d(${-touchDistance}px, 0px, 0px)`;
             }
-            const triggerPoint = Math.abs(touchDistance) >= 50;
+            const triggerPoint = Math.abs(touchDistance) >= 62;
             const triggerNegative = touchDistance < 0;
             if (triggerNegative) {
                 this.leftTriggered = triggerPoint;
