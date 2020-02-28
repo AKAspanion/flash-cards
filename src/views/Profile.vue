@@ -289,7 +289,7 @@ export default {
                             });
                         })
                         .catch((err) => {
-                            //TODO
+                            // TODO
                         })
                         .finally(() => {
                             this.resetLabel();
@@ -335,7 +335,6 @@ export default {
                     });
                 })
                 .catch((e) => {
-                    console.log(e);
                     this.$store.dispatch(
                         'SHOW_SNACK',
                         this.$t('toast.error.name.edit')

@@ -299,8 +299,8 @@ export default {
             if (this.filterLabel) {
                 sets = sets.filter((c) => {
                     let found = false;
-                    for (let i = 0; i < c.labels.length; i++) {
-                        if (this.filterLabel.docId === c.labels[i]) {
+                    for (const label of c.labels) {
+                        if (this.filterLabel.docId === label) {
                             found = true;
                             break;
                         }
@@ -311,11 +311,12 @@ export default {
             if (this.starFilter) {
                 sets = sets.filter((c) => !!c.fav);
             }
-            sets = sets.filter(
-                (c) =>
+            sets = sets.filter((c) => {
+                return (
                     !c.trashed &&
                     c.title.toUpperCase().includes(this.sanitizedSearchText)
-            );
+                );
+            });
             sets.sort((s1, s2) => s1.title.localeCompare(s2.title));
             return sets;
         },

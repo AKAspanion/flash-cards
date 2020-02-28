@@ -221,9 +221,9 @@ export default {
             return this.$store.getters.labels;
         },
         setLabels() {
-            return this.labels.filter((label) =>
-                this.cardSet.labels.includes(label.docId)
-            );
+            return this.labels.filter((label) => {
+                return this.cardSet.labels.includes(label.docId);
+            });
         },
         snackBtnCLicked() {
             return this.$store.getters.snackBtnCLicked;
@@ -253,13 +253,18 @@ export default {
             this.$refs.addoptions.togglePanel();
         },
         onCardAdd() {
-            let index = this.focusedIndex || 0;
-            this.cardSet.cards.splice(index, 0, {
+            const newCard = {
                 id: uid(),
                 front: '',
                 back: '',
                 learned: false,
-            });
+            };
+            const index = this.focusedIndex || 0;
+            if (index) {
+                this.cardSet.cards.splice(index, 0, newCard);
+            } else {
+                this.cardSet.cards.unshift(newCard);
+            }
         },
         restoreCard() {
             if (this.deletedCard) {
@@ -273,8 +278,10 @@ export default {
         },
         setCards(params) {
             if (this.isEdit) {
-                let storeCardSets = this.$store.getters.flashCardSets;
-                let index = storeCardSets.findIndex((e) => e.id === params.id);
+                const storeCardSets = this.$store.getters.flashCardSets;
+                const index = storeCardSets.findIndex((e) => {
+                    return e.id === params.id;
+                });
                 if (index >= 0) {
                     this.cardSet = { ...storeCardSets[index] };
                 } else {
@@ -325,7 +332,7 @@ export default {
         },
     },
     mounted() {
-        let { name, params } = this.$route;
+        const { name, params } = this.$route;
         this.isEdit = name === 'edit';
         if (!this.$store.getters.landingVisited) {
             this.$store.dispatch('LOADING', true);

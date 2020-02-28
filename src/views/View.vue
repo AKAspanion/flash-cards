@@ -60,9 +60,9 @@ export default {
             return this.$store.getters.labels;
         },
         setLabels() {
-            return this.labels.filter((label) =>
-                this.cardSet.labels.includes(label.docId)
-            );
+            return this.labels.filter((label) => {
+                return this.cardSet.labels.includes(label.docId);
+            });
         },
         learnedCards() {
             return this.cardSet.cards.reduce((total, value) => {
@@ -87,8 +87,8 @@ export default {
             }
         },
         setCards(params) {
-            let storeCardSets = this.$store.getters.flashCardSets;
-            let index = storeCardSets.findIndex((e) => e.id === params.id);
+            const storeCardSets = this.$store.getters.flashCardSets;
+            const index = storeCardSets.findIndex((e) => e.id === params.id);
             if (index >= 0) {
                 this.cardSet = { ...storeCardSets[index] };
             } else {
@@ -112,7 +112,7 @@ export default {
         },
     },
     mounted() {
-        let { params } = this.$route;
+        const { params } = this.$route;
         if (!this.$store.getters.landingVisited) {
             this.dataLoading = true;
             this.$store.dispatch('LOADING', true);

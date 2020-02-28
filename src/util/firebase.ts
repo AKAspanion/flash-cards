@@ -38,7 +38,7 @@ const parseAllFlashCardSets = (snapshot: any) => {
         });
         resolve(sets);
     });
-}
+};
 
 export const fetchAllLabels = (user: any) => {
     return new Promise((resolve, reject) => {
@@ -68,4 +68,4 @@ const parseAllLabels = (snapshot: any) => {
         });
         resolve(labels);
     });
-}
+};

@@ -4,7 +4,11 @@
         :style="`background: ${dark ? '#212121' : '#e0e0e0'}`"
     >
         <div class="login-wrapper">
-            <img alt="logo" src="images/flash-cards-logo.png" style="width:64px;" />
+            <img
+                alt="logo"
+                src="images/flash-cards-logo.png"
+                style="width:64px;"
+            />
             <div class="pt-4 headline text-uppercase">Flashcards</div>
             <div class="pa-2 pb-6 caption font-weight-light">
                 {{ isSignIn ? 'Login to application' : 'Create an account' }}
@@ -141,7 +145,7 @@ export default {
             return this.$vuetify.theme.dark;
         },
         passValid() {
-            let { password, repassword } = this.user;
+            const { password, repassword } = this.user;
             return password === repassword;
         },
     },

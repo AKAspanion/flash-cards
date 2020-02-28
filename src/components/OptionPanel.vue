@@ -61,15 +61,15 @@ export default {
         handleMouseMove(e) {
             this.moving = true;
             if (this.start && !this.end) {
-                let card = document.querySelector('.options-card');
-                let cardValues = card.getBoundingClientRect();
+                const card = document.querySelector('.options-card');
+                const cardValues = card.getBoundingClientRect();
                 this.touchDistance =
                     this.touchStartEvent.touches[0].clientY -
                     e.touches[0].clientY;
-                let velocity =
+                const velocity =
                     Math.abs(this.touchDistance) /
                     (e.timeStamp - this.touchStartEvent.timeStamp);
-                let yDistance = cardValues.height - this.touchDistance - 56;
+                const yDistance = cardValues.height - this.touchDistance - 56;
                 if (this.touchDistance <= cardValues.height - 56) {
                     card.style.transition = `none`;
                     if (!this.open && this.touchDistance >= 0) {
@@ -95,7 +95,7 @@ export default {
         handleMouseUp(e) {
             this.start = false;
             this.end = true;
-            let card = document.querySelector('.options-card');
+            const card = document.querySelector('.options-card');
             card.style.transition = `transform 200ms ease-out`;
             if (!this.moving) {
                 this.toggleOpen();
@@ -126,11 +126,11 @@ export default {
             }
         },
         docClickHandler(event) {
-            var panel = document.getElementById('optionspanel'),
-                target = event.target;
+            const panel = document.getElementById('optionspanel');
+            const target = event.target;
             do {
                 if (
-                    target == panel ||
+                    target === panel ||
                     (target.className &&
                         target.className.search('v-btn') !== -1)
                 ) {
@@ -147,7 +147,7 @@ export default {
         },
         togglePanel() {
             this.toggleOpen();
-            let card = document.querySelector('.options-card');
+            const card = document.querySelector('.options-card');
             if (this.open) {
                 card.style.transform = `translate3d(0px, 0, 0)`;
             } else {

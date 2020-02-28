@@ -139,17 +139,17 @@ export default {
             return this.$vuetify.theme.dark;
         },
         labels() {
-            return this.$store.getters.labels.filter((label) =>
-                this.card.labels.includes(label.docId)
-            );
+            return this.$store.getters.labels.filter((label) => {
+                return this.card.labels.includes(label.docId);
+            });
         },
         ratio() {
             return `${this.totalLearned} / ${this.card.cards.length}`;
         },
         percentage() {
-            let totalCards = this.card.cards.length;
+            const totalCards = this.card.cards.length;
             return totalCards
-                ? parseInt((this.totalLearned / totalCards) * 100)
+                ? parseInt((this.totalLearned / totalCards) * 100, 10)
                 : 0;
         },
         totalLearned() {
@@ -166,20 +166,24 @@ export default {
             navigateToPath(`/${this.card.id}/view`);
         },
         handleMouseDown(e) {
-            if(this.bin) return;
+            if (this.bin) {
+                return;
+            }
             this.touchStartEvent = e;
         },
         handleMouseMove(e) {
-            if(this.bin) return;
-            let cardDOM = document.getElementById(this.id);
-            let touchDistance =
+            if (this.bin) {
+                return;
+            }
+            const cardDOM = document.getElementById(this.id);
+            const touchDistance =
                 this.touchStartEvent.touches[0].clientX - e.touches[0].clientX;
             cardDOM.style.transition = `none`;
             if (Math.abs(touchDistance) <= 100) {
                 cardDOM.style.transform = `translate3d(${-touchDistance}px, 0px, 0px)`;
             }
-            let triggerPoint = Math.abs(touchDistance) >= 50;
-            let triggerNegative = touchDistance < 0;
+            const triggerPoint = Math.abs(touchDistance) >= 50;
+            const triggerNegative = touchDistance < 0;
             if (triggerNegative) {
                 this.leftTriggered = triggerPoint;
             } else {
@@ -187,14 +191,16 @@ export default {
             }
         },
         handleMouseUp(e) {
-            if(this.bin) return;
+            if (this.bin) {
+                return;
+            }
             if (this.leftTriggered) {
                 this.$emit('fav', this.card);
             }
             if (this.rightTriggered) {
                 this.$emit('delete', this.card);
             }
-            let cardDOM = document.getElementById(this.id);
+            const cardDOM = document.getElementById(this.id);
             cardDOM.style.transition = `transform 200ms ease-out`;
             cardDOM.style.transform = `translate3d(0px, 0px, 0px)`;
             this.leftTriggered = false;

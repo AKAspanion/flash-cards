@@ -199,6 +199,6 @@ export default new Vuex.Store({
     },
     snackBtnCLicked(state) {
       return state.snackBtnCLick;
-    }
+    },
   },
 });
