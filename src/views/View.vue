@@ -13,17 +13,7 @@
                 </div>
             </template>
             <template #right-button>
-                <v-progress-circular
-                    size="60"
-                    width="3"
-                    rotate="270"
-                    color="primary"
-                    :value="(learnedCards / cardSet.cards.length) * 100"
-                >
-                    <span class="text--primary">
-                        {{ `${learnedCards}/${cardSet.cards.length}` }}
-                    </span>
-                </v-progress-circular>
+                {{ `${learnedCards}/${cardSet.cards.length}` }}
             </template>
             <template #right-text>
                 {{ $t('common.learned') }}
@@ -37,6 +27,12 @@
                 v-model="cardSet.cards"
             ></group-card-flash>
         </div>
+        <v-progress-linear
+            height="4"
+            class="floating-progress"
+            :color="cardSet.color || 'primary'"
+            :value="(learnedCards / cardSet.cards.length) * 100"
+        ></v-progress-linear>
     </div>
 </template>
 
@@ -152,5 +148,10 @@ export default {
 <style scoped>
 .view-container {
     min-height: 100vh;
+}
+.floating-progress {
+    position: fixed;
+    z-index: 2;
+    bottom: 0;
 }
 </style>
