@@ -5,7 +5,7 @@
                 <v-icon size="32" color="primary">mdi-arrow-left</v-icon>
             </template>
             <template #left-text>
-                {{$t('common.home')}}
+                {{ $t('common.home') }}
             </template>
         </bar-top>
         <div class="flash-card-bin-container">
@@ -25,15 +25,31 @@
                     :title="$t('empty.bin.title')"
                     :subtitle="$t('empty.bin.subtitle')"
                 ></container-empty>
-                <div class="my-3 mx-8" v-for="card in cardSets" :key="card.id">
-                    <card-flash-set
-                        bin
-                        :card="card"
-                        :disabled="deleting"
-                        @restore="onRestore"
-                        @delete="onDelete"
-                    ></card-flash-set>
-                </div>
+                <v-slide-y-reverse-transition
+                    v-else
+                    group
+                    tag="div"
+                    hide-on-leave
+                    class="row px-4 no-gutters"
+                >
+                    <v-col
+                        md="6"
+                        lg="4"
+                        sm="6"
+                        cols="12"
+                        :key="card.id"
+                        class="py-3 px-4"
+                        v-for="card in cardSets"
+                    >
+                        <card-flash-set
+                            bin
+                            :card="card"
+                            :disabled="deleting"
+                            @restore="onRestore"
+                            @delete="onDelete"
+                        ></card-flash-set>
+                    </v-col>
+                </v-slide-y-reverse-transition>
             </template>
         </div>
     </div>

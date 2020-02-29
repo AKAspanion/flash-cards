@@ -118,7 +118,12 @@
                         {{ $t('home.set.add') }}
                     </v-btn>
                 </container-empty>
-                <v-row no-gutters class="px-4">
+                <v-slide-y-reverse-transition
+                    group
+                    tag="div"
+                    hide-on-leave
+                    class="row px-4 no-gutters"
+                >
                     <v-col
                         md="6"
                         lg="4"
@@ -136,7 +141,7 @@
                             @label="onLabelClick"
                         ></card-flash-set>
                     </v-col>
-                </v-row>
+                </v-slide-y-reverse-transition>
             </template>
         </div>
         <option-panel ref="settingspanel">
