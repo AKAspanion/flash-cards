@@ -13,7 +13,17 @@
                 </div>
             </template>
             <template #right-button>
-                {{ `${learnedCards}/${cardSet.cards.length}` }}
+                <v-progress-circular
+                    size="60"
+                    width="3"
+                    rotate="270"
+                    color="primary"
+                    :value="(learnedCards / cardSet.cards.length) * 100"
+                >
+                    <span class="text--primary">
+                        {{ `${learnedCards}/${cardSet.cards.length}` }}
+                    </span>
+                </v-progress-circular>
             </template>
             <template #right-text>
                 {{ $t('common.learned') }}

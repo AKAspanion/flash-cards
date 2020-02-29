@@ -6,7 +6,10 @@
             `height: ${browse ? 'calc(100vh - 224px)' : 'calc(100vh - 320px)'}`
         "
     >
-        <v-dialog v-model="editing" :max-width="$vuetify.breakpoint.smAndUp ? '50vw':''">
+        <v-dialog
+            v-model="editing"
+            :max-width="$vuetify.breakpoint.smAndUp ? '50vw' : ''"
+        >
             <v-card class="pa-6">
                 <v-textarea
                     rounded
@@ -142,7 +145,6 @@ export default {
         return {
             flipped: false,
             editing: false,
-            flippedCount: 0,
         };
     },
     methods: {
@@ -164,14 +166,11 @@ export default {
             }
         },
         onLearnCheck() {
-            if (!this.flippedCount) {
-                this.update('learned', !this.value.learned);
-            }
+            this.update('learned', !this.value.learned);
         },
         onCardFlip() {
             if (this.browse) {
                 this.update('learned', false);
-                this.flippedCount++;
             }
             this.$emit('flip');
             this.editing = false;

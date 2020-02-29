@@ -11,7 +11,7 @@
             @touchmove="handleMouseMove"
             @touchend="handleMouseUp"
         >
-            <div class="d-flex text-uppercase mb-2">
+            <div class="d-flex text-uppercase">
                 <v-scale-transition origin="center center">
                     <v-icon
                         class="mr-1"
