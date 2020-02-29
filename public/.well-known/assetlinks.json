@@ -1,10 +1,14 @@
 [
   {
-    "relation": ["delegate_permission/common.handle_all_urls"],
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
     "target": {
       "namespace": "android_app",
-      "package_name": "xyz.appmaker.borurt",
-      "sha256_cert_fingerprints": ["4B:B1:0C:CE:4D:2C:41:9E:C0:BD:6B:B5:3D:34:F8:D4:DD:30:9E:A6:14:56:3B:CC:68:01:83:E0:8B:0D:12:5A"]
+      "package_name": "com.flashcards.twa",
+      "sha256_cert_fingerprints": [
+        "A9:44:40:B1:79:95:A0:8B:68:8D:5B:4F:44:20:DC:13:46:BC:F6:23:E1:8C:74:3A:6C:EE:86:13:BC:EB:40:97"
+      ]
     }
   }
 ]
