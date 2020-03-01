@@ -17,7 +17,15 @@
                 mdi-drag-horizontal
             </v-icon>
         </div>
-        <div class="options-content pt-4 pb-12 px-5">
+        <slot name="title">
+            <div
+                v-if="title && typeof title === 'string'"
+                class="title px-5 pt-4 text-uppercase"
+            >
+                {{ title }}
+            </div>
+        </slot>
+        <div class="options-content pt-6 pb-12 px-5 mb-2">
             <slot></slot>
         </div>
     </v-card>
@@ -25,7 +33,7 @@
 
 <script>
 export default {
-    props: ['value'],
+    props: ['value', 'title'],
     data() {
         return {
             start: false,
@@ -158,7 +166,7 @@ export default {
     created() {
         document.addEventListener('click', this.docClickHandler, false);
     },
-    destroyed() {
+    beforeDestroy() {
         document.removeEventListener('click', this.docClickHandler, false);
     },
 };

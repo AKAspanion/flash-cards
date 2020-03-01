@@ -144,7 +144,7 @@
                 </v-slide-y-reverse-transition>
             </template>
         </div>
-        <option-panel ref="settingspanel">
+        <option-panel title="menu" ref="settingspanel">
             <v-list-item class="px-0">
                 <v-list-item-content>
                     <v-list-item-title>
@@ -444,7 +444,7 @@ export default {
 }
 .flash-card-set-container {
     height: calc(100vh - 136px);
-    padding-bottom: 64px;
+    padding-bottom: 82px;
     overflow-y: auto;
     overflow-x: hidden;
 }

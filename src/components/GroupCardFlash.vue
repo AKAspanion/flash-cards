@@ -90,7 +90,7 @@ export default {
             }
         });
     },
-    destroyed() {
+    beforeDestroy() {
         const container = document.getElementById('cardslidercontainer');
         container.removeEventListener('scroll', this.handleFocusCount, false);
         container.removeEventListener('wheel', this.handleScroll, false);

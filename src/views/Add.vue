@@ -84,7 +84,7 @@
         >
             <v-icon>mdi-check</v-icon>
         </v-btn>
-        <option-panel ref="addoptions">
+        <option-panel :title="$t('common.options')" ref="addoptions">
             <v-list-item class="px-0" v-if="isEdit">
                 <v-list-item-content>
                     {{ $t('add.mark-as-fav') }}
