@@ -148,56 +148,6 @@
             <v-list-item class="px-0">
                 <v-list-item-content>
                     <v-list-item-title>
-                        {{ $t('common.language') }}
-                    </v-list-item-title>
-                </v-list-item-content>
-                <v-list-item-action>
-                    <v-btn-toggle
-                        dark
-                        rounded
-                        mandatory
-                        v-model="langModel"
-                        background-color="primary"
-                    >
-                        <v-btn
-                            text
-                            x-small
-                            v-for="(lang, i) in langs"
-                            :key="`Lang${i}`"
-                            :value="lang"
-                            >{{ lang === 'hi' ? 'ही' : lang }}</v-btn
-                        >
-                    </v-btn-toggle>
-                </v-list-item-action>
-            </v-list-item>
-            <v-list-item class="px-0">
-                <v-list-item-content>
-                    <v-list-item-title>
-                        {{ $t('common.theme') }}
-                    </v-list-item-title>
-                </v-list-item-content>
-                <v-list-item-action>
-                    <v-btn-toggle
-                        dark
-                        rounded
-                        mandatory
-                        v-model="theme"
-                        background-color="primary"
-                    >
-                        <v-btn x-small text :value="false">
-                            <v-icon x-small>mdi-white-balance-sunny</v-icon>
-                        </v-btn>
-                        <v-btn x-small text :value="true">
-                            <v-icon x-small style="transform: rotate(-45deg)"
-                                >mdi-moon-waning-crescent</v-icon
-                            >
-                        </v-btn>
-                    </v-btn-toggle>
-                </v-list-item-action>
-            </v-list-item>
-            <v-list-item class="px-0">
-                <v-list-item-content>
-                    <v-list-item-title>
                         {{ $t('common.bin') }}
                     </v-list-item-title>
                 </v-list-item-content>
@@ -252,6 +202,25 @@
                     </v-btn>
                 </v-list-item-action>
             </v-list-item>
+            <v-list-item class="px-0">
+                <v-list-item-content>
+                    <v-list-item-title>
+                        {{ $t('common.settings') }}
+                    </v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-action>
+                    <v-btn
+                        icon
+                        small
+                        color="primary"
+                        @click.stop="goToFromMenu('/settings')"
+                    >
+                        <v-icon>
+                            mdi-settings
+                        </v-icon>
+                    </v-btn>
+                </v-list-item-action>
+            </v-list-item>
         </option-panel>
     </div>
 </template>
@@ -278,7 +247,6 @@ export default {
     },
     data() {
         return {
-            langs: ['en', 'hi'],
             pageLoading: false,
             filterLabel: null,
             starFilter: false,
@@ -340,27 +308,6 @@ export default {
                 default:
                     return 3;
             }
-        },
-        theme: {
-            get() {
-                return this.$vuetify.theme.dark;
-            },
-            set(val) {
-                this.$vuetify.theme.dark = val;
-                localStorage.setItem(
-                    'dark',
-                    JSON.stringify(this.$vuetify.theme.dark)
-                );
-            },
-        },
-        langModel: {
-            get() {
-                return this.$i18n.locale;
-            },
-            set(val) {
-                this.$i18n.locale = val;
-                localStorage.setItem('lang', this.$i18n.locale);
-            },
         },
     },
     methods: {

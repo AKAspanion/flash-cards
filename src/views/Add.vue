@@ -189,6 +189,7 @@ export default {
                 cards: [],
                 labels: [],
                 color: '#E91E63',
+                date: new Date(),
                 trashed: false,
                 fav: false,
             },
@@ -258,6 +259,7 @@ export default {
                 front: '',
                 back: '',
                 learned: false,
+                date: new Date(),
             };
             const index = this.focusedIndex || 0;
             if (index) {

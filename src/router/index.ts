@@ -92,13 +92,22 @@ const routes = [
     },
   },
   {
+    path: '/settings',
+    name: 'settings',
+    component: () => import('@/views/Settings.vue'),
+    meta: {
+      requireAuth: true,
+      index: 8,
+    },
+  },
+  {
     path: '*',
     name: 'notfound',
     redirect: '/',
     component: () => import('@/views/NotFound.vue'),
     meta: {
       requireAuth: true,
-      index: 8,
+      index: 9,
     },
   },
   {

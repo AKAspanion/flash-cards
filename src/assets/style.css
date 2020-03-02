@@ -29,6 +29,10 @@ body {
   -ms-overflow-style: none;
 }
 
+.full-width {
+  width: 100% !important;
+}
+
 
 /* global card css override */
 .v-card {
