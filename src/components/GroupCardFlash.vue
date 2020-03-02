@@ -1,5 +1,8 @@
 <template>
     <div class="group-card-slider" id="cardslidercontainer">
+        <section>
+            <div class="dummy-section"></div>
+        </section>
         <section
             :key="card.id + index"
             v-for="(card, index) in value"
@@ -74,8 +77,9 @@ export default {
         },
         handleFocusCount(event) {
             const containerLeft = event.target.scrollLeft;
-            const sectionWidth = event.target.children[0].getBoundingClientRect()
+            const sectionWidth = event.target.children[1].getBoundingClientRect()
                 .width;
+            console.log(containerLeft, sectionWidth);
             this.cardOnFocus = containerLeft
                 ? Math.ceil(containerLeft / sectionWidth)
                 : 0;
@@ -112,11 +116,8 @@ section {
     scroll-snap-align: none center;
 }
 .dummy-section {
-    width: 36px !important;
+    width: 28px !important;
     height: calc(100vh - 160px);
-}
-section:first-child {
-    margin-left: 36px;
 }
 .group-card-slider::-webkit-scrollbar {
     width: 0 !important;

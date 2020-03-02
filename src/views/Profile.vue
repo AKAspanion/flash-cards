@@ -103,83 +103,88 @@
             </div>
             <v-card
                 flat
-                class="pa-8 profile-card"
+                class="profile-card"
                 :color="dark ? '#212121' : '#e0e0e0'"
                 min-height="calc(100vh - 300px)"
             >
-                <div
-                    :key="i"
-                    v-for="(time, i) in timeMeta"
-                    class="d-flex align-start pb-8"
-                >
-                    <v-icon>{{ time.icon }}</v-icon>
-                    <div class="pl-8">
-                        <div class="caption">{{ $t(time.name) }}</div>
-                        <div class="subtitle-2">
-                            {{ currentUser[time.key].slice(0, 16) }}
+                <div class="profile-card-content">
+                    <div
+                        :key="i"
+                        v-for="(time, i) in timeMeta"
+                        class="d-flex align-start pb-8"
+                    >
+                        <v-icon>{{ time.icon }}</v-icon>
+                        <div class="pl-8">
+                            <div class="caption">{{ $t(time.name) }}</div>
+                            <div class="subtitle-2">
+                                {{ currentUser[time.key].slice(0, 16) }}
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="d-flex align-start pb-8">
-                    <v-icon>mdi-label-variant</v-icon>
-                    <div class="pl-8">
-                        <div class="caption">
-                            {{ $t('profile.label.title') }}
-                        </div>
-                        <div class="subtitle-2">
-                            {{ $t('profile.label.subtitle') }}
-                        </div>
-                        <div class="subtitle-2">
-                            <v-list-item dense class="px-0">
-                                <v-list-item-content class="py-1">
-                                    <v-text-field
-                                        flat
-                                        dense
-                                        rounded
+                    <div class="d-flex align-start pb-8">
+                        <v-icon>mdi-label-variant</v-icon>
+                        <div class="pl-8">
+                            <div class="caption">
+                                {{ $t('profile.label.title') }}
+                            </div>
+                            <div class="subtitle-2">
+                                {{ $t('profile.label.subtitle') }}
+                            </div>
+                            <div class="subtitle-2">
+                                <v-list-item dense class="px-0">
+                                    <v-list-item-content class="py-1">
+                                        <v-text-field
+                                            flat
+                                            dense
+                                            rounded
+                                            outlined
+                                            hide-details
+                                            v-model="label"
+                                            :disabled="labelLoading"
+                                            @keyup.enter="onLabelCreate"
+                                            @focus="hideSignout = true"
+                                            @blur="hideSignout = false"
+                                            :placeholder="
+                                                $t('profile.label.create')
+                                            "
+                                        >
+                                        </v-text-field>
+                                    </v-list-item-content>
+                                    <v-list-item-action>
+                                        <v-btn
+                                            icon
+                                            color="primary"
+                                            @click="onLabelCreate"
+                                            :disabled="
+                                                labelLoading || !this.label
+                                            "
+                                        >
+                                            <v-icon>{{
+                                                !selectedLabel
+                                                    ? 'mdi-plus-circle'
+                                                    : 'mdi-check'
+                                            }}</v-icon>
+                                        </v-btn>
+                                    </v-list-item-action>
+                                </v-list-item>
+                                <div class="py-1 mt-n2">
+                                    <v-chip
+                                        small
                                         outlined
-                                        hide-details
-                                        v-model="label"
-                                        :disabled="labelLoading"
-                                        @keyup.enter="onLabelCreate"
-                                        @focus="hideSignout = true"
-                                        @blur="hideSignout = false"
-                                        :placeholder="
-                                            $t('profile.label.create')
+                                        color="primary"
+                                        class="mr-3 mt-2"
+                                        :key="label.docId"
+                                        v-for="label in labels"
+                                        @click="onLabelClick(label)"
+                                        :input-value="
+                                            selectedLabel &&
+                                                label.docId ===
+                                                    selectedLabel.docId
                                         "
                                     >
-                                    </v-text-field>
-                                </v-list-item-content>
-                                <v-list-item-action>
-                                    <v-btn
-                                        icon
-                                        color="primary"
-                                        @click="onLabelCreate"
-                                        :disabled="labelLoading || !this.label"
-                                    >
-                                        <v-icon>{{
-                                            !selectedLabel
-                                                ? 'mdi-plus-circle'
-                                                : 'mdi-check'
-                                        }}</v-icon>
-                                    </v-btn>
-                                </v-list-item-action>
-                            </v-list-item>
-                            <div class="py-1 mt-n2">
-                                <v-chip
-                                    small
-                                    outlined
-                                    color="primary"
-                                    class="mr-3 mt-2"
-                                    :key="label.docId"
-                                    v-for="label in labels"
-                                    @click="onLabelClick(label)"
-                                    :input-value="
-                                        selectedLabel &&
-                                            label.docId === selectedLabel.docId
-                                    "
-                                >
-                                    {{ label.label }}
-                                </v-chip>
+                                        {{ label.label }}
+                                    </v-chip>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -397,16 +402,22 @@ export default {
 }
 .profile-content {
     height: calc(100vh - 136px);
-    overflow-y: auto;
 }
 .profile-text {
     padding-left: 2px;
     transition: all 0.3s ease-in-out;
 }
 .profile-card {
+    padding-top: 1px;
+    height: calc(100vh - 136px);
     border-bottom-right-radius: 0px !important;
     border-bottom-left-radius: 0px !important;
     padding-bottom: 88px !important;
+}
+.profile-card-content {
+    height: calc(100vh - 317px);
+    padding: 32px 32px 88px 32px;
+    overflow-y: auto;
 }
 .profile-avatar {
     min-height: 72px;

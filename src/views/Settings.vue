@@ -82,6 +82,26 @@
                     </v-list-item>
                 </div>
                 <div class="d-flex align-start pb-6">
+                    <v-icon class="py-2">mdi-star</v-icon>
+                    <v-list-item class="px-0 pl-8">
+                        <v-list-item-content class="py-0">
+                            <v-list-item-title>
+                                {{ $t('common.favourite') }}
+                            </v-list-item-title>
+                            <v-list-item-subtitle>
+                                {{ 'Favourite sets on top' }}
+                            </v-list-item-subtitle>
+                        </v-list-item-content>
+                        <v-list-item-action>
+                            <v-switch
+                                v-model="favOnTop"
+                                color="primary"
+                                class="px-1"
+                            ></v-switch>
+                        </v-list-item-action>
+                    </v-list-item>
+                </div>
+                <div class="d-flex align-start pb-6">
                     <v-icon class="py-2">mdi-card-outline</v-icon>
                     <div class="pl-8 full-width">
                         <v-list-item class="px-0 mb-2">
@@ -141,6 +161,7 @@ export default {
     },
     data() {
         return {
+            favOnTop: false,
             langs: ['en', 'hi'],
             cardSetOrder: 'Alphabetically',
             cardsOrder: 'Alphabetically',
@@ -150,6 +171,9 @@ export default {
     computed: {
         dark() {
             return this.$vuetify.theme.dark;
+        },
+        user() {
+            return this.$store.getters.user;
         },
         theme: {
             get() {
@@ -189,6 +213,7 @@ export default {
                     this.$store.dispatch('LANDING_VISITED', true);
                 })
                 .catch((err) => {
+                    console.log(err);
                     this.$store.dispatch('SET_FLASH_CARDS', []);
                     this.$store.dispatch('SET_LABELS', []);
                     this.$store.dispatch('LANDING_VISITED', false);
