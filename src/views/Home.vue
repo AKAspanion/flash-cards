@@ -258,6 +258,7 @@ export default {
                 outlined: true,
                 class: 'mr-3',
             },
+            orderTypes: ['Alphabetically', 'New first', 'Old first'],
         };
     },
     computed: {
@@ -269,6 +270,7 @@ export default {
         },
         flashCardSets() {
             let sets = this.$store.getters.flashCardSets;
+            // filters
             if (this.filterLabel) {
                 sets = sets.filter((c) => {
                     let found = false;
@@ -290,8 +292,31 @@ export default {
                     c.title.toUpperCase().includes(this.sanitizedSearchText)
                 );
             });
-            sets.sort((s1, s2) => s1.title.localeCompare(s2.title));
+            // sorts
+            switch (this.cardSetOrder) {
+                case 'Alphabetically':
+                    sets.sort((s1, s2) => s1.title.localeCompare(s2.title));
+                    break;
+                case 'New first':
+                    sets.sort((s1, s2) => new Date(s2.date) - new Date(s1.date));
+                    break;
+                case 'Old first':
+                    sets.sort((s1, s2) => new Date(s1.date) - new Date(s2.date));
+                    break;            
+                default:
+                    break;
+            }
+            if(this.favOnTop){
+                sets.sort((s1, s2) => s2.fav - s1.fav);
+            }
             return sets;
+        },
+        favOnTop(){
+            return localStorage.getItem('fav-on-top') == 'true'
+        },
+        cardSetOrder(){
+            let order = localStorage.getItem('card-set-order');
+            return this.orderTypes.indexOf(order) !== -1 ? order : 'Alphabetically';
         },
         loaderCardLength() {
             switch (this.$vuetify.breakpoint.name) {

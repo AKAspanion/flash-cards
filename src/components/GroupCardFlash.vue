@@ -79,7 +79,6 @@ export default {
             const containerLeft = event.target.scrollLeft;
             const sectionWidth = event.target.children[1].getBoundingClientRect()
                 .width;
-            console.log(containerLeft, sectionWidth);
             this.cardOnFocus = containerLeft
                 ? Math.ceil(containerLeft / sectionWidth)
                 : 0;

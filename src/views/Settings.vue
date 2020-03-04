@@ -117,6 +117,7 @@
                         <v-select
                             dense
                             rounded
+                            disabled
                             outlined
                             hide-details
                             :items="orderTypes"
@@ -161,10 +162,7 @@ export default {
     },
     data() {
         return {
-            favOnTop: false,
             langs: ['en', 'hi'],
-            cardSetOrder: 'Alphabetically',
-            cardsOrder: 'Alphabetically',
             orderTypes: ['Alphabetically', 'New first', 'Old first'],
         };
     },
@@ -174,6 +172,32 @@ export default {
         },
         user() {
             return this.$store.getters.user;
+        },
+        cardsOrder: {
+            get(){
+                let order = localStorage.getItem('cards-order');
+                return this.orderTypes.indexOf(order) !== -1 ? order : 'Alphabetically';
+            },
+            set(val){
+                localStorage.setItem('cards-order', val)
+            }
+        },
+        cardSetOrder: {
+            get(){
+                let order = localStorage.getItem('card-set-order');
+                return this.orderTypes.indexOf(order) !== -1 ? order : 'Alphabetically';
+            },
+            set(val){
+                localStorage.setItem('card-set-order', val)
+            }
+        },
+        favOnTop: {
+            get(){
+                return localStorage.getItem('fav-on-top') == 'true';
+            },
+            set(val){
+                localStorage.setItem('fav-on-top', val)
+            }
         },
         theme: {
             get() {
@@ -213,7 +237,6 @@ export default {
                     this.$store.dispatch('LANDING_VISITED', true);
                 })
                 .catch((err) => {
-                    console.log(err);
                     this.$store.dispatch('SET_FLASH_CARDS', []);
                     this.$store.dispatch('SET_LABELS', []);
                     this.$store.dispatch('LANDING_VISITED', false);
