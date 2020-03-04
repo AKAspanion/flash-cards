@@ -89,7 +89,7 @@
                                 {{ $t('common.favourite') }}
                             </v-list-item-title>
                             <v-list-item-subtitle>
-                                {{ 'Favourite sets on top' }}
+                                {{ 'Put favourite cardsets on top' }}
                             </v-list-item-subtitle>
                         </v-list-item-content>
                         <v-list-item-action>
@@ -107,10 +107,10 @@
                         <v-list-item class="px-0 mb-2">
                             <v-list-item-content class="py-0">
                                 <v-list-item-title>
-                                    {{ 'Cards' }}
+                                    {{ 'Cards order' }}
                                 </v-list-item-title>
                                 <v-list-item-subtitle>
-                                    {{ 'Select preferred order of cards' }}
+                                    {{ 'Select order of card while browsing' }}
                                 </v-list-item-subtitle>
                             </v-list-item-content>
                         </v-list-item>
@@ -131,10 +131,10 @@
                         <v-list-item class="px-0 mb-2">
                             <v-list-item-content class="py-0">
                                 <v-list-item-title>
-                                    {{ 'Card sets order' }}
+                                    {{ 'Cardsets order' }}
                                 </v-list-item-title>
                                 <v-list-item-subtitle>
-                                    {{ 'Select preferred order of card sets' }}
+                                    {{ 'Select order of cardset list' }}
                                 </v-list-item-subtitle>
                             </v-list-item-content>
                         </v-list-item>

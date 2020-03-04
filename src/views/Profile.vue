@@ -21,6 +21,7 @@
                         :color="!$vuetify.theme.dark ? 'white' : '#404040'"
                     >
                         <v-img
+                            alt="profile pic"
                             v-if="editingUrl"
                             v-show="!imageErr"
                             :src="user.photoURL || 'a'"

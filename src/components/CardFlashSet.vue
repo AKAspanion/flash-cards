@@ -94,13 +94,13 @@
             </template>
         </div>
         <v-icon
-            :color="leftTriggered ? card.color || 'primary' : ''"
+            :color="leftTriggered ? 'yellow' : ''"
             class="cardflash-set-hidden-icon cardflash-set-hidden-icon--left"
         >
             mdi-star
         </v-icon>
         <v-icon
-            :color="rightTriggered ? card.color || 'primary' : ''"
+            :color="rightTriggered ? 'error' : ''"
             class="cardflash-set-hidden-icon cardflash-set-hidden-icon--right"
         >
             mdi-trash-can
