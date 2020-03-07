@@ -22,6 +22,7 @@ export default new Vuex.Store({
     labels: [],
     loading: false,
     isLoggedIn: false,
+    authLoading: false,
     landingVisited: false,
     flashCardSets: [],
     snackInterval: 0,
@@ -52,6 +53,9 @@ export default new Vuex.Store({
         state.snackInterval = 0;
       }
       state.loading = payload;
+    },
+    setAuthLoading(state, payload) {
+      state.authLoading = payload;
     },
     setUser(state, payload) {
       state.user = payload;
@@ -174,6 +178,9 @@ export default new Vuex.Store({
     LOADING({ commit }, payload) {
       commit('setLoading', payload);
     },
+    AUTH_LOADING({ commit }, payload) {
+      commit('setAuthLoading', payload);
+    },
     SET_LABELS({ commit }, payload) {
       commit('setLabels', payload);
     },
@@ -199,6 +206,9 @@ export default new Vuex.Store({
   getters: {
     loading(state) {
       return state.loading;
+    },
+    authLoading(state) {
+      return state.authLoading;
     },
     user(state) {
       return state.user;

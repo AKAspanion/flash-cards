@@ -127,7 +127,9 @@ router.beforeEach((to, from, next) => {
   if (!firebase.isAppInitialized()) {
     firebase.initializeFirebase();
   }
+  store.dispatch('AUTH_LOADING', true);
   firebase.authChangeListener((user: any) => {
+    store.dispatch('AUTH_LOADING', false);
     if (to.matched.some((record: any) => record.meta.requireAuth)) {
       if (!user) {
         store.dispatch('UNSET_USER');

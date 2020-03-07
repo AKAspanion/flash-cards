@@ -15,7 +15,9 @@
         >
             <div class="settings-container">
                 <div class="d-flex align-start pb-6">
-                    <v-icon class="py-2">mdi-translate</v-icon>
+                    <v-icon class="py-2" style="min-width:24px;">
+                        mdi-translate
+                    </v-icon>
                     <v-list-item class="pa-0 pl-8">
                         <v-list-item-content class="py-0">
                             <v-list-item-title>
@@ -46,7 +48,9 @@
                     </v-list-item>
                 </div>
                 <div class="d-flex align-start pb-6">
-                    <v-icon class="py-2">mdi-brightness-4</v-icon>
+                    <v-icon class="py-2" style="min-width:24px;">
+                        mdi-brightness-4
+                    </v-icon>
                     <v-list-item class="px-0 pl-8">
                         <v-list-item-content class="py-0">
                             <v-list-item-title>
@@ -82,7 +86,9 @@
                     </v-list-item>
                 </div>
                 <div class="d-flex align-start pb-6">
-                    <v-icon class="py-2">mdi-star</v-icon>
+                    <v-icon class="py-2" style="min-width:24px;">
+                        mdi-star
+                    </v-icon>
                     <v-list-item class="px-0 pl-8">
                         <v-list-item-content class="py-0">
                             <v-list-item-title>
@@ -102,7 +108,9 @@
                     </v-list-item>
                 </div>
                 <div class="d-flex align-start pb-6">
-                    <v-icon class="py-2">mdi-card-outline</v-icon>
+                    <v-icon class="py-2" style="min-width:24px;">
+                        mdi-card-outline
+                    </v-icon>
                     <div class="pl-8 full-width">
                         <v-list-item class="px-0 mb-2">
                             <v-list-item-content class="py-0">
@@ -126,7 +134,9 @@
                     </div>
                 </div>
                 <div class="d-flex align-start pb-6">
-                    <v-icon class="py-2">mdi-card-bulleted-outline</v-icon>
+                    <v-icon class="py-2" style="min-width:24px;">
+                        mdi-card-text-outline
+                    </v-icon>
                     <div class="pl-8 full-width">
                         <v-list-item class="px-0 mb-2">
                             <v-list-item-content class="py-0">
@@ -174,30 +184,34 @@ export default {
             return this.$store.getters.user;
         },
         cardsOrder: {
-            get(){
+            get() {
                 let order = localStorage.getItem('cards-order');
-                return this.orderTypes.indexOf(order) !== -1 ? order : 'Alphabetically';
+                return this.orderTypes.indexOf(order) !== -1
+                    ? order
+                    : 'Alphabetically';
             },
-            set(val){
-                localStorage.setItem('cards-order', val)
-            }
+            set(val) {
+                localStorage.setItem('cards-order', val);
+            },
         },
         cardSetOrder: {
-            get(){
+            get() {
                 let order = localStorage.getItem('card-set-order');
-                return this.orderTypes.indexOf(order) !== -1 ? order : 'Alphabetically';
+                return this.orderTypes.indexOf(order) !== -1
+                    ? order
+                    : 'Alphabetically';
             },
-            set(val){
-                localStorage.setItem('card-set-order', val)
-            }
+            set(val) {
+                localStorage.setItem('card-set-order', val);
+            },
         },
         favOnTop: {
-            get(){
+            get() {
                 return localStorage.getItem('fav-on-top') == 'true';
             },
-            set(val){
-                localStorage.setItem('fav-on-top', val)
-            }
+            set(val) {
+                localStorage.setItem('fav-on-top', val);
+            },
         },
         theme: {
             get() {

@@ -8,7 +8,13 @@
                 height="4"
             ></v-progress-linear>
         </div>
-        <v-snackbar top :value="!online" color="primary" :timeout="0">
+        <v-snackbar
+            class="network-snack"
+            :value="!online"
+            color="primary"
+            :timeout="0"
+            top
+        >
             <v-icon>mdi-wifi-off</v-icon>
         </v-snackbar>
         <v-snackbar v-model="snackbar.model" multi-line bottom :timeout="3000">
@@ -42,6 +48,12 @@ export default Vue.extend({
             return this.$store.getters.isOnline;
         },
         loading(): boolean {
+            return this.appLoading || this.authLoading;
+        },
+        authLoading(): boolean {
+            return this.$store.getters.authLoading;
+        },
+        appLoading(): boolean {
             return this.$store.getters.loading;
         },
         snackbar(): any {

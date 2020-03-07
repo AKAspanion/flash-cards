@@ -77,6 +77,12 @@ export default {
             }, 0);
         },
         loading() {
+            return this.appLoading || this.authLoading;
+        },
+        authLoading() {
+            return this.$store.getters.authLoading;
+        },
+        appLoading() {
             return this.$store.getters.loading;
         },
         online() {

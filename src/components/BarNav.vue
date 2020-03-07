@@ -53,6 +53,12 @@ export default {
     },
     computed: {
         loading() {
+            return this.appLoading || this.authLoading;
+        },
+        authLoading() {
+            return this.$store.getters.authLoading;
+        },
+        appLoading() {
             return this.$store.getters.loading;
         },
         currentUser() {

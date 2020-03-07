@@ -20,7 +20,7 @@
         <slot name="title">
             <div
                 v-if="title && typeof title === 'string'"
-                class="title px-5 pt-4 text-uppercase"
+                class="options-content title px-5 pt-4 text-uppercase"
             >
                 {{ title }}
             </div>
@@ -51,6 +51,12 @@ export default {
             return this.$vuetify.theme.dark;
         },
         loading() {
+            return this.appLoading || this.authLoading;
+        },
+        authLoading() {
+            return this.$store.getters.authLoading;
+        },
+        appLoading() {
             return this.$store.getters.loading;
         },
     },

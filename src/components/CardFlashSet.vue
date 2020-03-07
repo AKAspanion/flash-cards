@@ -160,6 +160,9 @@ export default {
                 return (total += value.learned ? 1 : 0);
             }, 0);
         },
+        stopSwipe() {
+            return this.bin || this.disabled || !this.online;
+        },
     },
     methods: {
         onEdit() {
@@ -169,13 +172,13 @@ export default {
             navigateToPath(`/${this.card.id}/view`);
         },
         handleMouseDown(e) {
-            if (this.bin || this.disabled) {
+            if (this.stopSwipe) {
                 return;
             }
             this.touchStartEvent = e;
         },
         handleMouseMove(e) {
-            if (this.bin || this.disabled) {
+            if (this.stopSwipe) {
                 return;
             }
             const yDist = Math.abs(
@@ -212,7 +215,7 @@ export default {
             }
         },
         handleMouseUp(e) {
-            if (this.bin || this.disabled) {
+            if (this.stopSwipe) {
                 return;
             }
             if (this.leftTriggered) {
