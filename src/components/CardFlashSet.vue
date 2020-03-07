@@ -35,7 +35,7 @@
                         outlined
                         dark
                         @click="onEdit"
-                        :disabled="disabled"
+                        :disabled="disabled || !online"
                     >
                         <v-icon small>mdi-pencil</v-icon>
                     </v-chip>
@@ -50,7 +50,6 @@
                     class="mr-1"
                     text-color="white"
                     :key="label.docId"
-                    :disabled="disabled"
                     v-for="label in labels"
                     @click="$emit('label', label)"
                 >
@@ -136,6 +135,9 @@ export default {
         };
     },
     computed: {
+        online() {
+            return this.$store.getters.isOnline;
+        },
         dark() {
             return this.$vuetify.theme.dark;
         },
@@ -167,13 +169,13 @@ export default {
             navigateToPath(`/${this.card.id}/view`);
         },
         handleMouseDown(e) {
-            if (this.bin) {
+            if (this.bin || this.disabled) {
                 return;
             }
             this.touchStartEvent = e;
         },
         handleMouseMove(e) {
-            if (this.bin) {
+            if (this.bin || this.disabled) {
                 return;
             }
             const yDist = Math.abs(
@@ -210,7 +212,7 @@ export default {
             }
         },
         handleMouseUp(e) {
-            if (this.bin) {
+            if (this.bin || this.disabled) {
                 return;
             }
             if (this.leftTriggered) {

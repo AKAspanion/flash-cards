@@ -88,12 +88,24 @@
                     </v-chip-group>
                 </div>
                 <div class="flash-card-actions d-flex align-center mb-2">
-                    <v-btn v-if="browse" icon dark @click="onLearnCheck">
+                    <v-btn
+                        icon
+                        dark
+                        v-if="browse"
+                        :disabled="disabled || !online"
+                        @click="onLearnCheck"
+                    >
                         <v-icon>{{
                             value.learned ? 'mdi-close' : 'mdi-check'
                         }}</v-icon>
                     </v-btn>
-                    <v-btn v-else icon dark @click="$emit('delete', value)">
+                    <v-btn
+                        icon
+                        dark
+                        v-else
+                        :disabled="disabled || !online"
+                        @click="$emit('delete', value)"
+                    >
                         <v-icon>mdi-trash-can</v-icon>
                     </v-btn>
                     <v-spacer></v-spacer>
@@ -140,19 +152,24 @@
 
 <script>
 export default {
-    props: ['value', 'color', 'labels', 'browse', 'number'],
+    props: ['value', 'color', 'labels', 'browse', 'number', 'disabled'],
     data() {
         return {
             flipped: false,
             editing: false,
         };
     },
+    computed: {
+        online() {
+            return this.$store.getters.isOnline;
+        },
+    },
     methods: {
         update(key, value) {
             this.$emit('input', { ...this.value, [key]: value });
         },
         onTextClick() {
-            if (this.browse) {
+            if (this.browse || this.disabled) {
                 return;
             } else {
                 this.editing = true;
@@ -169,7 +186,7 @@ export default {
             this.update('learned', !this.value.learned);
         },
         onCardFlip() {
-            if (this.browse) {
+            if (this.browse && this.online) {
                 this.update('learned', false);
             }
             this.$emit('flip');

@@ -134,11 +134,12 @@
                         v-for="card in flashCardSets"
                     >
                         <card-flash-set
-                            :card="card"
                             @fav="onFav"
                             @star="onStar"
                             @delete="onDelete"
                             @label="onLabelClick"
+                            :disabled="loading"
+                            :card="card"
                         ></card-flash-set>
                     </v-col>
                 </v-slide-y-reverse-transition>
@@ -262,6 +263,9 @@ export default {
         };
     },
     computed: {
+        loading() {
+            return this.$store.getters.loading;
+        },
         user() {
             return this.$store.getters.user;
         },
@@ -298,25 +302,31 @@ export default {
                     sets.sort((s1, s2) => s1.title.localeCompare(s2.title));
                     break;
                 case 'New first':
-                    sets.sort((s1, s2) => new Date(s2.date) - new Date(s1.date));
+                    sets.sort(
+                        (s1, s2) => new Date(s2.date) - new Date(s1.date)
+                    );
                     break;
                 case 'Old first':
-                    sets.sort((s1, s2) => new Date(s1.date) - new Date(s2.date));
-                    break;            
+                    sets.sort(
+                        (s1, s2) => new Date(s1.date) - new Date(s2.date)
+                    );
+                    break;
                 default:
                     break;
             }
-            if(this.favOnTop){
+            if (this.favOnTop) {
                 sets.sort((s1, s2) => s2.fav - s1.fav);
             }
             return sets;
         },
-        favOnTop(){
-            return localStorage.getItem('fav-on-top') == 'true'
+        favOnTop() {
+            return localStorage.getItem('fav-on-top') == 'true';
         },
-        cardSetOrder(){
+        cardSetOrder() {
             let order = localStorage.getItem('card-set-order');
-            return this.orderTypes.indexOf(order) !== -1 ? order : 'Alphabetically';
+            return this.orderTypes.indexOf(order) !== -1
+                ? order
+                : 'Alphabetically';
         },
         loaderCardLength() {
             switch (this.$vuetify.breakpoint.name) {
@@ -397,7 +407,8 @@ export default {
                     this.$store.dispatch('SET_LABELS', data[1]);
                     this.$store.dispatch('LANDING_VISITED', true);
                 })
-                .catch(() => {
+                .catch((err) => {
+                    console.log(err);
                     this.$store.dispatch('SET_FLASH_CARDS', []);
                     this.$store.dispatch('SET_LABELS', []);
                     this.$store.dispatch('LANDING_VISITED', false);

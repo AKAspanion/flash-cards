@@ -19,11 +19,13 @@ export default new Vuex.Store({
       photoURL: '',
       email: '',
     },
+    labels: [],
     loading: false,
     isLoggedIn: false,
     landingVisited: false,
     flashCardSets: [],
-    labels: [],
+    snackInterval: 0,
+    isOnline: true,
   },
   mutations: {
     setSnackBtnCLick(state, payload) {
@@ -32,7 +34,23 @@ export default new Vuex.Store({
     setSnackBar(state, payload) {
       state.snackBar = payload;
     },
+    setOnline(state, payload) {
+      state.isOnline = payload;
+    },
     setLoading(state, payload) {
+      clearInterval(state.snackInterval);
+      if (payload) {
+        state.snackInterval = setInterval(() => {
+          state.snackBar = {
+            model: true,
+            text: 'Experiencing network difficulty, please hold on!',
+            btn: '',
+          };
+        }, 6000);
+      } else {
+        clearInterval(state.snackInterval);
+        state.snackInterval = 0;
+      }
       state.loading = payload;
     },
     setUser(state, payload) {
@@ -120,6 +138,9 @@ export default new Vuex.Store({
         email: '',
       });
     },
+    ONLINE({ commit }, payload) {
+      commit('setOnline', payload);
+    },
     LOGIN({ commit }) {
       commit('setLogin', true);
       localStorage.setItem('isLoggedIn', JSON.stringify(true));
@@ -181,6 +202,9 @@ export default new Vuex.Store({
     },
     user(state) {
       return state.user;
+    },
+    isOnline(state) {
+      return state.isOnline;
     },
     snackBar(state) {
       return state.snackBar;

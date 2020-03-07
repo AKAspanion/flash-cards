@@ -171,7 +171,7 @@ export default {
                             'SHOW_SNACK',
                             this.$t('toast.success.sign-up')
                         );
-                        this.navigateToPath('/home');
+                        navigateToPath('/home');
                     })
                     .catch((err) => {
                         this.$store.dispatch(

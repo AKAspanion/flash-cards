@@ -306,7 +306,6 @@ export default {
                             uid: this.user.uid,
                             title: this.cardSet.title || '',
                         });
-                        navigateToPath('/home');
                     })
                     .catch((err) => {
                         this.$store.dispatch('SHOW_SNACK', err.messsage);
@@ -322,7 +321,6 @@ export default {
                             'UPDATE_FLASH_CARD_SET',
                             this.cardSet
                         );
-                        navigateToPath('/home');
                     })
                     .catch((err) => {
                         this.$store.dispatch('SHOW_SNACK', err.messsage);
@@ -331,6 +329,7 @@ export default {
                         this.$store.dispatch('LOADING', false);
                     });
             }
+            navigateToPath('/home');
         },
     },
     mounted() {

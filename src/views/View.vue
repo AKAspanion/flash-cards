@@ -22,6 +22,7 @@
         <div>
             <group-card-flash
                 :browse="true"
+                :disabled="loading"
                 :labels="setLabels"
                 :color="cardSet.color"
                 v-model="cardSet.cards"
@@ -75,6 +76,12 @@ export default {
                 return (total += value.learned ? 1 : 0);
             }, 0);
         },
+        loading() {
+            return this.$store.getters.loading;
+        },
+        online() {
+            return this.$store.getters.isOnline;
+        },
     },
     watch: {
         cardSet: {
@@ -102,19 +109,24 @@ export default {
             }
         },
         onSubmit() {
-            this.$store.dispatch('LOADING', true);
-            firebase
-                .updateFlashCardSet(this.cardSet)
-                .then((res) => {
-                    this.$store.dispatch('UPDATE_FLASH_CARD_SET', this.cardSet);
-                    navigateToPath('/home');
-                })
-                .catch((err) => {
-                    this.$store.dispatch('SHOW_SNACK', err.messsage);
-                })
-                .finally(() => {
-                    this.$store.dispatch('LOADING', false);
-                });
+            if (this.online) {
+                this.$store.dispatch('LOADING', true);
+                firebase
+                    .updateFlashCardSet(this.cardSet)
+                    .then((res) => {
+                        this.$store.dispatch(
+                            'UPDATE_FLASH_CARD_SET',
+                            this.cardSet
+                        );
+                    })
+                    .catch((err) => {
+                        this.$store.dispatch('SHOW_SNACK', err.messsage);
+                    })
+                    .finally(() => {
+                        this.$store.dispatch('LOADING', false);
+                    });
+            }
+            navigateToPath('/home');
         },
     },
     mounted() {

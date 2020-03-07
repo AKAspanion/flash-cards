@@ -9,6 +9,7 @@
             :style="`width: ${mobile ? '82.5' : '70.5'}vw;`"
         >
             <card-flash
+                :disabled="disabled"
                 :number="index + 1"
                 :browse="browse"
                 :color="color"
@@ -27,7 +28,7 @@
 <script>
 import CardFlash from '@/components/CardFlash.vue';
 export default {
-    props: ['value', 'color', 'labels', 'browse'],
+    props: ['value', 'color', 'labels', 'browse', 'disabled'],
     components: {
         CardFlash,
     },

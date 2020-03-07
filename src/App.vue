@@ -8,7 +8,10 @@
                 height="4"
             ></v-progress-linear>
         </div>
-        <v-snackbar v-model="snackbar.model" multi-line bottom :timeout="5000">
+        <v-snackbar top :value="!online" color="primary" :timeout="0">
+            <v-icon>mdi-wifi-off</v-icon>
+        </v-snackbar>
+        <v-snackbar v-model="snackbar.model" multi-line bottom :timeout="3000">
             {{ snackbar.text }}
             <v-btn dark text @click="resetSnackBar">
                 {{ snackbar.btn || $t('common.close') }}
@@ -35,6 +38,9 @@ export default Vue.extend({
         };
     },
     computed: {
+        online(): boolean {
+            return this.$store.getters.isOnline;
+        },
         loading(): boolean {
             return this.$store.getters.loading;
         },
@@ -53,11 +59,40 @@ export default Vue.extend({
             this.snackbar.text = '';
             this.snackbar.btn = '';
         },
+        handleConnection(e: any): void {
+            let that = this;
+            if (navigator.onLine) {
+                this.isReachable(window.location.origin).then(function(online) {
+                    if (online) {
+                        that.$store.dispatch('ONLINE', true);
+                    } else {
+                        that.$store.dispatch('ONLINE', false);
+                    }
+                });
+            } else {
+                that.$store.dispatch('ONLINE', false);
+            }
+        },
+        isReachable(url: any) {
+            return fetch(url, { method: 'HEAD', mode: 'no-cors' })
+                .then(function(resp) {
+                    return resp && (resp.ok || resp.type === 'opaque');
+                })
+                .catch(function(err) {
+                    console.warn('[conn test failure]:', err);
+                });
+        },
     },
     mounted() {
         this.$i18n.locale = localStorage.getItem('lang') == 'hi' ? 'hi' : 'en';
         this.$vuetify.theme.dark =
             localStorage.getItem('dark') == 'true' ? true : false;
+        window.addEventListener('online', this.handleConnection, false);
+        window.addEventListener('offline', this.handleConnection, false);
+    },
+    beforeDestroy() {
+        window.removeEventListener('online', this.handleConnection, false);
+        window.removeEventListener('offline', this.handleConnection, false);
     },
 });
 </script>
