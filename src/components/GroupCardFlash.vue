@@ -53,14 +53,17 @@ export default {
     methods: {
         onCheck(val) {
             if (val) {
-                this.handleScroll({
-                    target: document.getElementById('cardslidercontainer'),
-                    deltaY:
-                        Math.max(
-                            document.documentElement.clientWidth,
-                            window.innerWidth || 400
-                        ) / 8,
-                });
+                this.handleScroll(
+                    {
+                        target: document.getElementById('cardslidercontainer'),
+                        deltaY:
+                            Math.max(
+                                document.documentElement.clientWidth,
+                                window.innerWidth || 400
+                            ) / 8,
+                    },
+                    true
+                );
             }
         },
         onUpdate(val) {
@@ -79,11 +82,26 @@ export default {
                 index,
             });
         },
-        handleScroll(event) {
-            if (this.scrolling) {
+        handleScroll(event, onCheck = false) {
+            let pathLength = event.path.length;
+            let container = null;
+            if (onCheck) {
+                container = event.target;
+            } else {
+                for (let i = 0; i < pathLength; i++) {
+                    if (event.path[i].id === 'cardslidercontainer') {
+                        container = event.path[i];
+                        break;
+                    }
+                }
+            }
+            if (this.scrolling || !container) {
                 return;
             }
-            event.target.scrollLeft += event.deltaY * 5;
+            if (onCheck) {
+                container = event.target;
+            }
+            container.scrollLeft += event.deltaY * 5;
             this.scrolling = true;
             setTimeout(() => {
                 this.scrolling = false;
