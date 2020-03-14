@@ -13,11 +13,11 @@
                 <div class="info-logo--img">
                     <v-img src="/images/flash-cards-logo.png"></v-img>
                 </div>
-                <div class="info-logo--text headline full-width">
-                    FLASHCARDS
+                <div class="info-logo--text headline text-uppercase full-width">
+                    {{ $t('info.tagline.title') }}
                 </div>
                 <div class="info-logo--text subtitle-1 full-width">
-                    Memorization Application
+                    {{ $t('info.tagline.desc') }}
                 </div>
             </div>
             <v-card
@@ -30,16 +30,20 @@
                     <div class="d-flex align-start pb-8">
                         <v-icon>mdi-glasses</v-icon>
                         <div class="pl-8">
-                            <div class="subtitle-2">{{ 'Author' }}</div>
+                            <div class="subtitle-2">
+                                {{ $t('info.author.title') }}
+                            </div>
                             <div class="caption">
-                                {{ 'Ankit Kumar Pandit' }}
+                                {{ $t('info.author.desc') }}
                             </div>
                         </div>
                     </div>
                     <div class="d-flex align-start pb-8">
                         <v-icon>mdi-alpha-v-circle-outline</v-icon>
                         <div class="pl-8">
-                            <div class="subtitle-2">{{ 'Version' }}</div>
+                            <div class="subtitle-2">
+                                {{ $t('info.version.title') }}
+                            </div>
                             <div class="caption">
                                 {{ '0.1.0 beta' }}
                             </div>
@@ -48,9 +52,11 @@
                     <div class="d-flex align-start pb-8">
                         <v-icon>mdi-share-variant</v-icon>
                         <div class="pl-8 pb-2">
-                            <div class="subtitle-2">{{ 'Share' }}</div>
+                            <div class="subtitle-2">
+                                {{ $t('info.share.title') }}
+                            </div>
                             <div class="caption">
-                                {{ 'Share the app' }}
+                                {{ $t('info.share.desc') }}
                             </div>
                         </div>
                         <v-spacer></v-spacer>
@@ -69,9 +75,11 @@
                     <div class="d-flex align-start pb-8">
                         <v-icon>mdi-star</v-icon>
                         <div class="pl-8 pb-2">
-                            <div class="subtitle-2">{{ 'Rate' }}</div>
+                            <div class="subtitle-2">
+                                {{ $t('info.rate.title') }}
+                            </div>
                             <div class="caption">
-                                {{ 'Rate on play store' }}
+                                {{ $t('info.rate.desc') }}
                             </div>
                         </div>
                         <v-spacer></v-spacer>

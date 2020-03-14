@@ -21,10 +21,10 @@
                     <v-list-item class="pa-0 pl-8">
                         <v-list-item-content class="py-0">
                             <v-list-item-title>
-                                {{ $t('common.language') }}
+                                {{ $t('settings.language.title') }}
                             </v-list-item-title>
                             <v-list-item-subtitle>
-                                {{ 'Change language' }}
+                                {{ $t('settings.language.desc') }}
                             </v-list-item-subtitle>
                         </v-list-item-content>
                         <v-list-item-action>
@@ -54,10 +54,10 @@
                     <v-list-item class="px-0 pl-8">
                         <v-list-item-content class="py-0">
                             <v-list-item-title>
-                                {{ $t('common.theme') }}
+                                {{ $t('settings.theme.title') }}
                             </v-list-item-title>
                             <v-list-item-subtitle>
-                                {{ 'Change theme' }}
+                                {{ $t('settings.theme.desc') }}
                             </v-list-item-subtitle>
                         </v-list-item-content>
                         <v-list-item-action>
@@ -92,10 +92,10 @@
                     <v-list-item class="px-0 pl-8">
                         <v-list-item-content class="py-0">
                             <v-list-item-title>
-                                {{ $t('common.favourite') }}
+                                {{ $t('settings.favourite.title') }}
                             </v-list-item-title>
                             <v-list-item-subtitle>
-                                {{ 'Put favourite cardsets on top' }}
+                                {{ $t('settings.favourite.desc') }}
                             </v-list-item-subtitle>
                         </v-list-item-content>
                         <v-list-item-action>
@@ -107,7 +107,7 @@
                         </v-list-item-action>
                     </v-list-item>
                 </div>
-                <div class="d-flex align-start pb-6">
+                <div class="d-flex align-start pb-6" v-if="false">
                     <v-icon class="py-2" style="min-width:24px;">
                         mdi-card-outline
                     </v-icon>
@@ -115,10 +115,10 @@
                         <v-list-item class="px-0 mb-2">
                             <v-list-item-content class="py-0">
                                 <v-list-item-title>
-                                    {{ 'Cards order' }}
+                                    {{ $t('settings.cards.title') }}
                                 </v-list-item-title>
                                 <v-list-item-subtitle>
-                                    {{ 'Select order of card while browsing' }}
+                                    {{ $t('settings.cards.desc') }}
                                 </v-list-item-subtitle>
                             </v-list-item-content>
                         </v-list-item>
@@ -141,10 +141,10 @@
                         <v-list-item class="px-0 mb-2">
                             <v-list-item-content class="py-0">
                                 <v-list-item-title>
-                                    {{ 'Cardsets order' }}
+                                    {{ $t('settings.card-set.title') }}
                                 </v-list-item-title>
                                 <v-list-item-subtitle>
-                                    {{ 'Select order of cardset list' }}
+                                    {{ $t('settings.card-set.desc') }}
                                 </v-list-item-subtitle>
                             </v-list-item-content>
                         </v-list-item>
@@ -153,6 +153,8 @@
                             rounded
                             outlined
                             hide-details
+                            item-text="label"
+                            item-value="val"
                             :items="orderTypes"
                             v-model="cardSetOrder"
                         ></v-select>
@@ -173,7 +175,6 @@ export default {
     data() {
         return {
             langs: ['en', 'hi'],
-            orderTypes: ['Alphabetically', 'New first', 'Old first'],
         };
     },
     computed: {
@@ -183,10 +184,26 @@ export default {
         user() {
             return this.$store.getters.user;
         },
+        orderTypes() {
+            return [
+                {
+                    label: this.$t('settings.order-items.al'),
+                    val: 'Alphabetically',
+                },
+                {
+                    label: this.$t('settings.order-items.nf'),
+                    val: 'New first',
+                },
+                {
+                    label: this.$t('settings.order-items.of'),
+                    val: 'Old first',
+                },
+            ];
+        },
         cardsOrder: {
             get() {
                 let order = localStorage.getItem('cards-order');
-                return this.orderTypes.indexOf(order) !== -1
+                return this.orderTypes.indexOf((o) => o.val === order)
                     ? order
                     : 'Alphabetically';
             },
@@ -197,7 +214,7 @@ export default {
         cardSetOrder: {
             get() {
                 let order = localStorage.getItem('card-set-order');
-                return this.orderTypes.indexOf(order) !== -1
+                return this.orderTypes.indexOf((o) => o.val === order)
                     ? order
                     : 'Alphabetically';
             },

@@ -79,7 +79,7 @@
             </template>
             <template v-else>
                 <div>
-                    <div class="overline">memorized</div>
+                    <div class="overline">{{ $t('common.memorized') }}</div>
                     <div class="caption d-flex align-center">
                         <div>{{ ratio }}</div>
                         <div class="mx-2">-</div>
@@ -88,7 +88,11 @@
                 </div>
                 <v-spacer></v-spacer>
                 <v-chip small outlined @click="onView" :disabled="disabled">
-                    {{ `${percentage == 100 ? 'review' : 'browse'}` }}
+                    {{
+                        percentage == 100
+                            ? $t('common.review')
+                            : $t('common.browse')
+                    }}
                 </v-chip>
             </template>
         </div>

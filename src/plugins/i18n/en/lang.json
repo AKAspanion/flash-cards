@@ -1,5 +1,6 @@
 {
   "common": {
+    "flashcards": "Flashcards",
     "home": "Home",
     "close": "Close",
     "about": "About",
@@ -15,6 +16,9 @@
     "restore": "Restore",
     "signout": "Sign Out",
     "learned": "Learned",
+    "done": "done",
+    "browse": "browse",
+    "review": "review",
     "favourite": "Favourite",
     "memorized": "Memorized"
   },
@@ -57,6 +61,50 @@
     "bin": {
       "title": "Flashcards trash bin",
       "subtitle": "Deleted flashcard sets will appear here. You can restore or delete them."
+    }
+  },
+  "settings": {
+    "language": {
+      "title": "Language",
+      "desc": "Change language"
+    },
+    "theme": {
+      "title": "Theme",
+      "desc": "Change theme"
+    },
+    "favourite": {
+      "title": "Favourite",
+      "desc": "Put favourite cards on top"
+    },
+    "card-set": {
+      "title": "Card-sets order",
+      "desc": "Select order of card-set list"
+    },
+    "order-items": {
+      "al": "Alphabetically",
+      "nf": "New first",
+      "of": "Old first"
+    }
+  },
+  "info": {
+    "tagline": {
+      "title": "Flashcards",
+      "desc": "Learn & Memorize"
+    },
+    "author": {
+      "title": "Author",
+      "desc": "Ankit Kumar Pandit"
+    },
+    "version": {
+      "title": "Version"
+    },
+    "share": {
+      "title": "Share",
+      "desc": "Share the app"
+    },
+    "rate": {
+      "title": "Rate",
+      "desc": "Rate on play store"
     }
   }
 }
