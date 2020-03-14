@@ -5,7 +5,11 @@
                 <v-icon size="32" color="primary">mdi-arrow-left</v-icon>
             </template>
             <template #left-text>
-                {{ $t('common.home') }}
+                {{
+                    cardFocused !== cardSet.cards.length - 1
+                        ? $t('common.home')
+                        : $t('common.done')
+                }}
             </template>
             <template #center>
                 <div class="text-center text-uppercase title pa-4 mb-4">
@@ -26,6 +30,7 @@
                 :labels="setLabels"
                 :color="cardSet.color"
                 v-model="cardSet.cards"
+                @focused="(v) => (cardFocused = v)"
             ></group-card-flash>
         </div>
         <v-progress-linear
@@ -51,6 +56,7 @@ export default {
     data() {
         return {
             changed: 0,
+            cardFocused: 0,
             dataLoading: false,
             cardSet: {
                 color: '',

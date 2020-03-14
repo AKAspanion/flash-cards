@@ -41,7 +41,7 @@
                         <div class="pl-8">
                             <div class="subtitle-2">{{ 'Version' }}</div>
                             <div class="caption">
-                                {{ '0.0.1 beta' }}
+                                {{ '0.1.0 beta' }}
                             </div>
                         </div>
                     </div>
@@ -134,7 +134,7 @@ export default {
                 });
         },
         openPlayStore() {
-            window.open(this.url);
+            window.open(this.url.play);
         },
     },
 };

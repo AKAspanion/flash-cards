@@ -90,6 +90,13 @@ export default {
             ];
         },
     },
+    watch: {
+        $route: {
+            handler(r) {
+                this.navModel = false;
+            },
+        },
+    },
     methods: {
         onActionClick(action) {
             navigateToPath(action.path);

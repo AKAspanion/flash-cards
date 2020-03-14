@@ -15,6 +15,7 @@
                 :color="color"
                 :value="card"
                 :labels="labels"
+                @check="onCheck"
                 @input="onUpdate"
                 @delete="onDelete"
             ></card-flash>
@@ -50,6 +51,18 @@ export default {
         },
     },
     methods: {
+        onCheck(val) {
+            if (val) {
+                this.handleScroll({
+                    target: document.getElementById('cardslidercontainer'),
+                    deltaY:
+                        Math.max(
+                            document.documentElement.clientWidth,
+                            window.innerWidth || 400
+                        ) / 8,
+                });
+            }
+        },
         onUpdate(val) {
             const newData = [...this.value];
             newData[newData.findIndex((obj) => obj.id === val.id)] = {

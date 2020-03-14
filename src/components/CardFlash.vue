@@ -183,7 +183,11 @@ export default {
             }
         },
         onLearnCheck() {
-            this.update('learned', !this.value.learned);
+            let check = !this.value.learned;
+            this.update('learned', check);
+            if (this.browse) {
+                this.$emit('check', check);
+            }
         },
         onCardFlip() {
             if (this.browse && this.online) {
