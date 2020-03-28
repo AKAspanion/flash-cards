@@ -83,11 +83,11 @@ export default {
             });
         },
         handleScroll(event, onCheck = false) {
-            let pathLength = event.path.length;
             let container = null;
             if (onCheck) {
                 container = event.target;
             } else {
+                let pathLength = event.path.length;
                 for (let i = 0; i < pathLength; i++) {
                     if (event.path[i].id === 'cardslidercontainer') {
                         container = event.path[i];
