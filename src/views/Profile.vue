@@ -309,6 +309,8 @@ async function onSignOut() {
 
 <style scoped>
 .profile {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
 }
 .profile__avatar {
@@ -326,7 +328,7 @@ async function onSignOut() {
   border: 0;
 }
 .profile__card {
-  min-height: calc(100vh - 340px);
+  flex: 1 0 auto;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
