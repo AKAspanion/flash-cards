@@ -1,255 +1,248 @@
 <template>
-    <v-card raised :color="dark ? '#212121' : '#e0e0e0'" height="182">
-        <v-card
-            dark
-            :id="id"
-            class="pa-6"
-            height="100"
-            style="z-index: 2"
-            :color="card.color || 'primary'"
-            @touchstart="handleMouseDown"
-            @touchmove="handleMouseMove"
-            @touchend="handleMouseUp"
-        >
-            <div class="d-flex text-uppercase">
-                <v-scale-transition origin="center center">
-                    <v-icon
-                        class="mr-1"
-                        color="yellow"
-                        v-if="card.fav"
-                        @click="$emit('star')"
-                    >
-                        mdi-star
-                    </v-icon>
-                </v-scale-transition>
-                <div
-                    class="text-truncate"
-                    :title="card.title || 'untitled set'"
-                >
-                    {{ card.title || 'untitled set' }}
-                </div>
-                <v-spacer></v-spacer>
-                <div class="ml-2" v-if="!bin">
-                    <v-chip
-                        small
-                        outlined
-                        dark
-                        @click="onEdit"
-                        :disabled="disabled || !online"
-                    >
-                        <v-icon small>mdi-pencil</v-icon>
-                    </v-chip>
-                </div>
-            </div>
-            <v-chip-group>
-                <v-chip
-                    dark
-                    small
-                    outlined
-                    input-value
-                    class="mr-1"
-                    text-color="white"
-                    :key="label.docId"
-                    v-for="label in labels"
-                    @click="$emit('label', label)"
-                >
-                    {{ label.label }}
-                </v-chip>
-            </v-chip-group>
-        </v-card>
-        <div class="d-flex align-center pa-6">
-            <template v-if="bin">
-                <v-btn
-                    icon
-                    :color="card.color"
-                    :disabled="disabled"
-                    @click="$emit('delete', card)"
-                >
-                    <v-icon>mdi-trash-can</v-icon>
-                </v-btn>
-                <v-spacer></v-spacer>
-                <v-btn
-                    icon
-                    :color="card.color"
-                    :disabled="disabled"
-                    @click="$emit('restore', card)"
-                >
-                    <v-icon>mdi-restore</v-icon>
-                </v-btn>
-            </template>
-            <template v-else>
-                <div>
-                    <div class="overline">{{ $t('common.memorized') }}</div>
-                    <div class="caption d-flex align-center">
-                        <div>{{ ratio }}</div>
-                        <div class="mx-2">-</div>
-                        <div>{{ percentage }}%</div>
-                    </div>
-                </div>
-                <v-spacer></v-spacer>
-                <v-chip small outlined @click="onView" :disabled="disabled">
-                    {{
-                        percentage == 100
-                            ? $t('common.review')
-                            : $t('common.browse')
-                    }}
-                </v-chip>
-            </template>
+  <v-card
+    class="set-card"
+    color="surface-light"
+    elevation="3"
+    height="182"
+  >
+    <div
+      ref="swipeEl"
+      class="set-card__swipe"
+      :style="swipeStyle"
+      @touchstart.passive="onTouchStart"
+      @touchmove.passive="onTouchMove"
+      @touchend="onTouchEnd"
+      @touchcancel="resetSwipe"
+    >
+      <v-card
+        class="pa-6"
+        :color="card.color || 'primary'"
+        flat
+        height="100"
+        theme="dark"
+      >
+        <div class="d-flex align-center text-uppercase">
+          <v-scale-transition origin="center center">
+            <v-icon
+              v-if="card.fav"
+              class="mr-1"
+              color="yellow"
+              @click="emit('star')"
+            >
+              mdi-star
+            </v-icon>
+          </v-scale-transition>
+          <div
+            class="text-truncate"
+            :title="title"
+          >
+            {{ title }}
+          </div>
+          <v-spacer />
+          <v-chip
+            v-if="!bin"
+            :aria-label="t('common.edit')"
+            class="ml-2"
+            :disabled="disabled || !session.online"
+            size="small"
+            variant="outlined"
+            @click="router.push(`/${card.id}/edit`)"
+          >
+            <v-icon size="small">
+              mdi-pencil
+            </v-icon>
+          </v-chip>
         </div>
-        <v-icon
-            :color="leftTriggered ? 'yellow' : ''"
-            class="cardflash-set-hidden-icon cardflash-set-hidden-icon--left"
+        <div class="set-card__labels">
+          <v-chip
+            v-for="label in labels"
+            :key="label.docId"
+            class="mr-1 mt-2"
+            size="small"
+            variant="outlined"
+            @click="emit('label', label)"
+          >
+            {{ label.label }}
+          </v-chip>
+        </div>
+      </v-card>
+    </div>
+    <div class="d-flex align-center pa-6">
+      <template v-if="bin">
+        <v-btn
+          :aria-label="t('common.delete')"
+          :color="card.color"
+          :disabled="disabled"
+          icon
+          variant="text"
+          @click="emit('delete', card)"
         >
-            mdi-star
-        </v-icon>
-        <v-icon
-            :color="rightTriggered ? 'error' : ''"
-            class="cardflash-set-hidden-icon cardflash-set-hidden-icon--right"
+          <v-icon>mdi-delete-forever</v-icon>
+        </v-btn>
+        <v-spacer />
+        <v-btn
+          :aria-label="t('common.restore')"
+          :color="card.color"
+          :disabled="disabled"
+          icon
+          variant="text"
+          @click="emit('restore', card)"
         >
-            mdi-trash-can
-        </v-icon>
-    </v-card>
+          <v-icon>mdi-restore</v-icon>
+        </v-btn>
+      </template>
+      <template v-else>
+        <div>
+          <div class="text-label-medium text-uppercase">
+            {{ t('common.memorized') }}
+          </div>
+          <div class="text-body-small d-flex align-center">
+            <span>{{ learned }} / {{ card.cards.length }}</span>
+            <span class="mx-2">-</span>
+            <span>{{ percentage }}%</span>
+          </div>
+        </div>
+        <v-spacer />
+        <v-chip
+          :disabled="disabled"
+          size="small"
+          variant="outlined"
+          @click="router.push(`/${card.id}/view`)"
+        >
+          {{ percentage === 100 ? t('common.review') : t('common.browse') }}
+        </v-chip>
+      </template>
+    </div>
+    <v-icon
+      class="set-card__hidden-icon set-card__hidden-icon--left"
+      :color="favTriggered ? 'yellow' : undefined"
+    >
+      mdi-star
+    </v-icon>
+    <v-icon
+      class="set-card__hidden-icon set-card__hidden-icon--right"
+      :color="binTriggered ? 'error' : undefined"
+    >
+      mdi-trash-can
+    </v-icon>
+  </v-card>
 </template>
 
-<script>
-import { navigateToPath } from '@/util';
-export default {
-    name: 'CardFlashSet',
-    props: {
-        card: {
-            type: Object,
-            required: true,
-        },
-        bin: {
-            type: Boolean,
-            default: false,
-        },
-        disabled: {
-            type: Boolean,
-            default: false,
-        },
-    },
-    data() {
-        return {
-            scrolledY: 'no',
-            leftTriggered: false,
-            rightTriggered: false,
-            touchStartEvent: null,
-            id: `set${new Date().getTime()}`,
-        };
-    },
-    computed: {
-        online() {
-            return this.$store.getters.isOnline;
-        },
-        dark() {
-            return this.$vuetify.theme.dark;
-        },
-        labels() {
-            return this.$store.getters.labels.filter((label) => {
-                return this.card.labels.includes(label.docId);
-            });
-        },
-        ratio() {
-            return `${this.totalLearned} / ${this.card.cards.length}`;
-        },
-        percentage() {
-            const totalCards = this.card.cards.length;
-            return totalCards
-                ? parseInt((this.totalLearned / totalCards) * 100, 10)
-                : 0;
-        },
-        totalLearned() {
-            return this.card.cards.reduce((total, value) => {
-                return (total += value.learned ? 1 : 0);
-            }, 0);
-        },
-        stopSwipe() {
-            return this.bin || this.disabled || !this.online;
-        },
-    },
-    methods: {
-        onEdit() {
-            navigateToPath(`/${this.card.id}/edit`);
-        },
-        onView() {
-            navigateToPath(`/${this.card.id}/view`);
-        },
-        handleMouseDown(e) {
-            if (this.stopSwipe) {
-                return;
-            }
-            this.touchStartEvent = e;
-        },
-        handleMouseMove(e) {
-            if (this.stopSwipe) {
-                return;
-            }
-            const yDist = Math.abs(
-                this.touchStartEvent.touches[0].clientY -
-                    e.changedTouches[0].clientY
-            );
-            const xDist = Math.abs(
-                this.touchStartEvent.touches[0].clientX -
-                    e.changedTouches[0].clientX
-            );
-            if (this.scrolledY === 'no') {
-                if (yDist > xDist) {
-                    this.scrolledY = 'yes';
-                } else {
-                    this.scrolledY = 'ohno';
-                }
-            }
-            if (this.scrolledY === 'yes') {
-                return;
-            }
-            const cardDOM = document.getElementById(this.id);
-            const touchDistance =
-                this.touchStartEvent.touches[0].clientX - e.touches[0].clientX;
-            cardDOM.style.transition = `none`;
-            if (Math.abs(touchDistance) <= 100) {
-                cardDOM.style.transform = `translate3d(${-touchDistance}px, 0px, 0px)`;
-            }
-            const triggerPoint = Math.abs(touchDistance) >= 62;
-            const triggerNegative = touchDistance < 0;
-            if (triggerNegative) {
-                this.leftTriggered = triggerPoint;
-            } else {
-                this.rightTriggered = triggerPoint;
-            }
-        },
-        handleMouseUp(e) {
-            if (this.stopSwipe) {
-                return;
-            }
-            if (this.leftTriggered) {
-                this.$emit('fav', this.card);
-            }
-            if (this.rightTriggered) {
-                this.$emit('delete', this.card);
-            }
-            const cardDOM = document.getElementById(this.id);
-            cardDOM.style.transition = `transform 200ms ease-out`;
-            cardDOM.style.transform = `translate3d(0px, 0px, 0px)`;
-            this.leftTriggered = false;
-            this.rightTriggered = false;
-            this.touchStartEvent = null;
-            this.scrolledY = 'no';
-        },
-    },
-};
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import type { CardSet, Label } from '@/types';
+import { learnedCount } from '@/utils/cardSets';
+import { useLibraryStore } from '@/stores/library';
+import { useSessionStore } from '@/stores/session';
+
+const SWIPE_MAX = 100;
+const SWIPE_TRIGGER = 62;
+
+const props = withDefaults(defineProps<{ card: CardSet; bin?: boolean; disabled?: boolean }>(), {
+  bin: false,
+  disabled: false,
+});
+const emit = defineEmits<{
+  fav: [card: CardSet];
+  star: [];
+  delete: [card: CardSet];
+  restore: [card: CardSet];
+  label: [label: Label];
+}>();
+
+const { t } = useI18n();
+const router = useRouter();
+const session = useSessionStore();
+const library = useLibraryStore();
+
+const title = computed(() => props.card.title || t('add.set.notitle'));
+const labels = computed(() => library.labels.filter((label) => props.card.labels.includes(label.docId)));
+const learned = computed(() => learnedCount(props.card));
+const percentage = computed(() =>
+  props.card.cards.length ? Math.floor((learned.value / props.card.cards.length) * 100) : 0,
+);
+const swipeDisabled = computed(() => props.bin || props.disabled || !session.online);
+
+// ---- swipe right to favourite, left to move to bin ----
+const start = ref<{ x: number; y: number } | null>(null);
+const direction = ref<'none' | 'horizontal' | 'vertical'>('none');
+const offset = ref(0);
+const dragging = ref(false);
+
+const favTriggered = computed(() => offset.value >= SWIPE_TRIGGER);
+const binTriggered = computed(() => offset.value <= -SWIPE_TRIGGER);
+const swipeStyle = computed(() => ({
+  transform: `translate3d(${offset.value}px, 0, 0)`,
+  transition: dragging.value ? 'none' : 'transform 200ms ease-out',
+}));
+
+function onTouchStart(e: TouchEvent) {
+  if (swipeDisabled.value) {
+    return;
+  }
+  const touch = e.touches[0];
+  start.value = { x: touch.clientX, y: touch.clientY };
+  direction.value = 'none';
+}
+
+function onTouchMove(e: TouchEvent) {
+  if (!start.value || swipeDisabled.value) {
+    return;
+  }
+  const touch = e.touches[0];
+  const dx = touch.clientX - start.value.x;
+  const dy = touch.clientY - start.value.y;
+  if (direction.value === 'none') {
+    direction.value = Math.abs(dy) > Math.abs(dx) ? 'vertical' : 'horizontal';
+  }
+  if (direction.value !== 'horizontal') {
+    return;
+  }
+  dragging.value = true;
+  offset.value = Math.max(-SWIPE_MAX, Math.min(SWIPE_MAX, dx));
+}
+
+function onTouchEnd() {
+  if (favTriggered.value) {
+    emit('fav', props.card);
+  } else if (binTriggered.value) {
+    emit('delete', props.card);
+  }
+  resetSwipe();
+}
+
+function resetSwipe() {
+  start.value = null;
+  direction.value = 'none';
+  dragging.value = false;
+  offset.value = 0;
+}
 </script>
 
 <style scoped>
-.cardflash-set-hidden-icon {
-    position: absolute;
-    z-index: 1;
-    top: 38px;
+.set-card {
+  position: relative;
+  overflow: hidden;
 }
-.cardflash-set-hidden-icon--left {
-    left: 38px;
+.set-card__swipe {
+  position: relative;
+  z-index: 2;
 }
-.cardflash-set-hidden-icon--right {
-    right: 38px;
+.set-card__labels {
+  white-space: nowrap;
+  overflow: hidden;
+}
+.set-card__hidden-icon {
+  position: absolute;
+  top: 38px;
+  z-index: 1;
+}
+.set-card__hidden-icon--left {
+  left: 38px;
+}
+.set-card__hidden-icon--right {
+  right: 38px;
 }
 </style>

@@ -1,256 +1,217 @@
 <template>
-    <div
-        class="login-container"
-        :style="`background: ${dark ? '#212121' : '#e0e0e0'}`"
-    >
-        <div class="login-wrapper">
-            <img
-                alt="logo"
-                src="images/flash-cards-logo.png"
-                style="width:64px;"
+  <div class="login">
+    <div class="login__wrapper">
+      <img
+        alt=""
+        class="login__logo"
+        src="/images/flash-cards-logo.png"
+      >
+      <h1 class="pt-4 text-headline-small text-uppercase">
+        {{ t('info.tagline.title') }}
+      </h1>
+      <div class="pa-2 pb-6 text-body-small">
+        {{ isSignIn ? t('login.subtitle.login') : t('login.subtitle.signup') }}
+      </div>
+      <v-card
+        class="login__card"
+        elevation="2"
+      >
+        <v-form
+          ref="form"
+          v-model="formValid"
+          @submit.prevent="onSubmit"
+        >
+          <v-text-field
+            v-model="email"
+            autocomplete="email"
+            autofocus
+            class="login__field login__field--first"
+            flat
+            height="48"
+            hide-details
+            :label="t('login.email')"
+            :rules="[rules.required(t('email.enter')), rules.noSpace(t('rule.space.email'))]"
+            type="email"
+            variant="solo"
+          />
+          <v-text-field
+            v-model="password"
+            :autocomplete="isSignIn ? 'current-password' : 'new-password'"
+            class="login__field"
+            flat
+            height="48"
+            hide-details
+            :label="t('login.password')"
+            :rules="passwordRules"
+            type="password"
+            variant="solo"
+          />
+          <v-expand-transition>
+            <v-text-field
+              v-if="!isSignIn"
+              v-model="repassword"
+              autocomplete="new-password"
+              class="login__field"
+              flat
+              height="48"
+              hide-details
+              :label="t('login.repassword')"
+              :rules="[...passwordRules, (v: string) => v === password || t('rule.password.match')]"
+              type="password"
+              variant="solo"
             />
-            <div class="pt-4 headline text-uppercase">Flashcards</div>
-            <div class="pa-2 pb-6 caption font-weight-light">
-                {{ isSignIn ? 'Login to application' : 'Create an account' }}
-            </div>
-            <div class="login-content elevation-2">
-                <v-form
-                    ref="formLogin"
-                    v-model="loginForm"
-                    @submit.prevent="isSignIn ? onLogin() : onSignup()"
-                >
-                    <div>
-                        <v-text-field
-                            solo
-                            flat
-                            rounded
-                            autofocus
-                            height="48"
-                            label="Email"
-                            hide-details
-                            class="email-field"
-                            v-model="user.email"
-                            :rules="[rules.empty.email, rules.nospace.email]"
-                        ></v-text-field>
-                        <v-text-field
-                            solo
-                            flat
-                            rounded
-                            height="48"
-                            hide-details
-                            type="password"
-                            label="Password"
-                            class="password-field"
-                            v-model="user.password"
-                            :rules="[
-                                rules.empty.password,
-                                rules.nospace.password,
-                            ]"
-                        ></v-text-field>
-                        <v-expand-transition>
-                            <v-text-field
-                                solo
-                                flat
-                                rounded
-                                height="48"
-                                hide-details
-                                v-if="!isSignIn"
-                                type="password"
-                                label="Re-Enter Password"
-                                class="password-field"
-                                v-model="user.repassword"
-                                :rules="[
-                                    rules.empty.password,
-                                    rules.nospace.password,
-                                ]"
-                            ></v-text-field>
-                        </v-expand-transition>
-                    </div>
-                    <v-btn
-                        block
-                        rounded
-                        depressed
-                        height="48"
-                        type="submit"
-                        color="primary"
-                        :disabled="!loginForm"
-                        :loading="logingIn || signingUp"
-                    >
-                        {{ !isSignIn ? 'Sign up' : 'Login' }}
-                    </v-btn>
-                </v-form>
-            </div>
-            <div class="overline py-6">OR</div>
-            <div class="d-flex justify-center">
-                <v-btn
-                    icon
-                    class="ma-1"
-                    name="google signin"
-                    title="google signin"
-                    @click="isSignIn ? onGoolgeSignin() : onGoogleSignUp()"
-                >
-                    <v-icon color="rgb(23, 156, 82)">
-                        mdi-google
-                    </v-icon>
-                </v-btn>
-            </div>
-            <div class="caption py-6">
-                {{
-                    !isSignIn
-                        ? 'Already have an account? '
-                        : `Don't have an account? `
-                }}
-                <span
-                    @click="isSignIn = !isSignIn"
-                    class="login-link-text selectable"
-                >
-                    {{ isSignIn ? 'Sign up' : 'Login' }}
-                </span>
-            </div>
-        </div>
+          </v-expand-transition>
+          <v-btn
+            block
+            class="login__submit"
+            color="primary"
+            :disabled="!formValid"
+            flat
+            height="48"
+            :loading="busy"
+            type="submit"
+          >
+            {{ isSignIn ? t('login.login') : t('login.signup') }}
+          </v-btn>
+        </v-form>
+      </v-card>
+      <div class="text-label-medium text-uppercase py-6">
+        {{ t('login.or') }}
+      </div>
+      <v-btn
+        :aria-label="t('login.google')"
+        :disabled="busy"
+        icon
+        :title="t('login.google')"
+        variant="text"
+        @click="onGoogle"
+      >
+        <v-icon color="rgb(23, 156, 82)">
+          mdi-google
+        </v-icon>
+      </v-btn>
+      <div class="text-body-small py-6">
+        {{ isSignIn ? t('login.no-account') : t('login.have-account') }}
+        <button
+          class="login__link"
+          type="button"
+          @click="toggleMode"
+        >
+          {{ isSignIn ? t('login.signup') : t('login.login') }}
+        </button>
+      </div>
     </div>
+  </div>
 </template>
 
-<script>
-import { navigateToPath } from '@/util';
-import FirebaseWeb from '@/firebase';
-const firebase = new FirebaseWeb();
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { signInWithEmail, signInWithGoogle, signUpWithEmail } from '@/services/firebase';
+import { authErrorMessage, isAuthCancel } from '@/services/authErrors';
+import { safeRedirect } from '@/router';
+import { useSessionStore } from '@/stores/session';
 
-export default {
-    data() {
-        return {
-            user: {
-                email: '',
-                password: '',
-                repassword: '',
-            },
-            rules: {
-                empty: {
-                    email: (v) => !!v || this.$t('email.enter'),
-                    password: (v) => !!v || this.$t('rule.password.required'),
-                },
-                nospace: {
-                    password: (v) =>
-                        (v && !/\s/g.test(v)) || this.$t('rule.space.password'),
-                    email: (v) =>
-                        (v && !/\s/g.test(v)) || this.$t('rule.space.email'),
-                },
-            },
-            logingIn: false,
-            signingUp: false,
-            loginForm: false,
-            isSignIn: true,
-        };
-    },
-    computed: {
-        dark() {
-            return this.$vuetify.theme.dark;
-        },
-        passValid() {
-            const { password, repassword } = this.user;
-            return password === repassword;
-        },
-    },
-    methods: {
-        goToApp() {
-            navigateToPath(this.$route.query.redirect || '/home');
-        },
-        onGoolgeSignin() {
-            firebase
-                .signInWithGoogle()
-                .then(() => {
-                    this.goToApp();
-                })
-                .catch((err) => {
-                    this.$store.dispatch('SHOW_SNACK', err.message);
-                });
-        },
-        onGoogleSignUp() {
-            this.onGoolgeSignin();
-        },
-        onSignup() {
-            if (this.passValid) {
-                this.signingUp = true;
-                firebase
-                    .signUpWithEmail({
-                        email: this.user.email,
-                        password: this.user.password,
-                    })
-                    .then((response) => {
-                        this.$store.dispatch(
-                            'SHOW_SNACK',
-                            this.$t('toast.success.sign-up')
-                        );
-                        this.goToApp();
-                    })
-                    .catch((err) => {
-                        this.$store.dispatch(
-                            'SHOW_SNACK',
-                            err.message || this.$t('toast.error.sign-up')
-                        );
-                    })
-                    .then(() => {
-                        this.signingUp = false;
-                    });
-            } else {
-                this.$store.dispatch('SHOW_SNACK', 'Passwords do not match!');
-            }
-        },
-        onLogin() {
-            this.logingIn = true;
-            firebase
-                .signInWithEmail(this.user)
-                .then(() => {
-                    this.goToApp();
-                })
-                .catch((err) => {
-                    this.$store.dispatch('SHOW_SNACK', err.message);
-                })
-                .finally(() => {
-                    this.logingIn = false;
-                });
-        },
-    },
-    mounted() {
-        if (firebase.getUser()) {
-            this.goToApp();
-        }
-    },
+const MIN_PASSWORD = 6;
+
+const { t } = useI18n();
+const route = useRoute();
+const router = useRouter();
+const session = useSessionStore();
+
+const email = ref('');
+const password = ref('');
+const repassword = ref('');
+const isSignIn = ref(true);
+const formValid = ref<boolean | null>(null);
+const busy = ref(false);
+
+const rules = {
+  required: (message: string) => (v: string) => !!v || message,
+  noSpace: (message: string) => (v: string) => !/\s/.test(v ?? '') || message,
 };
+const passwordRules = computed(() => [
+  rules.required(t('rule.password.required')),
+  rules.noSpace(t('rule.space.password')),
+  (v: string) => isSignIn.value || (v ?? '').length >= MIN_PASSWORD || t('rule.password.min', { n: MIN_PASSWORD }),
+]);
+
+function toggleMode() {
+  isSignIn.value = !isSignIn.value;
+  repassword.value = '';
+}
+
+function goToApp() {
+  return router.replace(safeRedirect(route.query.redirect));
+}
+
+async function run(action: () => Promise<unknown>, successMessage?: string) {
+  busy.value = true;
+  try {
+    await action();
+    if (successMessage) {
+      session.showSnack(successMessage);
+    }
+    await goToApp();
+  } catch (err) {
+    if (!isAuthCancel(err)) {
+      session.showSnack(authErrorMessage(err, t));
+    }
+  } finally {
+    busy.value = false;
+  }
+}
+
+function onSubmit() {
+  if (!formValid.value || busy.value) {
+    return;
+  }
+  if (isSignIn.value) {
+    void run(() => signInWithEmail(email.value, password.value));
+  } else if (password.value !== repassword.value) {
+    session.showSnack(t('rule.password.match'));
+  } else {
+    void run(() => signUpWithEmail(email.value, password.value), t('toast.success.sign-up'));
+  }
+}
+
+function onGoogle() {
+  void run(() => signInWithGoogle());
+}
 </script>
 
 <style scoped>
-.login-container {
-    width: 100vw;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    background: #e91e63;
-    justify-content: center;
+.login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: rgb(var(--v-theme-surface-light));
 }
-.login-wrapper {
-    width: calc(100% - 64px);
-    text-align: center;
-    max-width: 400px;
-    margin: 0px auto;
+.login__wrapper {
+  width: calc(100% - 64px);
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: center;
 }
-.login-content {
-    border-radius: 24px;
+.login__logo {
+  width: 64px;
 }
-.login-content >>> .v-btn--rounded {
-    border-top-right-radius: 0px !important;
-    border-top-left-radius: 0px !important;
+.login__card {
+  overflow: hidden;
 }
-.login-content >>> .password-field.v-text-field--rounded {
-    border-radius: 0px !important;
+.login__field :deep(.v-field) {
+  border-radius: 0;
 }
-.login-content >>> .email-field.v-text-field--rounded {
-    border-top-right-radius: 24px !important;
-    border-top-left-radius: 24px !important;
-    border-bottom-right-radius: 0px !important;
-    border-bottom-left-radius: 0px !important;
+.login__submit {
+  border-radius: 0;
 }
-.login-link-text {
-    color: #ba124b;
+.login__link {
+  color: #ba124b;
+  font: inherit;
+  cursor: pointer;
+  background: none;
+  border: 0;
 }
 </style>

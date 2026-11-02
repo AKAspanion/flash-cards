@@ -1,124 +1,90 @@
 <template>
-    <v-fab-transition>
-        <v-speed-dial
-            right
-            fixed
-            bottom
-            direction="top"
-            v-if="showBarNav"
-            v-model="navModel"
-            transition="slide-y-reverse-transition"
+  <div
+    v-if="visible"
+    class="floating-fab floating-fab--right"
+  >
+    <v-speed-dial
+      v-model="open"
+      location="top center"
+      transition="slide-y-reverse-transition"
+    >
+      <template #activator="{ props: activator }">
+        <v-btn
+          v-bind="activator"
+          :aria-label="t('common.menu')"
+          color="primary"
+          :disabled="session.loading"
+          :elevation="session.loading ? 0 : 4"
+          icon
+          size="x-large"
         >
-            <template #activator>
-                <v-btn
-                    :class="loading ? 'elevation-0' : ''"
-                    :disabled="loading"
-                    v-model="navModel"
-                    color="primary"
-                    fab
-                >
-                    <v-icon
-                        :class="
-                            navModel ? 'rotated-fab' : 'rotated-fab--active'
-                        "
-                    >
-                        mdi-chevron-left
-                    </v-icon>
-                </v-btn>
-            </template>
-            <v-btn
-                fab
-                small
-                color="accent"
-                :key="action.id"
-                :disabled="loading"
-                @click="onActionClick(action)"
-                v-for="action in loading ? [] : actionButtons"
-            >
-                <v-icon small>{{ action.icon }}</v-icon>
-                <div class="fab--tooltip">{{ action.title }}</div>
-            </v-btn>
-        </v-speed-dial>
-    </v-fab-transition>
+          <v-icon :class="open ? 'fab-icon fab-icon--open' : 'fab-icon'">
+            mdi-chevron-left
+          </v-icon>
+        </v-btn>
+      </template>
+      <v-btn
+        v-for="action in actions"
+        :key="action.path"
+        :aria-label="action.title"
+        color="accent"
+        icon
+        size="small"
+        @click="router.push(action.path)"
+      >
+        <v-icon size="small">
+          {{ action.icon }}
+        </v-icon>
+        <span class="fab-tooltip">{{ action.title }}</span>
+      </v-btn>
+    </v-speed-dial>
+  </div>
 </template>
 
-<script>
-import { navigateToPath } from '@/util';
-export default {
-    data() {
-        return {
-            navModel: false,
-            invisibleRoutes: ['login', 'profile', 'view'],
-        };
-    },
-    computed: {
-        loading() {
-            return this.appLoading || this.authLoading;
-        },
-        authLoading() {
-            return this.$store.getters.authLoading;
-        },
-        appLoading() {
-            return this.$store.getters.loading;
-        },
-        currentUser() {
-            return this.$store.getters.user;
-        },
-        showBarNav() {
-            return !this.invisibleRoutes.includes(this.$route.name);
-        },
-        actionButtons() {
-            return [
-                {
-                    title: this.$t('common.home'),
-                    icon: 'mdi-home',
-                    path: '/home',
-                    id: 1,
-                },
-                {
-                    title: this.$t('home.set.add'),
-                    icon: 'mdi-card-plus',
-                    path: '/add',
-                    id: 2,
-                },
-                // {
-                //     icon: 'mdi-folder',
-                //     title: 'manage folders',
-                //     path: '/folder',
-                //     id: 3,
-                // },
-            ];
-        },
-    },
-    watch: {
-        $route: {
-            handler(r) {
-                this.navModel = false;
-            },
-        },
-    },
-    methods: {
-        onActionClick(action) {
-            navigateToPath(action.path);
-        },
-    },
-};
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { useSessionStore } from '@/stores/session';
+
+const HIDDEN_ON = ['login', 'profile', 'view'];
+
+const { t } = useI18n();
+const route = useRoute();
+const router = useRouter();
+const session = useSessionStore();
+const open = ref(false);
+
+const visible = computed(() => !!route.name && !HIDDEN_ON.includes(String(route.name)) && !!session.user);
+const actions = computed(() => [
+  { title: t('common.home'), icon: 'mdi-home', path: '/home' },
+  { title: t('home.set.add'), icon: 'mdi-card-plus', path: '/add' },
+]);
+
+watch(
+  () => route.fullPath,
+  () => {
+    open.value = false;
+  },
+);
 </script>
 
 <style scoped>
-.rotated-fab {
-    transform: rotate(90deg);
-    transition: transform 0.2s cubic-bezier(1, 0, 0, 1);
+.fab-icon {
+  transform: rotate(40deg);
+  transition: transform 0.2s cubic-bezier(1, 0, 0, 1);
 }
-.rotated-fab--active {
-    transform: rotate(40deg);
+.fab-icon--open {
+  transform: rotate(90deg);
 }
-.fab--tooltip {
-    position: absolute;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    right: calc(100% + 8px);
-    background: rgba(0, 0, 0, 0.56);
+.fab-tooltip {
+  position: absolute;
+  right: calc(100% + 8px);
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: white;
+  white-space: nowrap;
+  text-transform: none;
+  background: rgba(0, 0, 0, 0.56);
 }
 </style>

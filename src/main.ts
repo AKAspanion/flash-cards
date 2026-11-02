@@ -1,18 +1,15 @@
-import Vue from 'vue';
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 import App from './App.vue';
 import router from './router';
-import store from './store';
-import vuetify from './plugins/vuetify/vuetify';
-import i18n from './plugins/i18n/i18n';
+import vuetify from './plugins/vuetify';
+import i18n from './plugins/i18n';
+import { setupPwaUpdates } from './pwa';
+import './assets/style.css';
 
-import './registerServiceWorker';
+createApp(App).use(createPinia()).use(router).use(vuetify).use(i18n).mount('#app');
 
-Vue.config.productionTip = false;
+setupPwaUpdates();
 
-new Vue({
-  vuetify,
-  router,
-  store,
-  i18n,
-  render: (h) => h(App),
-}).$mount('#app');
+// A tab opened before a deploy can ask for page chunks that no longer exist; reload to get the new build.
+window.addEventListener('vite:preloadError', () => window.location.reload());

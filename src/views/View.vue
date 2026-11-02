@@ -1,181 +1,150 @@
 <template>
-    <div class="view-container">
-        <bar-top @click:left="goBack">
-            <template #left-button>
-                <v-icon size="32" color="primary">mdi-arrow-left</v-icon>
-            </template>
-            <template #left-text>
-                {{
-                    cardFocused !== cardSet.cards.length - 1
-                        ? $t('common.home')
-                        : $t('common.done')
-                }}
-            </template>
-            <template #center>
-                <div class="text-center text-uppercase title pa-4 mb-4">
-                    {{ cardSet.title || 'untitled set' }}
-                </div>
-            </template>
-            <template #right-button>
-                {{ `${learnedCards}/${cardSet.cards.length}` }}
-            </template>
-            <template #right-text>
-                {{ $t('common.learned') }}
-            </template>
-        </bar-top>
-        <div>
-            <group-card-flash
-                :browse="true"
-                :disabled="loading"
-                :labels="setLabels"
-                :color="cardSet.color"
-                v-model="cardSet.cards"
-                @focused="(v) => (cardFocused = v)"
-            ></group-card-flash>
+  <div class="view">
+    <bar-top @click:left="goBack">
+      <template #left-button>
+        <v-icon
+          color="primary"
+          size="32"
+        >
+          mdi-arrow-left
+        </v-icon>
+      </template>
+      <template #left-text>
+        {{ atLastCard ? t('common.done') : t('common.home') }}
+      </template>
+      <template #center>
+        <div class="text-center text-title-large text-uppercase text-truncate pa-4">
+          {{ set?.title || t('add.set.notitle') }}
         </div>
-        <v-progress-linear
-            height="4"
-            class="floating-progress"
-            :color="cardSet.color || 'primary'"
-            :value="(learnedCards / cardSet.cards.length) * 100"
-        ></v-progress-linear>
-    </div>
+      </template>
+      <template #right>
+        <div class="view__count text-title-small">
+          {{ learned }}/{{ cards.length }}
+        </div>
+        <div class="text-label-medium text-uppercase">
+          {{ t('common.learned') }}
+        </div>
+      </template>
+    </bar-top>
+    <group-card-flash
+      v-if="set"
+      v-model="cards"
+      browse
+      :color="set.color"
+      :disabled="saving"
+      :labels="setLabels"
+      @focused="(index) => (focusedIndex = index)"
+    />
+    <v-progress-linear
+      class="view__progress"
+      :color="set?.color || 'primary'"
+      height="4"
+      location="bottom"
+      :model-value="cards.length ? (learned / cards.length) * 100 : 0"
+    />
+  </div>
 </template>
 
-<script>
-import { navigateToPath, loadData } from '@/util';
+<script setup lang="ts">
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import BarTop from '@/components/BarTop.vue';
-import BtnAction from '@/components/BtnAction.vue';
 import GroupCardFlash from '@/components/GroupCardFlash.vue';
+import type { CardSet, FlashCard } from '@/types';
+import { useLibraryStore } from '@/stores/library';
+import { useSessionStore } from '@/stores/session';
 
-import FirebaseWeb from '@/firebase';
-const firebase = new FirebaseWeb();
+const { t } = useI18n();
+const route = useRoute();
+const router = useRouter();
+const library = useLibraryStore();
+const session = useSessionStore();
 
-export default {
-    components: { BarTop, BtnAction, GroupCardFlash },
-    data() {
-        return {
-            changed: 0,
-            cardFocused: 0,
-            dataLoading: false,
-            cardSet: {
-                color: '',
-                labels: [],
-                cards: [],
-            },
-        };
-    },
-    computed: {
-        currentUser() {
-            return this.$store.getters.user;
-        },
-        labels() {
-            return this.$store.getters.labels;
-        },
-        setLabels() {
-            return this.labels.filter((label) => {
-                return this.cardSet.labels.includes(label.docId);
-            });
-        },
-        learnedCards() {
-            return this.cardSet.cards.reduce((total, value) => {
-                return (total += value.learned ? 1 : 0);
-            }, 0);
-        },
-        loading() {
-            return this.appLoading || this.authLoading;
-        },
-        authLoading() {
-            return this.$store.getters.authLoading;
-        },
-        appLoading() {
-            return this.$store.getters.loading;
-        },
-        online() {
-            return this.$store.getters.isOnline;
-        },
-    },
-    watch: {
-        cardSet: {
-            handler() {
-                this.changed++;
-            },
-            deep: true,
-        },
-    },
-    methods: {
-        goBack() {
-            if (this.changed > 1) {
-                this.onSubmit();
-            } else {
-                navigateToPath('/home');
-            }
-        },
-        setCards(params) {
-            const storeCardSets = this.$store.getters.flashCardSets;
-            const index = storeCardSets.findIndex((e) => e.id === params.id);
-            if (index >= 0) {
-                this.cardSet = { ...storeCardSets[index] };
-            } else {
-                this.goBack();
-            }
-        },
-        onSubmit() {
-            if (this.online) {
-                this.$store.dispatch('LOADING', true);
-                firebase
-                    .updateFlashCardSet(this.cardSet)
-                    .then((res) => {
-                        this.$store.dispatch(
-                            'UPDATE_FLASH_CARD_SET',
-                            this.cardSet
-                        );
-                    })
-                    .catch((err) => {
-                        this.$store.dispatch('SHOW_SNACK', err.messsage);
-                    })
-                    .finally(() => {
-                        this.$store.dispatch('LOADING', false);
-                    });
-            }
-            navigateToPath('/home');
-        },
-    },
-    mounted() {
-        const { params } = this.$route;
-        if (!this.$store.getters.landingVisited) {
-            this.dataLoading = true;
-            this.$store.dispatch('LOADING', true);
-            loadData(this.currentUser)
-                .then((data) => {
-                    this.$store.dispatch('SET_FLASH_CARDS', data[0]);
-                    this.$store.dispatch('SET_LABELS', data[1]);
-                    this.$store.dispatch('LANDING_VISITED', true);
-                    this.setCards(params);
-                })
-                .catch((err) => {
-                    this.$store.dispatch('SET_FLASH_CARDS', []);
-                    this.$store.dispatch('SET_LABELS', []);
-                    this.$store.dispatch('LANDING_VISITED', false);
-                })
-                .finally(() => {
-                    this.dataLoading = true;
-                    this.$store.dispatch('LOADING', false);
-                });
-        } else {
-            this.setCards(params);
-        }
-    },
-};
+const set = ref<CardSet | null>(null);
+const cards = ref<FlashCard[]>([]);
+const snapshot = ref('');
+const focusedIndex = ref(0);
+const saving = ref(false);
+
+const learned = computed(() => cards.value.filter((c) => c.learned).length);
+const atLastCard = computed(() => cards.value.length > 0 && focusedIndex.value >= cards.value.length - 1);
+const setLabels = computed(() => library.labels.filter((l) => set.value?.labels.includes(l.docId)));
+const dirty = computed(() => !!set.value && JSON.stringify(cards.value) !== snapshot.value);
+
+watch(dirty, (value) => (session.unsavedChanges = value), { immediate: true });
+
+watch(
+  () => library.status,
+  (status) => {
+    if (status === 'error') {
+      void router.replace('/home');
+      return;
+    }
+    if (status !== 'ready' || set.value) {
+      return;
+    }
+    const existing = library.findSet(String(route.params.id));
+    if (!existing?.docId) {
+      session.showSnack(t('toast.set-not-found'));
+      void router.replace('/home');
+      return;
+    }
+    set.value = existing;
+    cards.value = existing.cards.map((c) => ({ ...c }));
+    snapshot.value = JSON.stringify(cards.value);
+  },
+  { immediate: true },
+);
+
+function goBack() {
+  // Progress is saved by the leave guard below, whichever way the user leaves.
+  void router.push('/home');
+}
+
+async function saveProgress(): Promise<boolean> {
+  if (!set.value || !session.online) {
+    return false;
+  }
+  saving.value = true;
+  const ok = await library.saveSet({ ...set.value, cards: cards.value });
+  saving.value = false;
+  if (ok) {
+    snapshot.value = JSON.stringify(cards.value);
+  }
+  return ok;
+}
+
+onBeforeRouteLeave(async () => {
+  if (!session.user || !dirty.value) {
+    return true;
+  }
+  if (saving.value) {
+    return false;
+  }
+  if (await saveProgress()) {
+    return true;
+  }
+  return window.confirm(t('view.discard-confirm'));
+});
+
+onBeforeUnmount(() => {
+  session.unsavedChanges = false;
+});
 </script>
 
 <style scoped>
-.view-container {
-    min-height: 100vh;
+.view {
+  min-height: 100vh;
 }
-.floating-progress {
-    position: fixed;
-    z-index: 2;
-    bottom: 0;
+.view__count {
+  height: 64px;
+  line-height: 64px;
+}
+.view__progress {
+  position: fixed !important;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
 }
 </style>

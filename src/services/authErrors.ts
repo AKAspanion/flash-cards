@@ -1,0 +1,28 @@
+// Maps Firebase Auth error codes to i18n keys; anything unknown falls back to the raw message.
+const AUTH_ERROR_KEYS: Record<string, string> = {
+  'auth/invalid-credential': 'auth.error.invalid-credential',
+  'auth/wrong-password': 'auth.error.invalid-credential',
+  'auth/user-not-found': 'auth.error.invalid-credential',
+  'auth/invalid-email': 'auth.error.invalid-email',
+  'auth/email-already-in-use': 'auth.error.email-in-use',
+  'auth/weak-password': 'auth.error.weak-password',
+  'auth/too-many-requests': 'auth.error.too-many-requests',
+  'auth/network-request-failed': 'auth.error.network',
+  'auth/popup-blocked': 'auth.error.popup-blocked',
+  'auth/operation-not-allowed': 'auth.error.not-allowed',
+  'auth/user-disabled': 'auth.error.disabled',
+};
+
+/** Popup closed by the user: not worth an error message. */
+export function isAuthCancel(err: unknown): boolean {
+  const code = (err as { code?: string })?.code;
+  return code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request';
+}
+
+export function authErrorMessage(err: unknown, t: (key: string) => string): string {
+  const code = (err as { code?: string })?.code;
+  if (code && AUTH_ERROR_KEYS[code]) {
+    return t(AUTH_ERROR_KEYS[code]);
+  }
+  return (err as Error)?.message || t('auth.error.generic');
+}

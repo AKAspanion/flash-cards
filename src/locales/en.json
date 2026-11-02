@@ -1,0 +1,225 @@
+{
+  "common": {
+    "flashcards": "Flashcards",
+    "home": "Home",
+    "close": "Close",
+    "about": "About",
+    "search": "Search",
+    "options": "Options",
+    "color": "Color",
+    "bin": "Bin",
+    "label": "Label",
+    "labels": "Labels",
+    "settings": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "restore": "Restore",
+    "signout": "Sign Out",
+    "learned": "Learned",
+    "done": "done",
+    "browse": "browse",
+    "review": "review",
+    "favourite": "Favourite",
+    "memorized": "Memorized",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "menu": "Menu",
+    "offline": "You're offline",
+    "profile": "Profile",
+    "retry": "Retry",
+    "save": "Save",
+    "undo": "Undo"
+  },
+  "home": {
+    "set": {
+      "add": "Add flashcard set"
+    }
+  },
+  "add": {
+    "set": {
+      "notitle": "untitled set"
+    },
+    "card": "Add card",
+    "card-delete": "Card deleted",
+    "move-to-bin": "Move to bin",
+    "mark-as-fav": "Mark favourite",
+    "discard-confirm": "Your changes could not be saved. Leave anyway and lose them?"
+  },
+  "profile": {
+    "member": "Member Since",
+    "login": "Last Login",
+    "label": {
+      "title": "Your Labels",
+      "create": "Create new label",
+      "subtitle": "Create new label or select one to edit"
+    },
+    "name": {
+      "empty": "Add your name",
+      "placeholder": "Enter your name"
+    },
+    "photo": {
+      "edit": "Change profile photo",
+      "placeholder": "Enter your photo URL"
+    }
+  },
+  "empty": {
+    "home": {
+      "title": "Welcome to your flashcards library!",
+      "subtitle": "Add flashcard sets and it will appear here."
+    },
+    "filter": {
+      "title": "No results found",
+      "subtitle": "Make sure filter is correct or try a different filter."
+    },
+    "add": {
+      "title": "Add new flashcards here",
+      "subtitle": "Use add button below to create flashcards for current set and they will appear here."
+    },
+    "bin": {
+      "title": "Flashcards trash bin",
+      "subtitle": "Deleted flashcard sets will appear here. You can restore or delete them."
+    },
+    "error": {
+      "title": "Couldn't load your flashcards",
+      "subtitle": "Check your connection and try again."
+    }
+  },
+  "settings": {
+    "language": {
+      "title": "Language",
+      "desc": "Change language"
+    },
+    "theme": {
+      "title": "Theme",
+      "desc": "Change theme",
+      "light": "Light theme",
+      "dark": "Dark theme"
+    },
+    "favourite": {
+      "title": "Favourite",
+      "desc": "Put favourite cards on top"
+    },
+    "card-set": {
+      "title": "Card-sets order",
+      "desc": "Select order of card-set list"
+    },
+    "order-items": {
+      "al": "Alphabetically",
+      "nf": "New first",
+      "of": "Old first"
+    }
+  },
+  "info": {
+    "tagline": {
+      "title": "Flashcards",
+      "desc": "Learn & Memorize"
+    },
+    "author": {
+      "title": "Author",
+      "desc": "Ankit Kumar Pandit"
+    },
+    "version": {
+      "title": "Version"
+    },
+    "share": {
+      "title": "Share",
+      "desc": "Share the app",
+      "play": "Copy Play Store link",
+      "web": "Copy web app link"
+    },
+    "rate": {
+      "title": "Rate",
+      "desc": "Rate on play store"
+    },
+    "copied": {
+      "play": "Google Play link copied!",
+      "web": "Web app link copied!",
+      "failed": "Could not copy the link"
+    }
+  },
+  "email": {
+    "enter": "Please enter your email"
+  },
+  "rule": {
+    "password": {
+      "required": "Please enter a password",
+      "match": "Passwords do not match",
+      "min": "Password must be at least {n} characters"
+    },
+    "space": {
+      "password": "Password cannot contain spaces",
+      "email": "Email cannot contain spaces"
+    }
+  },
+  "toast": {
+    "success": {
+      "sign-up": "Account created successfully!"
+    },
+    "error": {
+      "sign-up": "Could not create account. Please try again.",
+      "generic": "Something went wrong. Please try again.",
+      "load": "Error getting your flashcards. Please try later!",
+      "save": "Could not save. Please try again.",
+      "delete": "Could not delete. Please try again.",
+      "name": {
+        "edit": "Could not update your profile."
+      }
+    },
+    "moved-to-bin": "Moved to bin",
+    "set-not-found": "That flashcard set was not found.",
+    "slow-network": "Experiencing network difficulty, please hold on!",
+    "offline-save": "You're offline. Connect to the internet to save."
+  },
+  "login": {
+    "email": "Email",
+    "password": "Password",
+    "repassword": "Re-enter password",
+    "login": "Login",
+    "signup": "Sign up",
+    "or": "or",
+    "google": "Continue with Google",
+    "no-account": "Don't have an account?",
+    "have-account": "Already have an account?",
+    "subtitle": {
+      "login": "Login to application",
+      "signup": "Create an account"
+    }
+  },
+  "auth": {
+    "error": {
+      "invalid-credential": "Incorrect email or password.",
+      "invalid-email": "That email address is not valid.",
+      "email-in-use": "An account with this email already exists. Try logging in.",
+      "weak-password": "Password is too weak. Use at least 6 characters.",
+      "too-many-requests": "Too many attempts. Please wait a moment and try again.",
+      "network": "Network error. Check your connection and try again.",
+      "popup-blocked": "The sign-in popup was blocked. Allow popups for this site and try again.",
+      "not-allowed": "This sign-in method is not enabled.",
+      "disabled": "This account has been disabled.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "card": {
+    "example": {
+      "front": "Example front side of a flashcard",
+      "back": "Example back side of a flashcard"
+    },
+    "placeholder": {
+      "front": "Enter text for the front side",
+      "back": "Enter text for the back side"
+    },
+    "flip": "Flip card",
+    "learn": "Mark as learned",
+    "unlearn": "Mark as not learned"
+  },
+  "bin": {
+    "confirm": {
+      "title": "Delete forever?",
+      "desc": "\"{title}\" will be permanently deleted. This cannot be undone."
+    }
+  },
+  "view": {
+    "discard-confirm": "Your progress could not be saved. Leave anyway and lose it?"
+  }
+}

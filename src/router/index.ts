@@ -1,161 +1,111 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
+import { createRouter, createWebHistory, type RouteLocationRaw } from 'vue-router';
+import { getAuthUser, onUserChanged } from '@/services/firebase';
+import { useSessionStore } from '@/stores/session';
+import { useLibraryStore } from '@/stores/library';
 
-import FirebaseWeb from '@/firebase';
-const firebase = new FirebaseWeb();
-
-import store from '@/store';
-
-Vue.use(VueRouter);
+declare module 'vue-router' {
+  interface RouteMeta {
+    requireAuth?: boolean;
+  }
+}
 
 const routes = [
-  {
-    path: '/',
-    name: 'root',
-    component: () => import('@/views/Home.vue'),
-    meta: {
-      requireAuth: true,
-      index: 1,
-    },
-  },
-  {
-    path: '/home',
-    name: 'home',
-    component: () => import('@/views/Home.vue'),
-    meta: {
-      requireAuth: true,
-      index: 2,
-    },
-  },
-  {
-    path: '/add',
-    name: 'add',
-    component: () => import('@/views/Add.vue'),
-    meta: {
-      requireAuth: true,
-      index: 3,
-    },
-  },
-
-  {
-    path: '/:id/edit',
-    name: 'edit',
-    component: () => import('@/views/Add.vue'),
-    meta: {
-      requireAuth: true,
-      index: 4,
-    },
-  },
-  {
-    path: '/folder',
-    name: 'folder',
-    component: () => import('@/views/Folder.vue'),
-    meta: {
-      requireAuth: true,
-      index: 5,
-    },
-  },
-  {
-    path: '/bin',
-    name: 'bin',
-    component: () => import('@/views/Bin.vue'),
-    meta: {
-      requireAuth: true,
-      index: 5,
-    },
-  },
-  {
-    path: '/:id/view',
-    name: 'view',
-    component: () => import('@/views/View.vue'),
-    meta: {
-      requireAuth: true,
-      index: 5,
-    },
-  },
-  {
-    path: '/profile',
-    name: 'profile',
-    component: () => import('@/views/Profile.vue'),
-    meta: {
-      requireAuth: true,
-      index: 6,
-    },
-  },
-  {
-    path: '/info',
-    name: 'info',
-    component: () => import('@/views/Info.vue'),
-    meta: {
-      requireAuth: true,
-      index: 7,
-    },
-  },
-  {
-    path: '/settings',
-    name: 'settings',
-    component: () => import('@/views/Settings.vue'),
-    meta: {
-      requireAuth: true,
-      index: 8,
-    },
-  },
-  {
-    path: '*',
-    name: 'notfound',
-    redirect: '/',
-    component: () => import('@/views/NotFound.vue'),
-    meta: {
-      requireAuth: true,
-      index: 9,
-    },
-  },
-  {
-    path: '/login',
-    name: 'login',
-    component: () => import('@/views/Login.vue'),
-  },
+  { path: '/', redirect: '/home' },
+  { path: '/home', name: 'home', component: () => import('@/views/Home.vue'), meta: { requireAuth: true } },
+  { path: '/add', name: 'add', component: () => import('@/views/Add.vue'), meta: { requireAuth: true } },
+  { path: '/:id/edit', name: 'edit', component: () => import('@/views/Add.vue'), meta: { requireAuth: true } },
+  { path: '/:id/view', name: 'view', component: () => import('@/views/View.vue'), meta: { requireAuth: true } },
+  { path: '/bin', name: 'bin', component: () => import('@/views/Bin.vue'), meta: { requireAuth: true } },
+  { path: '/profile', name: 'profile', component: () => import('@/views/Profile.vue'), meta: { requireAuth: true } },
+  { path: '/info', name: 'info', component: () => import('@/views/Info.vue'), meta: { requireAuth: true } },
+  { path: '/settings', name: 'settings', component: () => import('@/views/Settings.vue'), meta: { requireAuth: true } },
+  { path: '/login', name: 'login', component: () => import('@/views/Login.vue') },
+  { path: '/:pathMatch(.*)*', redirect: '/home' },
 ];
 
-const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
+/** Only same-app paths are allowed as a post-login redirect. */
+export function safeRedirect(value: unknown): string {
+  return typeof value === 'string' && value.startsWith('/') && !value.startsWith('//') ? value : '/home';
+}
+
+/** Where to send a navigation given the signed-in state; true = let it through. */
+export function authRedirect(
+  to: { fullPath: string; meta: { requireAuth?: boolean }; query: Record<string, unknown> },
+  signedIn: boolean,
+): true | RouteLocationRaw {
+  if (to.meta.requireAuth && !signedIn) {
+    return { path: '/login', query: { redirect: to.fullPath } };
+  }
+  if (!to.meta.requireAuth && signedIn) {
+    return safeRedirect(to.query.redirect);
+  }
+  return true;
+}
+
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
 
-router.beforeEach(async (to, from, next) => {
-  store.dispatch('AUTH_LOADING', true);
-  let user: any = null;
-  try {
-    if (!firebase.isAppInitialized()) {
-      firebase.initializeFirebase();
-    }
-    user = await firebase.getAuthUser();
-  } catch (err) {
-    console.error(err);
-    store.dispatch('AUTH_LOADING', false);
-    store.dispatch('SHOW_SNACK', (err as Error).message);
-    next(false);
+let watchingAuth = false;
+
+// Sign-in/sign-out can also happen outside navigation (another tab, token revoked):
+// swap the loaded library and move to the right page when the user changes.
+function watchAuthChanges() {
+  if (watchingAuth) {
     return;
   }
-  store.dispatch('AUTH_LOADING', false);
+  watchingAuth = true;
+  onUserChanged((user) => {
+    const session = useSessionStore();
+    if ((user?.uid ?? null) === (session.user?.uid ?? null)) {
+      return;
+    }
+    session.setUser(user);
+    const library = useLibraryStore();
+    library.reset();
+    if (!user) {
+      session.unsavedChanges = false;
+      void router.replace('/login');
+      return;
+    }
+    void library.load();
+    // The login page navigates on its own after a successful sign-in.
+    if (router.currentRoute.value.name !== 'login') {
+      void router.replace('/home');
+    }
+  });
+}
 
-  if (user) {
-    store.dispatch('SET_USER', user);
-    store.dispatch('LOGIN');
-  } else {
-    store.dispatch('UNSET_USER');
-    store.dispatch('LOGOUT');
+router.beforeEach(async (to) => {
+  const session = useSessionStore();
+  session.authLoading = true;
+  try {
+    const user = await getAuthUser();
+    session.setUser(user);
+    watchAuthChanges();
+  } catch (err) {
+    session.showError(err);
+    return false;
+  } finally {
+    session.authLoading = false;
   }
 
-  const requireAuth = to.matched.some((record: any) => record.meta.requireAuth);
-  if (requireAuth && !user) {
-    next({ path: '/login', query: { redirect: to.fullPath } });
-  } else if (!requireAuth && user) {
-    next({ path: (to.query.redirect as string) || '/home' });
+  const library = useLibraryStore();
+  if (session.user) {
+    void library.load();
   } else {
-    next();
+    library.reset();
   }
+  return authRedirect(to, !!session.user);
+});
+
+router.onError((err, to) => {
+  if (/dynamically imported module|Importing a module script failed/i.test(String(err?.message))) {
+    window.location.assign(to.fullPath);
+    return;
+  }
+  useSessionStore().showError(err);
 });
 
 export default router;

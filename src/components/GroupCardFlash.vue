@@ -1,172 +1,140 @@
 <template>
-    <div class="group-card-slider" id="cardslidercontainer">
-        <section>
-            <div class="dummy-section"></div>
-        </section>
-        <section
-            :key="card.id + index"
-            v-for="(card, index) in value"
-            :style="`width: ${mobile ? '82.5' : '70.5'}vw;`"
-        >
-            <card-flash
-                :disabled="disabled"
-                :number="index + 1"
-                :browse="browse"
-                :color="color"
-                :value="card"
-                :labels="labels"
-                @check="onCheck"
-                @input="onUpdate"
-                @delete="onDelete"
-            ></card-flash>
-        </section>
-        <section>
-            <div class="dummy-section"></div>
-        </section>
-    </div>
+  <div
+    ref="container"
+    class="card-slider"
+    @scroll.passive="updateFocused"
+  >
+    <section class="card-slider__spacer" />
+    <section
+      v-for="(card, index) in modelValue"
+      :key="card.id"
+      class="card-slider__item"
+      :style="{ width: itemWidth }"
+    >
+      <card-flash
+        :browse="browse"
+        :color="color"
+        :disabled="disabled"
+        :labels="labels"
+        :model-value="card"
+        :number="index + 1"
+        @check="onCheck"
+        @delete="onDelete"
+        @update:model-value="onUpdate"
+      />
+    </section>
+    <section class="card-slider__spacer" />
+  </div>
 </template>
 
-<script>
-import CardFlash from '@/components/CardFlash.vue';
-export default {
-    props: ['value', 'color', 'labels', 'browse', 'disabled'],
-    components: {
-        CardFlash,
-    },
-    data() {
-        return {
-            model: null,
-            cardOnFocus: 0,
-            scrolling: false,
-        };
-    },
-    watch: {
-        cardOnFocus(val) {
-            this.$emit('focused', val);
-        },
-    },
-    computed: {
-        mobile() {
-            return this.$vuetify.breakpoint.xsOnly;
-        },
-    },
-    methods: {
-        onCheck(val) {
-            if (val) {
-                this.handleScroll(
-                    {
-                        target: document.getElementById('cardslidercontainer'),
-                        deltaY:
-                            Math.max(
-                                document.documentElement.clientWidth,
-                                window.innerWidth || 400
-                            ) / 8,
-                    },
-                    true
-                );
-            }
-        },
-        onUpdate(val) {
-            const newData = [...this.value];
-            newData[newData.findIndex((obj) => obj.id === val.id)] = {
-                ...val,
-            };
-            this.$emit('input', newData);
-        },
-        onDelete(val) {
-            const index = this.value.findIndex((obj) => obj.id === val.id);
-            const newData = this.value.filter((obj) => obj.id !== val.id);
-            this.$emit('input', newData);
-            this.$emit('delete', {
-                val,
-                index,
-            });
-        },
-        handleScroll(event, onCheck = false) {
-            let container = null;
-            if (onCheck) {
-                container = event.target;
-            } else {
-                let pathLength = event.path.length;
-                for (let i = 0; i < pathLength; i++) {
-                    if (event.path[i].id === 'cardslidercontainer') {
-                        container = event.path[i];
-                        break;
-                    }
-                }
-            }
-            if (this.scrolling || !container) {
-                return;
-            }
-            if (onCheck) {
-                container = event.target;
-            }
-            container.scrollLeft += event.deltaY * 5;
-            this.scrolling = true;
-            setTimeout(() => {
-                this.scrolling = false;
-            }, 500);
-        },
-        handleFocusCount(event) {
-            const containerLeft = event.target.scrollLeft;
-            const sectionWidth = event.target.children[1].getBoundingClientRect()
-                .width;
-            this.cardOnFocus = containerLeft
-                ? Math.ceil(containerLeft / sectionWidth)
-                : 0;
-        },
-    },
-    created() {
-        this.$nextTick(() => {
-            const container = document.getElementById('cardslidercontainer');
-            container.addEventListener('scroll', this.handleFocusCount, false);
-            if (!this.mobile) {
-                container.addEventListener('wheel', this.handleScroll, false);
-            }
-        });
-    },
-    beforeDestroy() {
-        const container = document.getElementById('cardslidercontainer');
-        container.removeEventListener('scroll', this.handleFocusCount, false);
-        container.removeEventListener('wheel', this.handleScroll, false);
-    },
-};
+<script setup lang="ts">
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { useDisplay } from 'vuetify';
+import type { FlashCard, Label } from '@/types';
+import CardFlash from './CardFlash.vue';
+
+const props = withDefaults(
+  defineProps<{
+    modelValue: FlashCard[];
+    color?: string;
+    labels?: Label[];
+    browse?: boolean;
+    disabled?: boolean;
+  }>(),
+  { color: '', labels: () => [], browse: false, disabled: false },
+);
+const emit = defineEmits<{
+  'update:modelValue': [cards: FlashCard[]];
+  delete: [payload: { val: FlashCard; index: number }];
+  focused: [index: number];
+}>();
+
+const { xs } = useDisplay();
+const container = ref<HTMLElement | null>(null);
+const itemWidth = computed(() => (xs.value ? '82.5vw' : '70.5vw'));
+let wheelLocked = false;
+let focused = 0;
+
+function itemSize(): number {
+  const item = container.value?.querySelector<HTMLElement>('.card-slider__item');
+  return item?.getBoundingClientRect().width ?? 0;
+}
+
+function scrollByCards(count: number) {
+  container.value?.scrollBy({ left: count * itemSize(), behavior: 'smooth' });
+}
+
+function updateFocused() {
+  const size = itemSize();
+  const index = size && container.value ? Math.round(container.value.scrollLeft / size) : 0;
+  if (index !== focused) {
+    focused = index;
+    emit('focused', index);
+  }
+}
+
+// Desktop: turn vertical mouse-wheel movement into one card step at a time.
+function onWheel(e: WheelEvent) {
+  if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) {
+    return;
+  }
+  e.preventDefault();
+  if (wheelLocked) {
+    return;
+  }
+  wheelLocked = true;
+  scrollByCards(Math.sign(e.deltaY));
+  setTimeout(() => {
+    wheelLocked = false;
+  }, 400);
+}
+
+function onCheck(learned: boolean) {
+  if (learned) {
+    scrollByCards(1);
+  }
+}
+
+function onUpdate(card: FlashCard) {
+  emit(
+    'update:modelValue',
+    props.modelValue.map((c) => (c.id === card.id ? { ...card } : c)),
+  );
+}
+
+function onDelete(card: FlashCard) {
+  const index = props.modelValue.findIndex((c) => c.id === card.id);
+  emit(
+    'update:modelValue',
+    props.modelValue.filter((c) => c.id !== card.id),
+  );
+  emit('delete', { val: card, index });
+}
+
+onMounted(() => {
+  container.value?.addEventListener('wheel', onWheel, { passive: false });
+});
+onBeforeUnmount(() => {
+  container.value?.removeEventListener('wheel', onWheel);
+});
 </script>
 
 <style scoped>
-.group-card-slider {
-    display: flex;
-    overflow-x: scroll;
-    scroll-behavior: smooth;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
+.card-slider {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
 }
-section {
-    position: relative;
-    height: calc(100vh - 160px);
-    scroll-snap-align: none center;
+.card-slider__item {
+  position: relative;
+  flex: 0 0 auto;
+  height: calc(100vh - 160px);
+  scroll-snap-align: center;
 }
-.dummy-section {
-    width: 28px !important;
-    height: calc(100vh - 160px);
-}
-.group-card-slider::-webkit-scrollbar {
-    width: 0 !important;
-}
-.group-card-slider {
-    overflow: -moz-scrollbars-none;
-}
-.group-card-slider {
-    -ms-overflow-style: none;
-}
-.group-card-btn {
-    position: absolute;
-    bottom: 38px;
-}
-.group-card-btn--right {
-    left: calc(50% + 99px);
-}
-.group-card-btn--left {
-    left: calc(50% - 144px);
+.card-slider__spacer {
+  flex: 0 0 28px;
+  height: calc(100vh - 160px);
 }
 </style>
