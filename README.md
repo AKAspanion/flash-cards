@@ -66,6 +66,16 @@ Both addresses serve the same deploy. Each one the app is opened from must be li
 Firebase console > Authentication > Settings > **Authorized domains**, or Google sign-in fails there
 (email/password works everywhere). If you restrict the web API key by HTTP referrer, list both domains there too.
 
+Google's sign-in window shows the **auth domain** (`VUE_APP_AUTH_DOMAIN`). It is set to `flashcards.spanion.in`
+rather than the default `spanion-flash-cards.firebaseapp.com`; Firebase Hosting serves the `/__/auth/*` helper
+pages on any connected domain. Using a custom auth domain needs, in Google Cloud console > APIs & Services >
+Credentials > the *Web client (auto created by Google Service)*:
+- Authorized JavaScript origins: `https://flashcards.spanion.in`
+- Authorized redirect URIs: `https://flashcards.spanion.in/__/auth/handler`
+
+`firebase.json` allows that domain in the CSP `frame-src`, so sign-in also works when the app is opened on the
+`.web.app` address.
+
 ## Security
 
 - `firestore.rules` limits every document to its owner (`uid`) and checks the stored shape; tested in `tests/unit/firestore.rules.spec.ts`.
