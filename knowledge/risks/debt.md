@@ -1,7 +1,7 @@
 ---
 type: Technical Debt
 title: Technical debt
-description: Known weak spots worth fixing — whole-set rewrites with no size cap, no offline saves, rules that still allow label deletion, out-of-date compatibility comments, and rules that must be deployed by hand ahead of code.
+description: Known weak spots worth fixing — whole-set rewrites with no size cap, no offline saves, out-of-date compatibility comments, and rules that must be deployed by hand ahead of code.
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:30:00Z }
 verified: human:panditankit1995@gmail.com
 ---
@@ -17,8 +17,6 @@ verified: human:panditankit1995@gmail.com
 - **No offline saves.** The editor and study screens refuse to save while offline (`persist` in
   `src/views/Add.vue`, `saveProgress` in `src/views/View.vue`); nothing is queued. The approved plan
   `docs/plans/2026-11-02-offline-study.md` addresses it.
-- **Rules allow label deletion.** `firestore.rules` permits `delete` on `labels/{labelId}`, although labels are
-  never deleted ([labels cannot be deleted](../decisions/labels-cannot-be-deleted.md)).
 - **Out-of-date reasons in comments.** `firestore.rules`, `src/services/cardSetMapper.ts`, `src/stores/prefs.ts`
   and `vite.config.ts` give compatibility with the original app as the reason for a shape, but that app is no longer
   in use.
@@ -28,6 +26,7 @@ verified: human:panditankit1995@gmail.com
 
 ## History
 
+- 2026-11-03: "rules allow label deletion" was listed as debt; now intended, so account deletion can remove labels. See [Labels are deleted only with the account](../decisions/labels-deleted-only-with-account.md).
 - 2026-11-03: the whole-set format was "kept on purpose" for the original app; now no longer required. Label
   deletion was an open question; now decided against, which leaves the rules out of step. Separate rules deploys
   were listed as debt; now deliberate. See [Labels cannot be deleted](../decisions/labels-cannot-be-deleted.md) and
