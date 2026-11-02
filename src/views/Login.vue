@@ -152,11 +152,21 @@ export default {
         },
     },
     methods: {
+        goToApp() {
+            navigateToPath(this.$route.query.redirect || '/home');
+        },
         onGoolgeSignin() {
-            firebase.signInWithGoogle();
+            firebase
+                .signInWithGoogle()
+                .then(() => {
+                    this.goToApp();
+                })
+                .catch((err) => {
+                    this.$store.dispatch('SHOW_SNACK', err.message);
+                });
         },
         onGoogleSignUp() {
-            firebase.signUpWithGoogle();
+            this.onGoolgeSignin();
         },
         onSignup() {
             if (this.passValid) {
@@ -171,7 +181,7 @@ export default {
                             'SHOW_SNACK',
                             this.$t('toast.success.sign-up')
                         );
-                        navigateToPath('/home');
+                        this.goToApp();
                     })
                     .catch((err) => {
                         this.$store.dispatch(
@@ -191,7 +201,7 @@ export default {
             firebase
                 .signInWithEmail(this.user)
                 .then(() => {
-                    navigateToPath('/home');
+                    this.goToApp();
                 })
                 .catch((err) => {
                     this.$store.dispatch('SHOW_SNACK', err.message);
@@ -203,7 +213,7 @@ export default {
     },
     mounted() {
         if (firebase.getUser()) {
-            navigateToPath('/home');
+            this.goToApp();
         }
     },
 };

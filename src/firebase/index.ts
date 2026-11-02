@@ -20,6 +20,14 @@ class FirebaseWeb {
     }
 
     public initializeFirebase = () => {
+        const missing = ['apiKey', 'authDomain', 'projectId', 'appId']
+            .filter((key) => !this.firebaseConfig[key]);
+        if (missing.length) {
+            throw new Error(
+                `Firebase is not configured (missing ${missing.join(', ')}). ` +
+                'Copy .env.example to .env.local and fill in your Firebase web app config.',
+            );
+        }
         firebase.initializeApp(this.firebaseConfig);
     }
 
@@ -71,7 +79,17 @@ class FirebaseWeb {
     }
 
     public authChangeListener(callback: any) {
-        firebase.auth().onAuthStateChanged(callback);
+        return firebase.auth().onAuthStateChanged(callback);
+    }
+
+    // Resolves once with the current user (or null) after Firebase restores the session.
+    public getAuthUser = () => {
+        return new Promise((resolve, reject) => {
+            const unsubscribe = firebase.auth().onAuthStateChanged((user: any) => {
+                unsubscribe();
+                resolve(user);
+            }, reject);
+        });
     }
 
     public updateUserProfile = (updatedUser: any) => {
@@ -95,18 +113,16 @@ class FirebaseWeb {
         return this.signInWithGoogle();
     }
 
+    // Popup instead of redirect: browsers that partition third-party storage
+    // (Chrome 115+, Safari 16.1+, Firefox 109+) break signInWithRedirect when the
+    // app is not served from the authDomain.
     public signInWithFacebook = () => {
-        let provider: any = null;
-        provider = new firebase.auth.FacebookAuthProvider();
-        firebase.auth().signInWithRedirect(provider);
+        const provider = new firebase.auth.FacebookAuthProvider();
+        return firebase.auth().signInWithPopup(provider);
     }
     public signInWithGoogle = () => {
-        let provider: any = null;
-        provider = new firebase.auth.GoogleAuthProvider();
-        firebase.auth().signInWithRedirect(provider);
-    }
-    public signInResult() {
-        return firebase.auth().getRedirectResult();
+        const provider = new firebase.auth.GoogleAuthProvider();
+        return firebase.auth().signInWithPopup(provider);
     }
 
     public signOut = () => {

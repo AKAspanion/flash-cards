@@ -123,37 +123,39 @@ const router = new VueRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-  if (!firebase.isAppInitialized()) {
-    firebase.initializeFirebase();
-  }
+router.beforeEach(async (to, from, next) => {
   store.dispatch('AUTH_LOADING', true);
-  firebase.authChangeListener((user: any) => {
-    store.dispatch('AUTH_LOADING', false);
-    if (to.matched.some((record: any) => record.meta.requireAuth)) {
-      if (!user) {
-        store.dispatch('UNSET_USER');
-        store.dispatch('LOGOUT');
-        const nextObject: any = {
-          path: '/login',
-          redirect: from.fullPath,
-        };
-        next(nextObject);
-      } else {
-        store.dispatch('SET_USER', user);
-        store.dispatch('LOGIN');
-        next();
-      }
-    } else {
-      if (localStorage.getItem('isLoggedIn') === 'true') {
-        next({
-          path: '/home',
-        });
-      } else {
-        next();
-      }
+  let user: any = null;
+  try {
+    if (!firebase.isAppInitialized()) {
+      firebase.initializeFirebase();
     }
-  });
+    user = await firebase.getAuthUser();
+  } catch (err) {
+    console.error(err);
+    store.dispatch('AUTH_LOADING', false);
+    store.dispatch('SHOW_SNACK', (err as Error).message);
+    next(false);
+    return;
+  }
+  store.dispatch('AUTH_LOADING', false);
+
+  if (user) {
+    store.dispatch('SET_USER', user);
+    store.dispatch('LOGIN');
+  } else {
+    store.dispatch('UNSET_USER');
+    store.dispatch('LOGOUT');
+  }
+
+  const requireAuth = to.matched.some((record: any) => record.meta.requireAuth);
+  if (requireAuth && !user) {
+    next({ path: '/login', query: { redirect: to.fullPath } });
+  } else if (!requireAuth && user) {
+    next({ path: (to.query.redirect as string) || '/home' });
+  } else {
+    next();
+  }
 });
 
 export default router;

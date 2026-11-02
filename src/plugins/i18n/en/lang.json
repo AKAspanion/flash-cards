@@ -106,5 +106,25 @@
       "title": "Rate",
       "desc": "Rate on play store"
     }
+  },
+  "email": {
+    "enter": "Please enter your email"
+  },
+  "rule": {
+    "password": {
+      "required": "Please enter a password"
+    },
+    "space": {
+      "password": "Password cannot contain spaces",
+      "email": "Email cannot contain spaces"
+    }
+  },
+  "toast": {
+    "success": {
+      "sign-up": "Account created successfully!"
+    },
+    "error": {
+      "sign-up": "Could not create account. Please try again."
+    }
   }
 }
