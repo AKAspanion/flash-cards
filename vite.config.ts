@@ -51,6 +51,21 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  build: {
+    // The Firebase SDK chunk is ~570 kB raw (~170 kB gzip) on its own; warn only above that.
+    chunkSizeWarningLimit: 600,
+    rolldownOptions: {
+      output: {
+        // Long-lived vendor chunks: an app-only deploy leaves these cached in returning browsers.
+        codeSplitting: {
+          groups: [
+            { name: 'firebase', test: /node_modules[\\/](firebase|@firebase|@grpc|idb)[\\/]/ },
+            { name: 'vue', test: /node_modules[\\/](vue|@vue|vue-router|pinia|vue-i18n|@intlify)[\\/]/ },
+          ],
+        },
+      },
+    },
+  },
   optimizeDeps: {
     // Vuetify 4 note: avoids duplicate overlay stacks in dev (dialogs behind overlays).
     include: [

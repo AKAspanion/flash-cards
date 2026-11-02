@@ -126,6 +126,7 @@
           </div>
           <v-select
             v-model="prefs.setOrder"
+            :aria-label="t('settings.card-set.title')"
             class="settings__select"
             density="compact"
             hide-details

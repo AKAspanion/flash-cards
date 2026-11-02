@@ -15,6 +15,7 @@
           :color="cardColor"
           hide-details
           :model-value="flipped ? modelValue.back : modelValue.front"
+          :aria-label="flipped ? t('card.placeholder.back') : t('card.placeholder.front')"
           :placeholder="flipped ? t('card.placeholder.back') : t('card.placeholder.front')"
           rounded="xl"
           variant="outlined"
@@ -45,7 +46,7 @@
     >
       <div
         class="flash-card__face pa-6"
-        :style="{ backgroundColor: cardColor }"
+        :style="{ backgroundColor: faceColor }"
       >
         <div class="flash-card__content">
           <div
@@ -110,7 +111,7 @@
       </div>
       <div
         class="flash-card__face flash-card__face--back pa-6"
-        :style="{ backgroundColor: cardColor }"
+        :style="{ backgroundColor: faceColor }"
       >
         <div class="flash-card__content">
           <div
@@ -145,6 +146,7 @@ import { computed, ref } from 'vue';
 import { useDisplay } from 'vuetify';
 import { useI18n } from 'vue-i18n';
 import type { FlashCard, Label } from '@/types';
+import { shade } from '@/utils/color';
 import { useSessionStore } from '@/stores/session';
 
 const props = withDefaults(
@@ -172,6 +174,8 @@ const flipped = ref(false);
 const editing = ref(false);
 const textarea = ref<{ focus: () => void } | null>(null);
 const cardColor = computed(() => props.color || '#E91E63');
+// White text sits on the faces, so they use the AA-safe shade of the set colour.
+const faceColor = computed(() => shade(cardColor.value));
 const canEdit = computed(() => !props.browse && !props.disabled);
 
 function update<K extends keyof FlashCard>(key: K, value: FlashCard[K]) {

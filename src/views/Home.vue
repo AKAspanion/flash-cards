@@ -1,6 +1,9 @@
 <template>
   <div class="home">
-    <bar-top @click:left="router.push('/profile')">
+    <bar-top
+      :left-label="t('common.profile')"
+      @click:left="router.push('/profile')"
+    >
       <template #left-button>
         <v-avatar
           v-if="user?.photoURL && !imgErr"
@@ -57,6 +60,7 @@
             <v-text-field
               ref="searchBox"
               v-model="search"
+              :aria-label="t('common.search')"
               density="compact"
               hide-details
               prepend-inner-icon="mdi-magnify"

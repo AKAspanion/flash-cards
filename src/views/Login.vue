@@ -18,7 +18,6 @@
       >
         <v-form
           ref="form"
-          v-model="formValid"
           @submit.prevent="onSubmit"
         >
           <v-text-field
@@ -65,7 +64,6 @@
             block
             class="login__submit"
             color="primary"
-            :disabled="!formValid"
             flat
             height="48"
             :loading="busy"
@@ -124,8 +122,8 @@ const email = ref('');
 const password = ref('');
 const repassword = ref('');
 const isSignIn = ref(true);
-const formValid = ref<boolean | null>(null);
 const busy = ref(false);
+const form = ref<{ validate: () => Promise<{ valid: boolean; errors: { errorMessages: string[] }[] }> } | null>(null);
 
 const rules = {
   required: (message: string) => (v: string) => !!v || message,
@@ -163,8 +161,15 @@ async function run(action: () => Promise<unknown>, successMessage?: string) {
   }
 }
 
-function onSubmit() {
-  if (!formValid.value || busy.value) {
+// Validate on submit rather than disabling the button: password-manager autofill
+// often doesn't fire input events, which would leave a disabled button stuck.
+async function onSubmit() {
+  if (busy.value || !form.value) {
+    return;
+  }
+  const { valid, errors } = await form.value.validate();
+  if (!valid) {
+    session.showSnack(errors[0]?.errorMessages[0] ?? t('auth.error.generic'));
     return;
   }
   if (isSignIn.value) {

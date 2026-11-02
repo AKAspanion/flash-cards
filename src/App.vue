@@ -2,6 +2,7 @@
   <v-app>
     <v-progress-linear
       v-if="session.loading"
+      :aria-label="t('common.loading')"
       class="top-loader"
       color="primary"
       height="4"
@@ -89,14 +90,23 @@ function updateOnline() {
   session.online = navigator.onLine;
 }
 
+// Closing or reloading the tab mid-edit skips the router's save-on-leave, so ask first.
+function warnBeforeUnload(e: BeforeUnloadEvent) {
+  if (session.unsavedChanges || session.pending > 0) {
+    e.preventDefault();
+  }
+}
+
 onMounted(() => {
   window.addEventListener('online', updateOnline);
   window.addEventListener('offline', updateOnline);
+  window.addEventListener('beforeunload', warnBeforeUnload);
   updateOnline();
 });
 onBeforeUnmount(() => {
   window.removeEventListener('online', updateOnline);
   window.removeEventListener('offline', updateOnline);
+  window.removeEventListener('beforeunload', warnBeforeUnload);
 });
 </script>
 

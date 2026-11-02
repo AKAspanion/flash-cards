@@ -63,3 +63,26 @@ body {
 .option-row__label {
   flex: 1 1 auto;
 }
+
+/* WCAG AA contrast: Vuetify's default field label (~4.3:1) and placeholder are too faint. */
+.v-field:not(.v-field--focused) .v-field-label {
+  color: rgba(var(--v-theme-on-surface), 0.72);
+  opacity: 1;
+}
+.v-field input::placeholder,
+.v-field textarea::placeholder {
+  color: rgba(var(--v-theme-on-surface), 0.62);
+  opacity: 1;
+}
+
+/* Respect the OS "reduce motion" setting: card flips, page slides and list animations. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
