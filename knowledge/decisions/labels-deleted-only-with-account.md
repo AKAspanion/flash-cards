@@ -2,8 +2,8 @@
 type: Decision
 title: Labels are deleted only with the account
 description: The app never deletes a single label, but firestore.rules keeps the owner's delete on labels so that deleting an account can remove its labels from the browser.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:41:08Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Labels are deleted only with the account
