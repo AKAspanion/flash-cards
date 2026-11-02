@@ -11,6 +11,7 @@ let billing: CloudBillingClient | undefined;
 export const billingKillSwitch = onMessagePublished(
   {
     topic: 'budget-alerts',
+    region: 'us-east1',
     // Dedicated account holding only Project Billing Manager on this project.
     serviceAccount: 'billing-kill-switch@',
     maxInstances: 1,

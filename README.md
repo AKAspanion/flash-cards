@@ -94,9 +94,15 @@ One-time setup in the Google Cloud console for `spanion-flash-cards`, signed in 
    billing off for this project, and it can't touch the billing account or other projects.
 2. **API:** enable the [Cloud Billing API](https://console.cloud.google.com/apis/library/cloudbilling.googleapis.com?project=spanion-flash-cards).
 3. **Deploy:** `npm run deploy:functions`. This creates the function and its Pub/Sub topic `budget-alerts`.
-4. **Connect the budget:** Billing > Budgets & alerts > the monthly budget > Edit > Actions >
+   The first deploy may stop with a cleanup-policy error after the function is created; run
+   `npx --yes firebase-tools@15.34.2 functions:artifacts:setpolicy --location us-east1 --force` once.
+4. **Let the trigger call the function:** Cloud Run > `billingkillswitch` > **Security** (or Permissions) >
+   **Add principal** `billing-kill-switch@spanion-flash-cards.iam.gserviceaccount.com` with the
+   **Cloud Run Invoker** role. Pub/Sub messages are delivered as that account, and the Firebase CLI only grants
+   invoke rights for HTTP and scheduled functions. Without the role, the logs show `lacks {run.routes.invoke}`.
+5. **Connect the budget:** Billing > Budgets & alerts > the monthly budget > Edit > Actions >
    **Connect a Pub/Sub topic to this budget** > project `spanion-flash-cards`, topic `budget-alerts` > Save.
-5. **Check the wiring:** Pub/Sub > Topics > `budget-alerts` > Messages > **Publish message** with the body
+6. **Check the wiring:** Pub/Sub > Topics > `budget-alerts` > Messages > **Publish message** with the body
    `{"costAmount": 0.5, "budgetAmount": 5, "currencyCode": "USD"}`. The function's logs should show
    `Budget check: under-budget`. Never publish a `costAmount` at or above `budgetAmount`: that really turns
    billing off.
