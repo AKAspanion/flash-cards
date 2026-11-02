@@ -27,9 +27,15 @@ Written by `cardSetToDoc` in `src/services/cardSetMapper.ts`:
   Tested in `tests/unit/cardSetMapper.spec.ts`.
 - `firestore.rules` (`validSet`) requires `cards` to be a string and `labels` a list on every create and update,
   and an update may not change `id`.
-- `cards` stays a JSON string because older app versions parse it (comment in `firestore.rules`); see
-  [original app compatibility](../decisions/original-app-compatibility.md).
+- `cards` is a JSON string, as the original app stored it. The original app is no longer in use, so the format may
+  change, as long as the version that is live can still read it; see
+  [original app compatibility](../decisions/original-app-compatibility.md). The size limit to come is
+  [set size limit](../requirements/set-size-limit.md).
 - Every save rewrites the whole document, all cards included.
+
+## History
+
+- 2026-11-03: `cards` had to stay a JSON string for older app versions; now no old version is in use, and the format may change. See [Original app compatibility](../decisions/original-app-compatibility.md).
 
 ## Sources
 

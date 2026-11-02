@@ -54,14 +54,20 @@ ESLint with the Vue and TypeScript recommended configs (`./eslint.config.js`); E
   `git.message`, `git.ticket`.
 - Work merges into `master` (16 of 16 merges), almost always squashed (15 of 16). Policy: `git.base`,
   `git.squash`.
-- Branch names have no convention beyond Claude Code's worktree names; ga's default applies. Policy:
-  `git.branch`.
+- Branch names start with a conventional type, `feat/<topic>`, `fix/<topic>` and so on, never `claude/…`, as the
+  developer set on 2026-11-03. Policy: `git.branch`.
+- Every pull request is reviewed by the developer before it merges, Hindi strings included
+  ([PR review](../decisions/pr-review.md)).
 
 ## Commands
 
 From `package.json` scripts, npm (`package-lock.json`). Policy: `checks.commands.typecheck`,
 `checks.commands.lint`, `checks.commands.test`, `checks.commands.e2e`. There is no lint-fix or format-check
 command.
+
+## History
+
+- 2026-11-03: branch names had no convention (mostly `claude/…`); now `<type>/<topic>`, as the developer set, so the history no longer reflects the rule.
 
 ## Sources
 

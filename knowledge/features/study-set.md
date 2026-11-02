@@ -20,7 +20,7 @@ see its back and marks it learned or not; marking a card learned moves on to the
 ## Rules
 
 - Flipping a card that is marked learned, while online, marks it not learned again: peeking at the answer counts as
-  not knowing it (comment in `CardFlash.vue`, `flip`).
+  not knowing it (comment in `CardFlash.vue`, `flip`). The developer confirmed this rule on 2026-11-03.
 - Marking a card learned scrolls to the next card (`onCheck` in `GroupCardFlash.vue`).
 - Learned state is saved with the whole set when the user leaves the screen, if anything changed and the app is
   online; if saving fails, the user is asked whether to discard. See

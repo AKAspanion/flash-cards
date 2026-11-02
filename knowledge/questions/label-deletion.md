@@ -21,7 +21,7 @@ labels that no longer exist (`CardSet.labels` in `src/types.ts`).
 
 ## Status
 
-Open
+Answered: labels cannot be deleted. See [Labels cannot be deleted](../decisions/labels-cannot-be-deleted.md).
 
 ## Sources
 

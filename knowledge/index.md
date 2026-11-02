@@ -10,6 +10,7 @@ Start with the [project overview](project/overview.md).
 
 - [Project](project/index.md) - overview, architecture and conventions
 - [Apps](apps/index.md) - the web app and the Cloud Functions
+- [Requirements](requirements/index.md) - who it is for, and what is still to be added
 - [Data](data/index.md) - the Firestore collections
 - [Features](features/index.md) - what a person does with the app, screen by screen
 - [Domain](domain/index.md) - business rules the code enforces

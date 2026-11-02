@@ -21,10 +21,14 @@ name and photo URL, create a label, select a label to rename it, and sign out.
 
 - Profile changes go to Firebase Auth through `updateUserProfile`, which sends only changed fields and clears a
   field left empty.
-- Labels are created with `library.createLabel` and renamed with `library.renameLabel`; there is no delete (see
-  [label deletion](../questions/label-deletion.md)).
+- Labels are created with `library.createLabel` and renamed with `library.renameLabel`; labels are never deleted
+  ([labels cannot be deleted](../decisions/labels-cannot-be-deleted.md)).
 - Signing out goes to `/login`; the router's auth watcher clears the loaded library
   ([auth](../security/auth.md)).
+
+## History
+
+- 2026-11-03: label deletion was an open question; now decided against. See [Labels cannot be deleted](../decisions/labels-cannot-be-deleted.md).
 
 ## Sources
 

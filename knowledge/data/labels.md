@@ -21,7 +21,12 @@ Created by `addLabel` and renamed by `renameLabel` in `src/services/firebase.ts`
 - `firestore.rules` requires `label` to be a string on create and update, and only the owner may read, write or
   delete.
 - Sets point at labels by document id (`CardSet.labels`); renaming a label therefore needs no change to sets.
-- The client has no delete call for labels: see [label deletion](../questions/label-deletion.md).
+- Labels are never deleted: see [labels cannot be deleted](../decisions/labels-cannot-be-deleted.md). The rules
+  still allow `delete`, which that decision notes.
+
+## History
+
+- 2026-11-03: label deletion was an open question; now decided against. See [Labels cannot be deleted](../decisions/labels-cannot-be-deleted.md).
 
 ## Sources
 

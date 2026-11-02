@@ -5,7 +5,7 @@
       "message": "free",
       "ticket": "none",
       "base": "master",
-      "branch": "feat/<topic>",
+      "branch": "<type>/<topic>",
       "squash": true
     },
     "checks": {

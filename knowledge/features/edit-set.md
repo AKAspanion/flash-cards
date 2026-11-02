@@ -26,7 +26,8 @@ Undo). An options panel can move the set to the bin.
   sent to `/home` with a "set not found" snack.
 - Saving happens when the user leaves by any route (back button, nav, browser back), in the editor's
   `onBeforeRouteLeave`, not only on the save button. See [unsaved changes](../domain/unsaved-changes.md).
-- A brand-new set with no cards is not saved (`needsSave`, `canSave`); an edited set always is.
+- A brand-new set with no cards is not saved (`needsSave`, `canSave`); an edited set always is. The developer
+  confirmed this rule on 2026-11-03.
 - A save is refused while offline, with a snack, and concurrent saves are ignored so a set is never created twice
   (`persist`).
 

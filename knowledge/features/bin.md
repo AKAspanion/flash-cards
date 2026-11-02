@@ -21,7 +21,8 @@ generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
 - Moving to the bin (from [library](library.md) or [the editor](edit-set.md)) sets `trashed: true` and saves the
   set; restoring sets it back to `false`.
 - Delete forever calls `deleteCardSet`, removing the Firestore document; it can't be undone.
-- Nothing empties the bin automatically.
+- Nothing empties the bin automatically, by decision: see
+  [the bin keeps sets](../decisions/bin-keeps-sets-indefinitely.md).
 
 ## Sources
 

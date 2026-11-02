@@ -19,14 +19,16 @@ Enforced by `firestore.rules`, the only server-side check:
 - `flash-card-sets/{setId}`: read and delete only if the stored `uid` is the caller's (`ownsStored`); create only if
   the new `uid` is the caller's and the shape is valid (`ownsIncoming`, `validSet`); update needs both, and may not
   change `id`.
-- `labels/{labelId}`: the same ownership checks, and `label` must be a string.
+- `labels/{labelId}`: the same ownership checks, and `label` must be a string. The rules allow `delete`, although
+  labels are never deleted ([labels cannot be deleted](../decisions/labels-cannot-be-deleted.md)).
 - Anything else in the database is denied, since no other path is matched.
 - A signed-out caller can do nothing (`signedIn`).
 
 The app's own queries filter by `uid` (`fetchCardSets`, `fetchLabels`), which the rules require for a list query to
 be allowed. Tested on the emulator by `tests/unit/firestore.rules.spec.ts`.
 
-Rules are deployed only by hand: `deploy.yml` deploys them when run manually with `deploy_rules` ticked
+Rules are deployed only by hand, by decision ([manual deploys](../decisions/manual-rules-and-functions-deploy.md)):
+`deploy.yml` deploys them when run manually with `deploy_rules` ticked
 ([CI](../quality/ci.md)).
 
 ## Sources

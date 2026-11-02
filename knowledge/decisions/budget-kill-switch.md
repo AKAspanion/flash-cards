@@ -19,6 +19,9 @@ The Firebase project is on the Blaze plan, which has no spending cap (README, "B
 `functions/src/killSwitch.ts`). Forecast alerts don't trigger it. It runs as a dedicated service account that holds
 only Project Billing Manager on this project.
 
+The monthly budget is 5 USD (stated by the developer on 2026-11-03). It is set in the Cloud Billing console, not
+in this repository.
+
 ## Consequences
 
 - Without billing the project falls back to the free Spark limits: Hosting, Auth and Firestore keep working within

@@ -1,5 +1,5 @@
 <!-- GA-WORKFLOW:START -->
-<!-- ga:rules 9a85f06aecb2 -->
+<!-- ga:rules 279f9e819019 -->
 
 ## How work flows here
 
@@ -44,7 +44,7 @@ Set in `.ga/config.json` under `workflow`. `/ga:workflow` asks the developer and
 - Before the work is done, run smoke (`ga.mjs run smoke --since <the branch's base>`: the apps and the routes the branch adds start and answer, and no app's latest compile failed), typecheck (`npm run type-check`) and lint (`npm run lint`). Run those for what the branch changed: `ga.mjs run checks --since <the branch's base> --only typecheck,lint` gives each command, narrowed to the packages it changed and those that depend on them. Test and e2e run only when the developer asks ("run the tests", "run e2e", "run all checks"): `ga.mjs run checks --since <the branch's base> --only <checks>` gives each command, narrowed to what changed. Then `ga:verify-work`: read the output, don't assume it.
 - Commit at the end of each step: each spec, each approved design, each task. In a plan run the implementer commits its task, and the task is complete then. Stage the step's files by name, never `git add -A`, with the knowledge that describes them in the same commit.
 - Commit messages are plain sentences.
-- Build on a branch named `feat/<topic>`.
+- Build on a branch named `<type>/<topic>`.
 - Branch from, and merge back into, `master`. Until ga's own setup is on `master` (`git cat-file -e master:.ga/config.json` fails), branch from the branch that holds it, and say so: a branch cut from `master` then has no `knowledge/` and no `.ga/`.
 - Ask before pushing.
 - Ask before opening a merge request.
@@ -103,77 +103,30 @@ Never configurable, whatever the project sets:
 
 _Generated from `knowledge/`. Do not edit by hand._
 
+_45 concepts, so sections other than project/ and apps/ show counts. Follow `knowledge/index.md` into them._
+
+- [data/](knowledge/data/) — 3 concepts
+- [decisions/](knowledge/decisions/) — 9 concepts
+- [design-system/](knowledge/design-system/) — 3 concepts
+- [domain/](knowledge/domain/) — 1 concept
+- [features/](knowledge/features/) — 7 concepts
+- [integrations/](knowledge/integrations/) — 2 concepts
+- [operations/](knowledge/operations/) — 2 concepts
+- [quality/](knowledge/quality/) — 2 concepts
+- [questions/](knowledge/questions/) — 1 concept
+- [requirements/](knowledge/requirements/) — 6 concepts
+- [risks/](knowledge/risks/) — 1 concept
+- [security/](knowledge/security/) — 3 concepts
+
 ### apps
 
 - [flash-cards web app](knowledge/apps/flash-cards.md) _(Application)_ — The Vue 3 + Vuetify PWA at the repository root, built by Vite and served by Firebase Hosting; every screen except login needs a signed-in user.
 - [Cloud Functions](knowledge/apps/functions.md) _(Application)_ — The functions/ codebase deployed to Firebase, holding one Pub/Sub-triggered function, billingKillSwitch, that unlinks billing when the monthly budget is spent.
-
-### data
-
-- [flash-card-sets collection](knowledge/data/flash-card-sets.md) _(Data Model)_ — Fields of a stored flashcard set, the defaults the mapper applies when reading, and the shape the security rules require.
-- [labels collection](knowledge/data/labels.md) _(Data Model)_ — A user's labels — a name and an owner uid — referenced from sets by document id.
-- [Data model](knowledge/data/model.md) _(Data Model)_ — Two Firestore collections, flash-card-sets and labels, each document owned by one user through its uid; cards are embedded in their set as a JSON string.
-
-### decisions
-
-- [Unlink billing when the monthly budget is spent](knowledge/decisions/budget-kill-switch.md) _(Decision)_ — Because the Blaze plan has no spending cap, a Cloud Function unlinks the billing account once actual spend reaches the budget, dropping the project to the free Spark limits.
-- [This repository's code is continued, not rewritten](knowledge/decisions/codebase-is-continued.md) _(Decision)_ — The flash-cards code at the repository root is the project's own live codebase, adopted into ga on 2026-11-03; work builds on it in place rather than replacing or migrating it.
-- [Google sign-in uses a popup, not a redirect](knowledge/decisions/google-sign-in-popup.md) _(Decision)_ — signInWithPopup is used because browsers that partition third-party storage break signInWithRedirect when the app isn't served from the auth domain.
-- [Stay compatible with the original app](knowledge/decisions/original-app-compatibility.md) _(Decision)_ — The rewrite keeps the original app's Firestore schema, localStorage keys, VUE_APP_ env names and service-worker file name, so existing data, settings, .env files and installed copies keep working.
-
-### design-system
-
-- [Accessibility](knowledge/design-system/accessibility.md) _(Convention)_ — Screens must pass axe WCAG 2.1 AA scans on desktop and mobile, text on set colours must meet AA contrast, and the OS reduce-motion setting is respected.
-- [Components](knowledge/design-system/components.md) _(Component Inventory)_ — The app's own Vue components in src/components, what each is for, and which screens use them.
-- [Design tokens](knowledge/design-system/tokens.md) _(Design Tokens)_ — Brand colours and light/dark surfaces are defined once in the Vuetify theme; set colours are darkened by TEXT_SAFE_FACTOR so white text on them meets WCAG AA.
-
-### domain
-
-- [Unsaved changes are saved on leave, never lost to an update](knowledge/domain/unsaved-changes.md) _(Business Rule)_ — Screens with edits save when the user navigates away, warn before the tab closes, and hold back a new app version until nothing is unsaved.
-
-### features
-
-- [Bin](knowledge/features/bin.md) _(Feature)_ — Sets moved to the bin are only flagged trashed; from the bin the user restores them or deletes them permanently after confirming.
-- [Create and edit a set](knowledge/features/edit-set.md) _(Feature)_ — The set editor — title, colour, labels and cards — which saves when the user leaves it, and never saves an empty new set.
-- [Library (home)](knowledge/features/library.md) _(Feature)_ — The home screen listing the user's sets, with search, label and favourite filters, the saved sort order, swipe gestures, and move to bin with undo.
-- [Profile and labels](knowledge/features/profile-and-labels.md) _(Feature)_ — The profile screen — display name and photo URL, account dates, sign out — which is also where labels are created and renamed.
-- [Settings and about](knowledge/features/settings-and-about.md) _(Feature)_ — Device-local settings (language, dark mode, set order, favourites on top) and the about screen with the app version and share links.
-- [Sign in and sign up](knowledge/features/sign-in.md) _(Feature)_ — Email/password sign-in and sign-up, or Google sign-in in a popup, then a return to the page the user first asked for.
-- [Study a set](knowledge/features/study-set.md) _(Feature)_ — Review a set card by card, flip to see the answer, mark cards learned; progress is saved when the user leaves.
-
-### integrations
-
-- [Cloud Billing and budget alerts](knowledge/integrations/cloud-billing.md) _(Integration)_ — The kill-switch function reads budget notifications from Pub/Sub and calls the Cloud Billing API to check and unlink the project's billing account.
-- [Firebase (Auth, Firestore, Hosting)](knowledge/integrations/firebase.md) _(Integration)_ — The app's whole backend — Auth for sign-in, Firestore for data, Hosting for serving — configured from VUE_APP_* variables, with local emulators for development and tests.
-
-### operations
-
-- [Environment variables](knowledge/operations/environment.md) _(Runbook)_ — Every setting the app and its pipelines read — the VUE_APP_* Firebase web config, the emulator switch, the deploy variables and secret — and where each is read.
-- [Run locally](knowledge/operations/run-locally.md) _(Runbook)_ — How to run the app against the real Firebase project or against local emulators, and which ports each uses.
 
 ### project
 
 - [Architecture](knowledge/project/architecture.md) _(Architecture)_ — A Vue SPA that reads and writes Firestore directly through one service module, with Pinia stores in between and Firestore rules as the only server-side check; plus one Pub/Sub-triggered Cloud Function.
 - [Conventions](knowledge/project/conventions.md) _(Conventions)_ — How code is written in this repository — where files go, how components are named, how errors reach the user, where tests live, and which tools and policy keys govern lint, git and checks.
 - [Flashcards](knowledge/project/overview.md) _(Project Overview)_ — A learning and memorisation PWA where signed-in users build flashcard sets, study them and track which cards they have learned.
-
-### quality
-
-- [CI and deploy](knowledge/quality/ci.md) _(Runbook)_ — GitHub Actions runs lint, types, unit, rules, build, audits and e2e on every pull request; a push to master runs the same checks and then deploys hosting; rules deploy only on a manual run.
-- [Testing](knowledge/quality/testing.md) _(Test Strategy)_ — Vitest unit tests for logic and stores, emulator tests for the Firestore rules, and Playwright end-to-end and accessibility tests on a production build against the emulators, on desktop and mobile.
-
-### questions
-
-- [Should users be able to delete labels?](knowledge/questions/label-deletion.md) _(Open Question)_ — The Firestore rules allow deleting a label, but the app has no delete call or screen for it, and sets would keep the deleted label's id.
-
-### risks
-
-- [Technical debt](knowledge/risks/debt.md) _(Technical Debt)_ — Known weak spots worth fixing — whole-set rewrites with a document size ceiling, no offline saves, labels that can't be deleted, and rules deployed separately from hosting.
-
-### security
-
-- [Authentication](knowledge/security/auth.md) _(Security)_ — Firebase Auth (email/password and Google) holds the session; a router guard sends signed-out users to /login, and a watcher follows sign-in changes from other tabs.
-- [Data protection](knowledge/security/data-protection.md) _(Security)_ — What personal data the app holds and where, and the protections around it — owner-only rules, hosting security headers, local env files out of git, and a pinned, audited CI.
-- [Roles and access](knowledge/security/roles.md) _(Security)_ — There is one role, the signed-in owner; firestore.rules lets each user read and write only documents whose uid is theirs, and checks the stored shape.
 
 <!-- OKF-KNOWLEDGE-MAP:END -->

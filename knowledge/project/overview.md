@@ -13,7 +13,8 @@ generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
 Flashcards is a progressive web app for learning and memorising. A person signs in (email and password, or Google),
 builds sets of two-sided cards, studies a set card by card, and marks cards learned. Sets can be coloured, labelled,
 favourited, searched and sorted, and moved to a bin before being deleted. The interface is in English and Hindi.
-Each person sees only their own data. It is live at `https://flashcards.spanion.in`, as the README says.
+Each person sees only their own data. It is for anyone in India who would like to learn with flashcards
+([personas](../requirements/personas.md)). It is live at `https://flashcards.spanion.in`, as the README says.
 
 ## Applications
 
@@ -27,7 +28,9 @@ How they fit together is in [architecture](architecture.md); how code is written
 
 ## Open
 
-- [Label deletion](../questions/label-deletion.md): the rules allow deleting a label, but no screen offers it.
+- Who it is for: [personas](../requirements/personas.md). What is still to be added: the
+  [requirements](../requirements/index.md) (password reset, email verification, account deletion and export, a set
+  size limit, the Android app).
 - Nine usability features are specified and planned in `docs/specs/2026-11-02-usability-features.md` and
   `docs/plans/`, approved and not yet learned into this knowledge base.
 

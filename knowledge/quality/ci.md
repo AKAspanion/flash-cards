@@ -18,7 +18,10 @@ generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
   deploys `firestore.rules`. One deploy runs at a time (concurrency group `deploy-production`).
 - `.github/workflows/codeql.yml`: CodeQL analysis on pull requests, pushes and weekly.
 - `.github/dependabot.yml`: weekly grouped npm and GitHub Actions updates.
-- Cloud Functions are not deployed by CI: `npm run deploy:functions` from a developer's machine.
+- Cloud Functions are not deployed by CI: `npm run deploy:functions` from a developer's machine. Rules and
+  functions are deployed by hand on purpose: see [manual deploys](../decisions/manual-rules-and-functions-deploy.md).
+- Every pull request is reviewed by the developer, Hindi strings included: see
+  [PR review](../decisions/pr-review.md).
 
 ## Gates
 
