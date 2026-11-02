@@ -11,6 +11,7 @@ const AUTH_ERROR_KEYS: Record<string, string> = {
   'auth/popup-blocked': 'auth.error.popup-blocked',
   'auth/operation-not-allowed': 'auth.error.not-allowed',
   'auth/user-disabled': 'auth.error.disabled',
+  'auth/unauthorized-domain': 'auth.error.unauthorized-domain',
 };
 
 /** Popup closed by the user: not worth an error message. */

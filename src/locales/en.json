@@ -200,7 +200,8 @@
       "popup-blocked": "The sign-in popup was blocked. Allow popups for this site and try again.",
       "not-allowed": "This sign-in method is not enabled.",
       "disabled": "This account has been disabled.",
-      "generic": "Something went wrong. Please try again."
+      "generic": "Something went wrong. Please try again.",
+      "unauthorized-domain": "Google sign-in is not enabled for this web address yet. Use email and password, or try again from the main site."
     }
   },
   "card": {

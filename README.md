@@ -1,7 +1,7 @@
 # Flashcards
 
 A learning and memorization PWA: create flashcard sets, review them, and track what you've learned.
-Live at https://spanion-flash-cards.web.app.
+Live at https://flashcards.spanion.in (also served at https://spanion-flash-cards.web.app).
 
 **Stack:** Vue 3, Vuetify 4, Vite 8, Pinia, Vue Router, vue-i18n (English and Hindi), Firebase 13 (Auth + Firestore), TypeScript.
 
@@ -54,9 +54,18 @@ In **Settings > Secrets and variables > Actions**:
 - **Secret** `FIREBASE_SERVICE_ACCOUNT`: JSON key of a Google Cloud service account with the
   *Firebase Hosting Admin* role (plus *Firebase Rules Admin* if you deploy rules from CI).
   `npx firebase-tools init hosting:github` can create it and add the secret for you.
-- **Variables** `FIREBASE_PROJECT_ID` and the `VUE_APP_*` values from `.env.example`.
+- **Variables** `FIREBASE_PROJECT_ID` and the `VUE_APP_*` values from `.env.example`; optionally `APP_URL`
+  (the address shown on deploys, e.g. `https://flashcards.spanion.in`).
+- The service account needs *Firebase Hosting Admin* and *Service Usage Consumer*
+  (the CLI checks that the Hosting API is enabled before deploying).
 
 Until these exist, `deploy.yml` fails with a message naming what is missing and `preview.yml` is skipped.
+
+### Domains
+
+Both addresses serve the same deploy. Each one the app is opened from must be listed in
+Firebase console > Authentication > Settings > **Authorized domains**, or Google sign-in fails there
+(email/password works everywhere). If you restrict the web API key by HTTP referrer, list both domains there too.
 
 ## Security
 
