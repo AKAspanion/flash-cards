@@ -1,440 +1,293 @@
 <template>
-    <div class="home-container">
-        <bar-top @click:left="goToProfile" @click:right="openSearch">
-            <template #left-button>
-                <v-avatar v-if="user.photoURL" size="32">
-                    <v-img
-                        v-show="!imgErr"
-                        @load="imgErr = false"
-                        @error="imgErr = true"
-                        :src="user.photoURL || 'a'"
-                    ></v-img>
-                    <v-icon v-show="imgErr" size="32" color="primary">
-                        mdi-face
-                    </v-icon>
-                </v-avatar>
-            </template>
-            <template #left-text>
-                {{ user.displayName ? user.displayName.split(' ')[0] : 'na' }}
-            </template>
-            <template #right-button>
-                <v-menu :close-on-content-click="false" nudge-top="17">
-                    <template #activator="{ on }">
-                        <v-icon
-                            v-on="on"
-                            size="32"
-                            color="primary"
-                            :disabled="!flashCardSets.length"
-                        >
-                            mdi-magnify
-                        </v-icon>
-                    </template>
-                    <v-card class="pa-2">
-                        <v-text-field
-                            dense
-                            outlined
-                            hide-details
-                            ref="searchbox"
-                            v-model="searchText"
-                            prepend-inner-icon="mdi-magnify"
-                        >
-                        </v-text-field>
-                    </v-card>
-                </v-menu>
-            </template>
-            <template #right-text>
-                {{ $t('common.search') }}
-            </template>
-            <div class="mx-4">
-                <v-chip
-                    v-bind="searchChipAttrs"
-                    v-if="sanitizedSearchText"
-                    @click:close="searchText = ''"
-                >
-                    <v-icon left small>mdi-magnify</v-icon>
-                    {{ sanitizedSearchText.toLowerCase() }}
-                </v-chip>
-                <v-chip
-                    v-if="filterLabel"
-                    v-bind="searchChipAttrs"
-                    @click:close="filterLabel = null"
-                >
-                    <v-icon left small>mdi-label-variant</v-icon>
-                    {{ filterLabel.label }}
-                </v-chip>
-                <v-chip
-                    v-if="starFilter"
-                    v-bind="searchChipAttrs"
-                    @click:close="starFilter = false"
-                >
-                    <v-icon left small>mdi-star</v-icon>
-                    {{ $t('common.favourite') }}
-                </v-chip>
+  <div class="home">
+    <bar-top @click:left="router.push('/profile')">
+      <template #left-button>
+        <v-avatar
+          v-if="user?.photoURL && !imgErr"
+          size="32"
+        >
+          <v-img
+            :alt="t('common.profile')"
+            :src="user.photoURL"
+            @error="imgErr = true"
+          />
+        </v-avatar>
+        <v-icon
+          v-else
+          color="primary"
+          size="32"
+        >
+          mdi-account-circle
+        </v-icon>
+      </template>
+      <template #left-text>
+        {{ firstName }}
+      </template>
+      <template #right>
+        <v-menu
+          :close-on-content-click="false"
+          location="bottom end"
+          @after-enter="searchBox?.focus()"
+        >
+          <template #activator="{ props: activator }">
+            <v-btn
+              v-bind="activator"
+              :aria-label="t('common.search')"
+              :disabled="!library.sets.length"
+              height="64"
+              icon
+              variant="text"
+              width="64"
+            >
+              <v-icon
+                color="primary"
+                size="32"
+              >
+                mdi-magnify
+              </v-icon>
+            </v-btn>
+            <div class="text-label-medium text-uppercase">
+              {{ t('common.search') }}
             </div>
-        </bar-top>
-        <div class="flash-card-set-container">
-            <template v-if="pageLoading">
-                <div class="mt-n3">
-                    <v-row no-gutters class="px-4 pb-5">
-                        <v-col
-                            md="6"
-                            lg="4"
-                            :key="i"
-                            class="pa-0"
-                            v-for="i in loaderCardLength"
-                        >
-                            <shimmer-card-flash-set
-                                class="mt-6 mx-4"
-                            ></shimmer-card-flash-set>
-                        </v-col>
-                    </v-row>
-                </div>
-            </template>
-            <template v-else>
-                <container-empty
-                    :icon="
-                        sanitizedSearchText
-                            ? 'mdi-card-bulleted-off-outline'
-                            : 'mdi-card-bulleted-outline'
-                    "
-                    v-if="!flashCardSets.length"
-                    :title="
-                        sanitizedSearchText
-                            ? $t('empty.filter.title')
-                            : $t('empty.home.title')
-                    "
-                    :subtitle="
-                        sanitizedSearchText
-                            ? $t('empty.filter.subtitle')
-                            : $t('empty.home.subtitle')
-                    "
-                >
-                    <v-btn
-                        v-if="!sanitizedSearchText"
-                        rounded
-                        color="primary"
-                        @click="goToAdd"
-                    >
-                        {{ $t('home.set.add') }}
-                    </v-btn>
-                </container-empty>
-                <v-slide-y-reverse-transition
-                    group
-                    tag="div"
-                    hide-on-leave
-                    class="row px-4 no-gutters"
-                >
-                    <v-col
-                        md="6"
-                        lg="4"
-                        sm="6"
-                        cols="12"
-                        :key="card.id"
-                        class="py-3 px-4"
-                        v-for="card in flashCardSets"
-                    >
-                        <card-flash-set
-                            @fav="onFav"
-                            @star="onStar"
-                            @delete="onDelete"
-                            @label="onLabelClick"
-                            :disabled="loading"
-                            :card="card"
-                        ></card-flash-set>
-                    </v-col>
-                </v-slide-y-reverse-transition>
-            </template>
-        </div>
-        <option-panel title="menu" ref="settingspanel">
-            <v-list-item class="px-0">
-                <v-list-item-content>
-                    <v-list-item-title>
-                        {{ $t('common.bin') }}
-                    </v-list-item-title>
-                </v-list-item-content>
-                <v-list-item-action>
-                    <v-btn
-                        icon
-                        small
-                        color="primary"
-                        @click.stop="goToFromMenu('/bin')"
-                    >
-                        <v-icon>
-                            mdi-trash-can
-                        </v-icon>
-                    </v-btn>
-                </v-list-item-action>
-            </v-list-item>
-            <v-list-item class="px-0">
-                <v-list-item-content>
-                    <v-list-item-title>
-                        {{ $t('common.labels') }}
-                    </v-list-item-title>
-                </v-list-item-content>
-                <v-list-item-action>
-                    <v-btn
-                        icon
-                        small
-                        color="primary"
-                        @click.stop="goToFromMenu('/profile')"
-                    >
-                        <v-icon>
-                            mdi-label-variant
-                        </v-icon>
-                    </v-btn>
-                </v-list-item-action>
-            </v-list-item>
-            <v-list-item class="px-0">
-                <v-list-item-content>
-                    <v-list-item-title>
-                        {{ $t('common.about') }}
-                    </v-list-item-title>
-                </v-list-item-content>
-                <v-list-item-action>
-                    <v-btn
-                        icon
-                        small
-                        color="primary"
-                        @click.stop="goToFromMenu('/info')"
-                    >
-                        <v-icon>
-                            mdi-information
-                        </v-icon>
-                    </v-btn>
-                </v-list-item-action>
-            </v-list-item>
-            <v-list-item class="px-0">
-                <v-list-item-content>
-                    <v-list-item-title>
-                        {{ $t('common.settings') }}
-                    </v-list-item-title>
-                </v-list-item-content>
-                <v-list-item-action>
-                    <v-btn
-                        icon
-                        small
-                        color="primary"
-                        @click.stop="goToFromMenu('/settings')"
-                    >
-                        <v-icon>
-                            mdi-settings
-                        </v-icon>
-                    </v-btn>
-                </v-list-item-action>
-            </v-list-item>
-        </option-panel>
+          </template>
+          <v-card
+            class="pa-2"
+            width="280"
+          >
+            <v-text-field
+              ref="searchBox"
+              v-model="search"
+              density="compact"
+              hide-details
+              prepend-inner-icon="mdi-magnify"
+              variant="outlined"
+            />
+          </v-card>
+        </v-menu>
+      </template>
+      <div class="mx-4">
+        <v-chip
+          v-if="search.trim()"
+          class="mr-3"
+          closable
+          size="small"
+          variant="outlined"
+          @click:close="search = ''"
+        >
+          <v-icon
+            size="small"
+            start
+          >
+            mdi-magnify
+          </v-icon>
+          {{ search.trim().toLowerCase() }}
+        </v-chip>
+        <v-chip
+          v-if="filterLabel"
+          class="mr-3"
+          closable
+          size="small"
+          variant="outlined"
+          @click:close="filterLabel = null"
+        >
+          <v-icon
+            size="small"
+            start
+          >
+            mdi-label-variant
+          </v-icon>
+          {{ filterLabel.label }}
+        </v-chip>
+        <v-chip
+          v-if="favOnly"
+          class="mr-3"
+          closable
+          size="small"
+          variant="outlined"
+          @click:close="favOnly = false"
+        >
+          <v-icon
+            size="small"
+            start
+          >
+            mdi-star
+          </v-icon>
+          {{ t('common.favourite') }}
+        </v-chip>
+      </div>
+    </bar-top>
+
+    <div class="home__sets">
+      <div
+        v-if="library.status === 'loading' || library.status === 'idle'"
+        class="set-grid"
+      >
+        <shimmer-card-flash-set
+          v-for="i in shimmerCount"
+          :key="i"
+        />
+      </div>
+      <container-empty
+        v-else-if="library.status === 'error'"
+        icon="mdi-alert-circle-outline"
+        :subtitle="t('empty.error.subtitle')"
+        :title="t('empty.error.title')"
+      >
+        <v-btn
+          color="primary"
+          rounded="xl"
+          @click="library.load(true)"
+        >
+          {{ t('common.retry') }}
+        </v-btn>
+      </container-empty>
+      <container-empty
+        v-else-if="!visibleSets.length"
+        :icon="filtering ? 'mdi-card-bulleted-off-outline' : 'mdi-card-bulleted-outline'"
+        :subtitle="filtering ? t('empty.filter.subtitle') : t('empty.home.subtitle')"
+        :title="filtering ? t('empty.filter.title') : t('empty.home.title')"
+      >
+        <v-btn
+          v-if="!filtering"
+          color="primary"
+          rounded="xl"
+          @click="router.push('/add')"
+        >
+          {{ t('home.set.add') }}
+        </v-btn>
+      </container-empty>
+      <transition-group
+        v-else
+        class="set-grid"
+        name="set-list"
+        tag="div"
+      >
+        <card-flash-set
+          v-for="set in visibleSets"
+          :key="set.id"
+          :card="set"
+          :disabled="session.loading"
+          @delete="moveToBin"
+          @fav="toggleFav"
+          @label="(label) => (filterLabel = label)"
+          @star="favOnly = true"
+        />
+      </transition-group>
     </div>
+
+    <option-panel
+      ref="menuPanel"
+      :title="t('common.menu')"
+    >
+      <div
+        v-for="item in menuItems"
+        :key="item.path"
+        class="option-row"
+      >
+        <span class="option-row__label">{{ item.title }}</span>
+        <v-btn
+          :aria-label="item.title"
+          color="primary"
+          icon
+          size="small"
+          variant="text"
+          @click.stop="goFromMenu(item.path)"
+        >
+          <v-icon>{{ item.icon }}</v-icon>
+        </v-btn>
+      </div>
+    </option-panel>
+  </div>
 </template>
 
-<script>
-import { navigateToPath, loadData } from '@/util';
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { useDisplay } from 'vuetify';
 import BarTop from '@/components/BarTop.vue';
-import OptionPanel from '@/components/OptionPanel.vue';
 import CardFlashSet from '@/components/CardFlashSet.vue';
 import ContainerEmpty from '@/components/ContainerEmpty.vue';
+import OptionPanel from '@/components/OptionPanel.vue';
 import ShimmerCardFlashSet from '@/components/ShimmerCardFlashSet.vue';
+import type { CardSet, Label } from '@/types';
+import { filterAndSortSets } from '@/utils/cardSets';
+import { useLibraryStore } from '@/stores/library';
+import { usePrefsStore } from '@/stores/prefs';
+import { useSessionStore } from '@/stores/session';
 
-import FirebaseWeb from '@/firebase';
-const firebase = new FirebaseWeb();
+const { t } = useI18n();
+const router = useRouter();
+const display = useDisplay();
+const session = useSessionStore();
+const library = useLibraryStore();
+const prefs = usePrefsStore();
 
-export default {
-    name: 'home',
-    components: {
-        BarTop,
-        CardFlashSet,
-        OptionPanel,
-        ContainerEmpty,
-        ShimmerCardFlashSet,
-    },
-    data() {
-        return {
-            pageLoading: false,
-            filterLabel: null,
-            starFilter: false,
-            searchText: '',
-            imgErr: false,
-            searchChipAttrs: {
-                small: true,
-                close: true,
-                outlined: true,
-                class: 'mr-3',
-            },
-            orderTypes: ['Alphabetically', 'New first', 'Old first'],
-        };
-    },
-    computed: {
-        loading() {
-            return this.appLoading || this.authLoading;
-        },
-        authLoading() {
-            return this.$store.getters.authLoading;
-        },
-        appLoading() {
-            return this.$store.getters.loading;
-        },
-        user() {
-            return this.$store.getters.user;
-        },
-        sanitizedSearchText() {
-            return this.searchText ? this.searchText.trim().toUpperCase() : '';
-        },
-        flashCardSets() {
-            let sets = this.$store.getters.flashCardSets;
-            // filters
-            if (this.filterLabel) {
-                sets = sets.filter((c) => {
-                    let found = false;
-                    for (const label of c.labels) {
-                        if (this.filterLabel.docId === label) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    return found;
-                });
-            }
-            if (this.starFilter) {
-                sets = sets.filter((c) => !!c.fav);
-            }
-            sets = sets.filter((c) => {
-                return (
-                    !c.trashed &&
-                    c.title.toUpperCase().includes(this.sanitizedSearchText)
-                );
-            });
-            // sorts
-            switch (this.cardSetOrder) {
-                case 'Alphabetically':
-                    sets.sort((s1, s2) => s1.title.localeCompare(s2.title));
-                    break;
-                case 'New first':
-                    sets.sort(
-                        (s1, s2) => new Date(s2.date) - new Date(s1.date)
-                    );
-                    break;
-                case 'Old first':
-                    sets.sort(
-                        (s1, s2) => new Date(s1.date) - new Date(s2.date)
-                    );
-                    break;
-                default:
-                    break;
-            }
-            if (this.favOnTop) {
-                sets.sort((s1, s2) => s2.fav - s1.fav);
-            }
-            return sets;
-        },
-        favOnTop() {
-            return localStorage.getItem('fav-on-top') == 'true';
-        },
-        cardSetOrder() {
-            let order = localStorage.getItem('card-set-order');
-            return this.orderTypes.indexOf(order) !== -1
-                ? order
-                : 'Alphabetically';
-        },
-        loaderCardLength() {
-            switch (this.$vuetify.breakpoint.name) {
-                case 'xs':
-                    return 3;
-                case 'sm':
-                    return 4;
-                case 'md':
-                    return 4;
-                case 'lg':
-                    return 6;
-                case 'xl':
-                    return 9;
-                default:
-                    return 3;
-            }
-        },
-    },
-    methods: {
-        onStar() {
-            this.starFilter = true;
-        },
-        onFav(val) {
-            this.updateFlashCardSet({ ...val, fav: !val.fav });
-        },
-        onDelete(val) {
-            this.updateFlashCardSet({ ...val, trashed: true });
-        },
-        onLabelClick(label) {
-            this.filterLabel = label;
-        },
-        goToProfile() {
-            navigateToPath('/profile');
-        },
-        goToAdd() {
-            navigateToPath('/add');
-        },
-        goToFromMenu(path) {
-            this.openSettings();
-            setTimeout(() => {
-                navigateToPath(path);
-            }, 300);
-        },
-        openSettings() {
-            this.$refs.settingspanel.togglePanel();
-        },
-        openSearch() {
-            this.$nextTick(() => {
-                setTimeout(() => {
-                    if (this.$refs.searchbox) {
-                        this.$refs.searchbox.focus();
-                    }
-                }, 250);
-            });
-        },
-        updateFlashCardSet(cardSet) {
-            this.$store.dispatch('LOADING', true);
-            firebase
-                .updateFlashCardSet(cardSet)
-                .then((res) => {
-                    this.$store.dispatch('UPDATE_FLASH_CARD_SET', cardSet);
-                })
-                .catch((err) => {
-                    this.$store.dispatch('SHOW_SNACK', err.messsage);
-                })
-                .finally(() => {
-                    this.$store.dispatch('LOADING', false);
-                });
-        },
-    },
-    mounted() {
-        if (!this.$store.getters.landingVisited) {
-            this.pageLoading = true;
-            this.$store.dispatch('LOADING', true);
-            loadData(this.user)
-                .then((data) => {
-                    this.$store.dispatch('SET_FLASH_CARDS', data[0]);
-                    this.$store.dispatch('SET_LABELS', data[1]);
-                    this.$store.dispatch('LANDING_VISITED', true);
-                })
-                .catch((err) => {
-                    console.log(err);
-                    this.$store.dispatch('SET_FLASH_CARDS', []);
-                    this.$store.dispatch('SET_LABELS', []);
-                    this.$store.dispatch('LANDING_VISITED', false);
-                })
-                .finally(() => {
-                    this.pageLoading = false;
-                    this.$store.dispatch('LOADING', false);
-                });
-        }
-    },
-};
-</script>
-<style>
-.home-container {
-    min-height: 100vh;
+const search = ref('');
+const filterLabel = ref<Label | null>(null);
+const favOnly = ref(false);
+const imgErr = ref(false);
+const searchBox = ref<{ focus: () => void } | null>(null);
+const menuPanel = ref<InstanceType<typeof OptionPanel> | null>(null);
+
+const user = computed(() => session.user);
+const firstName = computed(() => user.value?.displayName?.split(' ')[0] || user.value?.email?.split('@')[0] || '');
+const filtering = computed(() => !!search.value.trim() || !!filterLabel.value || favOnly.value);
+const visibleSets = computed(() =>
+  filterAndSortSets(library.sets, {
+    search: search.value,
+    labelId: filterLabel.value?.docId,
+    favOnly: favOnly.value,
+    order: prefs.setOrder,
+    favOnTop: prefs.favOnTop,
+  }),
+);
+const shimmerCount = computed(() => ({ xs: 3, sm: 4, md: 4, lg: 6, xl: 9, xxl: 9 })[display.name.value] ?? 3);
+
+const menuItems = computed(() => [
+  { title: t('common.bin'), icon: 'mdi-trash-can', path: '/bin' },
+  { title: t('common.labels'), icon: 'mdi-label-variant', path: '/profile' },
+  { title: t('common.about'), icon: 'mdi-information', path: '/info' },
+  { title: t('common.settings'), icon: 'mdi-cog', path: '/settings' },
+]);
+
+function goFromMenu(path: string) {
+  menuPanel.value?.toggle(false);
+  setTimeout(() => router.push(path), 300);
 }
-.flash-card-set-container {
-    height: calc(100vh - 136px);
-    padding-bottom: 82px;
-    overflow-y: auto;
-    overflow-x: hidden;
+
+function toggleFav(set: CardSet) {
+  void library.saveSet({ ...set, fav: !set.fav });
+}
+
+async function moveToBin(set: CardSet) {
+  if (await library.saveSet({ ...set, trashed: true })) {
+    session.showSnack(t('toast.moved-to-bin'), {
+      text: t('common.undo'),
+      onAction: () => void library.saveSet({ ...set, trashed: false }),
+    });
+  }
+}
+</script>
+
+<style scoped>
+.home__sets {
+  padding-bottom: 96px;
+}
+.set-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: 24px 32px;
+  padding: 12px 32px;
+}
+.set-list-enter-active {
+  transition: all 0.3s ease;
+}
+.set-list-enter-from {
+  opacity: 0;
+  transform: translateY(16px);
+}
+.set-list-leave-active {
+  display: none;
 }
 </style>

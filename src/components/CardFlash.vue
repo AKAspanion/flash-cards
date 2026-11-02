@@ -1,276 +1,265 @@
 <template>
-    <v-card
-        flat
-        class="flash-card my-8"
-        :style="
-            `height: ${browse ? 'calc(100vh - 224px)' : 'calc(100vh - 320px)'}`
-        "
+  <div
+    class="flash-card my-8"
+    :style="{ height: browse ? 'calc(100vh - 224px)' : 'calc(100vh - 320px)' }"
+  >
+    <v-dialog
+      v-model="editing"
+      :max-width="smAndUp ? '50vw' : undefined"
+      @after-enter="textarea?.focus()"
     >
-        <v-dialog
-            v-model="editing"
-            :max-width="$vuetify.breakpoint.smAndUp ? '50vw' : ''"
+      <v-card class="pa-6">
+        <v-textarea
+          ref="textarea"
+          auto-grow
+          :color="cardColor"
+          hide-details
+          :model-value="flipped ? modelValue.back : modelValue.front"
+          :placeholder="flipped ? t('card.placeholder.back') : t('card.placeholder.front')"
+          rounded="xl"
+          variant="outlined"
+          @update:model-value="update(flipped ? 'back' : 'front', $event)"
         >
-            <v-card class="pa-6">
-                <v-textarea
-                    rounded
-                    outlined
-                    auto-grow
-                    hide-details
-                    :color="color || '#e91e63'"
-                    :value="flipped ? value.back : value.front"
-                    :ref="`${value.id}${flipped ? 'back' : 'front'}`"
-                    @input="update(flipped ? 'back' : 'front', $event)"
-                    :placeholder="
-                        `Enter text for ${flipped ? 'back' : 'front'} side`
-                    "
-                >
-                    <template #append>
-                        <v-btn
-                            icon
-                            small
-                            @click="editing = false"
-                            :color="color || '#e91e63'"
-                        >
-                            <v-icon>
-                                mdi-check
-                            </v-icon>
-                        </v-btn>
-                    </template>
-                </v-textarea>
-            </v-card>
-        </v-dialog>
-        <div
-            class="flash-card-inner"
-            :class="[
-                flipped ? 'flash-card-inner--rotated' : '',
-                browse
-                    ? `flash-card-bordered--${
-                          value.learned ? 'success' : 'error'
-                      }`
-                    : '',
-            ]"
-        >
-            <div
-                class="flash-card-front pa-6 "
-                :style="`background-color: ${color || '#e91e63'}`"
+          <template #append-inner>
+            <v-btn
+              :aria-label="t('common.done')"
+              :color="cardColor"
+              icon
+              size="small"
+              variant="text"
+              @click="editing = false"
             >
-                <div class="flash-card-content">
-                    <div
-                        class="align-center justify-center fill-height"
-                        :class="editing ? '' : 'd-flex'"
-                    >
-                        <div
-                            @click="onTextClick"
-                            v-if="!editing && !flipped"
-                            class="headline d-inline-block my-4"
-                        >
-                            {{
-                                value.front ||
-                                    'example front side of a flashcard'
-                            }}
-                        </div>
-                    </div>
-                </div>
-                <div class="flash-card-label-container">
-                    <v-chip-group dark>
-                        <v-chip
-                            dark
-                            small
-                            outlined
-                            input-value
-                            class="mr-1"
-                            text-color="white"
-                            :key="label.docId"
-                            v-for="label in labels"
-                        >
-                            {{ label.label }}
-                        </v-chip>
-                    </v-chip-group>
-                </div>
-                <div class="flash-card-actions d-flex align-center mb-2">
-                    <v-btn
-                        icon
-                        dark
-                        v-if="browse"
-                        :disabled="disabled || !online"
-                        @click="onLearnCheck"
-                    >
-                        <v-icon>{{
-                            value.learned ? 'mdi-close' : 'mdi-check'
-                        }}</v-icon>
-                    </v-btn>
-                    <v-btn
-                        icon
-                        dark
-                        v-else
-                        :disabled="disabled || !online"
-                        @click="$emit('delete', value)"
-                    >
-                        <v-icon>mdi-trash-can</v-icon>
-                    </v-btn>
-                    <v-spacer></v-spacer>
-                    <div class="caption number-icon">
-                        {{ number }}
-                    </div>
-                    <v-spacer></v-spacer>
-                    <v-btn icon dark @click="onCardFlip">
-                        <v-icon>mdi-flip-to-back</v-icon>
-                    </v-btn>
-                </div>
-            </div>
-            <div
-                class="flash-card-back pa-6"
-                :style="`background-color: ${color || '#e91e63'}`"
-            >
-                <div class="flash-card-content">
-                    <div
-                        class="align-center justify-center fill-height"
-                        :class="editing ? '' : 'd-flex'"
-                    >
-                        <div
-                            @click="onTextClick"
-                            v-if="!editing && flipped"
-                            class="headline d-inline-block my-4"
-                        >
-                            {{
-                                value.back || 'example back side of a flashcard'
-                            }}
-                        </div>
-                    </div>
-                </div>
-                <div class="flash-card-label-container"></div>
-                <div class="flash-card-actions d-flex align-center mb-2">
-                    <v-spacer></v-spacer>
-                    <v-btn icon dark @click="onCardFlip">
-                        <v-icon>mdi-flip-to-front</v-icon>
-                    </v-btn>
-                </div>
-            </div>
+              <v-icon>mdi-check</v-icon>
+            </v-btn>
+          </template>
+        </v-textarea>
+      </v-card>
+    </v-dialog>
+    <div
+      class="flash-card__inner"
+      :class="{
+        'flash-card__inner--flipped': flipped,
+        'flash-card__inner--learned': browse && modelValue.learned,
+        'flash-card__inner--unlearned': browse && !modelValue.learned,
+      }"
+    >
+      <div
+        class="flash-card__face pa-6"
+        :style="{ backgroundColor: cardColor }"
+      >
+        <div class="flash-card__content">
+          <div
+            v-if="!flipped"
+            class="flash-card__text text-headline-small my-4"
+            :class="{ selectable: canEdit }"
+            @click="startEditing"
+          >
+            {{ modelValue.front || t('card.example.front') }}
+          </div>
         </div>
-    </v-card>
+        <div class="flash-card__labels">
+          <v-chip
+            v-for="label in labels"
+            :key="label.docId"
+            class="mr-1"
+            size="small"
+            theme="dark"
+            variant="outlined"
+          >
+            {{ label.label }}
+          </v-chip>
+        </div>
+        <div class="d-flex align-center mb-2">
+          <v-btn
+            v-if="browse"
+            :aria-label="modelValue.learned ? t('card.unlearn') : t('card.learn')"
+            :disabled="disabled || !session.online"
+            icon
+            theme="dark"
+            variant="text"
+            @click="toggleLearned"
+          >
+            <v-icon>{{ modelValue.learned ? 'mdi-close' : 'mdi-check' }}</v-icon>
+          </v-btn>
+          <v-btn
+            v-else
+            :aria-label="t('common.delete')"
+            :disabled="disabled || !session.online"
+            icon
+            theme="dark"
+            variant="text"
+            @click="emit('delete', modelValue)"
+          >
+            <v-icon>mdi-trash-can</v-icon>
+          </v-btn>
+          <v-spacer />
+          <div class="flash-card__number text-body-small">
+            {{ number }}
+          </div>
+          <v-spacer />
+          <v-btn
+            :aria-label="t('card.flip')"
+            icon
+            theme="dark"
+            variant="text"
+            @click="flip"
+          >
+            <v-icon>mdi-flip-to-back</v-icon>
+          </v-btn>
+        </div>
+      </div>
+      <div
+        class="flash-card__face flash-card__face--back pa-6"
+        :style="{ backgroundColor: cardColor }"
+      >
+        <div class="flash-card__content">
+          <div
+            v-if="flipped"
+            class="flash-card__text text-headline-small my-4"
+            :class="{ selectable: canEdit }"
+            @click="startEditing"
+          >
+            {{ modelValue.back || t('card.example.back') }}
+          </div>
+        </div>
+        <div class="flash-card__labels" />
+        <div class="d-flex align-center mb-2">
+          <v-spacer />
+          <v-btn
+            :aria-label="t('card.flip')"
+            icon
+            theme="dark"
+            variant="text"
+            @click="flip"
+          >
+            <v-icon>mdi-flip-to-front</v-icon>
+          </v-btn>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
-<script>
-export default {
-    props: ['value', 'color', 'labels', 'browse', 'number', 'disabled'],
-    data() {
-        return {
-            flipped: false,
-            editing: false,
-        };
-    },
-    computed: {
-        online() {
-            return this.$store.getters.isOnline;
-        },
-    },
-    methods: {
-        update(key, value) {
-            this.$emit('input', { ...this.value, [key]: value });
-        },
-        onTextClick() {
-            if (this.browse || this.disabled) {
-                return;
-            } else {
-                this.editing = true;
-                setTimeout(() => {
-                    this.$nextTick(() => {
-                        this.$refs[
-                            `${this.value.id}${this.flipped ? 'back' : 'front'}`
-                        ].focus();
-                    });
-                }, 50);
-            }
-        },
-        onLearnCheck() {
-            let check = !this.value.learned;
-            this.update('learned', check);
-            if (this.browse) {
-                this.$emit('check', check);
-            }
-        },
-        onCardFlip() {
-            if (this.browse && this.online) {
-                this.update('learned', false);
-            }
-            this.$emit('flip');
-            this.editing = false;
-            this.flipped = !this.flipped;
-        },
-    },
-};
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import { useDisplay } from 'vuetify';
+import { useI18n } from 'vue-i18n';
+import type { FlashCard, Label } from '@/types';
+import { useSessionStore } from '@/stores/session';
+
+const props = withDefaults(
+  defineProps<{
+    modelValue: FlashCard;
+    color?: string;
+    labels?: Label[];
+    browse?: boolean;
+    number: number;
+    disabled?: boolean;
+  }>(),
+  { color: '', labels: () => [], browse: false, disabled: false },
+);
+const emit = defineEmits<{
+  'update:modelValue': [card: FlashCard];
+  delete: [card: FlashCard];
+  check: [learned: boolean];
+}>();
+
+const { t } = useI18n();
+const { smAndUp } = useDisplay();
+const session = useSessionStore();
+
+const flipped = ref(false);
+const editing = ref(false);
+const textarea = ref<{ focus: () => void } | null>(null);
+const cardColor = computed(() => props.color || '#E91E63');
+const canEdit = computed(() => !props.browse && !props.disabled);
+
+function update<K extends keyof FlashCard>(key: K, value: FlashCard[K]) {
+  emit('update:modelValue', { ...props.modelValue, [key]: value });
+}
+
+function startEditing() {
+  if (canEdit.value) {
+    editing.value = true;
+  }
+}
+
+function toggleLearned() {
+  const learned = !props.modelValue.learned;
+  update('learned', learned);
+  emit('check', learned);
+}
+
+function flip() {
+  // Review mode: peeking at the answer marks the card as not yet learned.
+  if (props.browse && session.online && props.modelValue.learned) {
+    update('learned', false);
+  }
+  editing.value = false;
+  flipped.value = !flipped.value;
+}
 </script>
 
 <style scoped>
 .flash-card {
-    width: 100vw;
-    padding: 0 4.25vw;
-    perspective: 1000px;
-    border-radius: 28px;
+  width: 100%;
+  padding: 0 4.25vw;
+  perspective: 1000px;
 }
-
-.flash-card-inner {
-    width: 100%;
-    height: 100%;
-    text-align: center;
-    position: relative;
-    border-radius: 28px;
-    will-change: transform;
-    transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    transform-style: preserve-3d;
+.flash-card__inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  border-radius: 28px;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-
-.flash-card-label-container {
-    min-height: 32px;
-    overflow: hidden;
+.flash-card__inner--flipped {
+  transform: rotateY(180deg);
 }
-
-.flash-card-content {
-    overflow-x: hidden;
-    height: calc(100% - 60px);
+.flash-card__inner--learned {
+  border-bottom: 4px solid #4caf50;
+  border-radius: 28px 28px 32px 32px;
 }
-
-.flash-card-inner--rotated {
-    transform: rotateY(180deg);
+.flash-card__inner--unlearned {
+  border-bottom: 4px solid #212121;
+  border-radius: 28px 28px 32px 32px;
 }
-
-.flash-card-front,
-.flash-card-back {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 28px;
-    will-change: transform;
-    backface-visibility: hidden;
+.flash-card__face {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  color: white;
+  border-radius: 28px;
+  backface-visibility: hidden;
 }
-
-.flash-card-front {
-    color: white;
+.flash-card__face--back {
+  transform: rotateY(180deg);
 }
-
-.flash-card-back {
-    color: white;
-    transform: rotateY(180deg);
+.flash-card__content {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
-
-.number-icon {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    box-sizing: border-box;
-    border: 1.5px solid white;
+.flash-card__text {
+  white-space: pre-wrap;
+  word-break: break-word;
 }
-
-.flash-card-bordered--success {
-    box-sizing: border-box;
-    border-bottom: 4px solid #4caf50;
-    border-bottom-left-radius: 32px !important;
-    border-bottom-right-radius: 32px !important;
+.flash-card__labels {
+  min-height: 32px;
+  overflow: hidden;
+  white-space: nowrap;
 }
-.flash-card-bordered--error {
-    box-sizing: border-box;
-    border-bottom: 4px solid #212121;
-    border-bottom-left-radius: 32px !important;
-    border-bottom-right-radius: 32px !important;
+.flash-card__number {
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid white;
+  border-radius: 50%;
 }
 </style>

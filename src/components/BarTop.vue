@@ -1,53 +1,74 @@
 <template>
-    <div class="px-4 py-2">
-        <v-toolbar flat height="120">
-            <div class="avatar-container">
-                <v-btn icon width="64" height="64" @click="$emit('click:left')">
-                    <slot name="left-button"></slot>
-                </v-btn>
-                <div class="avatar-text overline">
-                    <slot name="left-text"></slot>
-                </div>
+  <div class="px-4 py-2">
+    <div class="bar-top">
+      <div class="bar-top__side">
+        <v-btn
+          height="64"
+          icon
+          variant="text"
+          width="64"
+          @click="emit('click:left')"
+        >
+          <slot name="left-button" />
+        </v-btn>
+        <div class="bar-top__text text-label-medium text-uppercase">
+          <slot name="left-text" />
+        </div>
+      </div>
+      <div class="bar-top__center">
+        <slot name="center" />
+      </div>
+      <div class="bar-top__side">
+        <slot name="right">
+          <template v-if="slots['right-button']">
+            <v-btn
+              height="64"
+              icon
+              variant="text"
+              width="64"
+              @click="emit('click:right')"
+            >
+              <slot name="right-button" />
+            </v-btn>
+            <div class="bar-top__text text-label-medium text-uppercase">
+              <slot name="right-text" />
             </div>
-            <div class="center-slot">
-                <slot name="center"></slot>
-            </div>
-            <div class="avatar-container">
-                <v-btn
-                    icon
-                    width="64"
-                    height="64"
-                    @click="$emit('click:right')"
-                >
-                    <slot name="right-button"></slot>
-                </v-btn>
-                <div class="avatar-text overline">
-                    <slot name="right-text"></slot>
-                </div>
-            </div>
-        </v-toolbar>
-        <slot></slot>
+          </template>
+        </slot>
+      </div>
     </div>
+    <slot />
+  </div>
 </template>
 
-<script>
-export default {};
+<script setup lang="ts">
+import { useSlots } from 'vue';
+
+const emit = defineEmits<{ 'click:left': []; 'click:right': [] }>();
+const slots = useSlots();
 </script>
 
 <style scoped>
-.center-slot {
-    overflow: hidden;
-    max-height: 120px;
-    width: calc(100% - 128px);
+.bar-top {
+  display: flex;
+  align-items: center;
+  height: 120px;
+  padding: 0 4px;
 }
-.avatar-container {
-    min-width: 64px;
-    text-align: center;
+.bar-top__side {
+  width: 64px;
+  min-width: 64px;
+  text-align: center;
 }
-.avatar-text {
-    max-width: 64px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.bar-top__center {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-height: 120px;
+  overflow: hidden;
+}
+.bar-top__text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

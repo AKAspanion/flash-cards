@@ -1,35 +1,54 @@
 {
   "name": "flash-cards",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "serve": "vite",
+    "dev": "vite",
+    "dev:emulator": "vite --mode emulator",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "type-check": "vue-tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-flash-cards \"vitest run tests/unit/firestore.rules.spec.ts\"",
+    "emulators": "firebase emulators:start --only auth,firestore --project demo-flash-cards"
   },
   "dependencies": {
-    "core-js": "^3.4.4",
-    "firebase": "^7.6.1",
-    "register-service-worker": "^1.6.2",
-    "vue": "^2.6.10",
-    "vue-i18n": "^8.15.3",
-    "vue-router": "^3.1.3",
-    "vuetify": "^2.1.0",
-    "vuex": "^3.1.2"
+    "@mdi/font": "^7.4.47",
+    "firebase": "^13.1.0",
+    "pinia": "^4.1.0",
+    "vue": "^3.5.44",
+    "vue-i18n": "^11.4.17",
+    "vue-router": "^5.4.0",
+    "vuetify": "^4.3.1"
   },
   "devDependencies": {
-    "@mdi/font": "^4.7.95",
-    "@vue/cli-plugin-babel": "~5.0.8",
-    "@vue/cli-plugin-pwa": "~5.0.8",
-    "@vue/cli-plugin-router": "~5.0.8",
-    "@vue/cli-plugin-typescript": "~5.0.8",
-    "@vue/cli-plugin-vuex": "~5.0.8",
-    "@vue/cli-service": "~5.0.8",
-    "sass": "^1.19.0",
-    "sass-loader": "^8.0.0",
-    "typescript": "~4.5.5",
-    "vue-cli-plugin-vuetify": "^2.0.2",
-    "vue-template-compiler": "^2.6.10",
-    "vuetify-loader": "^1.9.2"
+    "@firebase/rules-unit-testing": "^6.0.0",
+    "@types/node": "^24.0.0",
+    "@vitejs/plugin-vue": "^6.0.10",
+    "@vue/devtools-api": "^8.2.1",
+    "@vue/eslint-config-typescript": "^14.9.0",
+    "@vue/test-utils": "^2.5.1",
+    "@vue/tsconfig": "^0.9.1",
+    "eslint": "^10.14.0",
+    "eslint-plugin-vue": "^10.12.0",
+    "firebase-tools": "^15.34.2",
+    "jsdom": "^30.1.3",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.5",
+    "vite-plugin-pwa": "^2.0.0",
+    "vite-plugin-vuetify": "^2.1.3",
+    "vitest": "^5.0.5",
+    "vue-tsc": "^3.3.14",
+    "workbox-window": "^7.4.1"
+  },
+  "overrides": {
+    "@grpc/grpc-js": "^1.14.7"
   }
 }

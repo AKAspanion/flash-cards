@@ -1,0 +1,35 @@
+rules_version = '2';
+
+// Every document carries the owner's uid; users can only see and change their own.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+    function ownsStored() {
+      return signedIn() && resource.data.uid == request.auth.uid;
+    }
+    function ownsIncoming() {
+      return signedIn() && request.resource.data.uid == request.auth.uid;
+    }
+
+    // Older app versions JSON.parse `cards`, so it must stay a string.
+    function validSet() {
+      return request.resource.data.cards is string
+        && request.resource.data.labels is list;
+    }
+
+    match /flash-card-sets/{setId} {
+      allow read, delete: if ownsStored();
+      allow create: if ownsIncoming() && validSet();
+      allow update: if ownsStored() && ownsIncoming() && validSet()
+        && request.resource.data.get('id', null) == resource.data.get('id', null);
+    }
+
+    match /labels/{labelId} {
+      allow read, delete: if ownsStored();
+      allow create: if ownsIncoming() && request.resource.data.label is string;
+      allow update: if ownsStored() && ownsIncoming() && request.resource.data.label is string;
+    }
+  }
+}

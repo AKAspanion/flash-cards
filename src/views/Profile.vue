@@ -1,428 +1,336 @@
 <template>
-    <div class="profile-container">
-        <bar-top @click:left="goBack">
-            <template #left-button>
-                <v-icon size="32" color="primary">mdi-arrow-left</v-icon>
-            </template>
-            <template #left-text>
-                {{ $t('common.home') }}
-            </template>
-        </bar-top>
-        <div class="profile-content">
-            <div class="px-8 pb-8">
-                <div class="d-flex align-center profile-avatar">
-                    <v-avatar
-                        size="88"
-                        class="ml-n1"
-                        @click="
-                            editingUrl = true;
-                            editingName = false;
-                        "
-                        :color="!$vuetify.theme.dark ? 'white' : '#404040'"
-                    >
-                        <v-img
-                            alt="profile pic"
-                            v-if="editingUrl"
-                            v-show="!imageErr"
-                            :src="user.photoURL || 'a'"
-                            @load="imageErr = false"
-                            @error="imageErr = true"
-                        ></v-img>
-                        <v-img
-                            v-else
-                            v-show="!imageErr"
-                            @load="imageErr = false"
-                            @error="imageErr = true"
-                            :src="currentUser.photoURL || 'a'"
-                        ></v-img>
-                        <v-icon v-show="imageErr" size="88" color="primary">
-                            mdi-face
-                        </v-icon>
-                    </v-avatar>
-                    <template v-if="editingUrl">
-                        <v-text-field
-                            dense
-                            rounded
-                            outlined
-                            autofocus
-                            hide-details
-                            class="pl-3"
-                            v-model="user.photoURL"
-                            append-icon="mdi-check"
-                            placeholder="Enter your photo url"
-                            @click:append="onUserEdit()"
-                        ></v-text-field>
-                        <v-btn icon class="ml-3" @click="resetEdit('url')">
-                            <v-icon>
-                                mdi-close
-                            </v-icon>
-                        </v-btn>
-                    </template>
-                </div>
-                <div class="d-flex title profile-text">
-                    <template v-if="!editingName">
-                        <div
-                            class="pt-3 pb-1"
-                            @click="
-                                editingName = true;
-                                editingUrl = false;
-                            "
-                        >
-                            {{ currentUser.displayName || 'na' }}
-                        </div>
-                    </template>
-                    <template v-else>
-                        <v-text-field
-                            dense
-                            rounded
-                            outlined
-                            autofocus
-                            hide-details
-                            class="pt-2"
-                            v-model="user.displayName"
-                            append-icon="mdi-check"
-                            placeholder="Enter your name"
-                            @click:append="onUserEdit()"
-                        ></v-text-field>
-                        <v-btn
-                            icon
-                            class="ml-3 mt-2"
-                            @click="resetEdit('name')"
-                        >
-                            <v-icon>
-                                mdi-close
-                            </v-icon>
-                        </v-btn>
-                    </template>
-                </div>
-                <div
-                    class="text-lowercase caption profile-text"
-                    :class="editingName ? 'mt-2' : 'mt-n2'"
-                >
-                    {{ currentUser.email || 'na' }}
-                </div>
-            </div>
-            <v-card
-                flat
-                class="profile-card"
-                :color="dark ? '#212121' : '#e0e0e0'"
-                min-height="calc(100vh - 300px)"
-            >
-                <div class="profile-card-content">
-                    <div
-                        :key="i"
-                        v-for="(time, i) in timeMeta"
-                        class="d-flex align-start pb-8"
-                    >
-                        <v-icon>{{ time.icon }}</v-icon>
-                        <div class="pl-8">
-                            <div class="caption">{{ $t(time.name) }}</div>
-                            <div class="subtitle-2">
-                                {{ currentUser[time.key].slice(0, 16) }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="d-flex align-start pb-8">
-                        <v-icon>mdi-label-variant</v-icon>
-                        <div class="pl-8">
-                            <div class="caption">
-                                {{ $t('profile.label.title') }}
-                            </div>
-                            <div class="subtitle-2">
-                                {{ $t('profile.label.subtitle') }}
-                            </div>
-                            <div class="subtitle-2">
-                                <v-list-item dense class="px-0">
-                                    <v-list-item-content class="py-1">
-                                        <v-text-field
-                                            flat
-                                            dense
-                                            rounded
-                                            outlined
-                                            hide-details
-                                            v-model="label"
-                                            :disabled="labelLoading"
-                                            @keyup.enter="onLabelCreate"
-                                            @focus="hideSignout = true"
-                                            @blur="hideSignout = false"
-                                            :placeholder="
-                                                $t('profile.label.create')
-                                            "
-                                        >
-                                        </v-text-field>
-                                    </v-list-item-content>
-                                    <v-list-item-action>
-                                        <v-btn
-                                            icon
-                                            color="primary"
-                                            @click="onLabelCreate"
-                                            :disabled="
-                                                labelLoading || !this.label
-                                            "
-                                        >
-                                            <v-icon>{{
-                                                !selectedLabel
-                                                    ? 'mdi-plus-circle'
-                                                    : 'mdi-check'
-                                            }}</v-icon>
-                                        </v-btn>
-                                    </v-list-item-action>
-                                </v-list-item>
-                                <div class="py-1 mt-n2">
-                                    <v-chip
-                                        small
-                                        outlined
-                                        color="primary"
-                                        class="mr-3 mt-2"
-                                        :key="label.docId"
-                                        v-for="label in labels"
-                                        @click="onLabelClick(label)"
-                                        :input-value="
-                                            selectedLabel &&
-                                                label.docId ===
-                                                    selectedLabel.docId
-                                        "
-                                    >
-                                        {{ label.label }}
-                                    </v-chip>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </v-card>
-        </div>
-        <btn-action
-            rounded
-            height="50"
-            color="primary"
-            @click="onSignout"
-            v-if="hideSignoutBtn"
+  <div class="profile">
+    <bar-top @click:left="router.push('/home')">
+      <template #left-button>
+        <v-icon
+          color="primary"
+          size="32"
         >
-            Sign out
-        </btn-action>
+          mdi-arrow-left
+        </v-icon>
+      </template>
+      <template #left-text>
+        {{ t('common.home') }}
+      </template>
+    </bar-top>
+
+    <div class="px-8 pb-8">
+      <div class="d-flex align-center profile__avatar">
+        <v-avatar
+          :aria-label="t('profile.photo.edit')"
+          class="ml-n1 selectable"
+          color="surface-light"
+          role="button"
+          size="88"
+          tabindex="0"
+          @click="startEdit('photo')"
+          @keydown.enter="startEdit('photo')"
+        >
+          <v-img
+            v-if="avatarUrl && !imageErr"
+            :alt="t('common.profile')"
+            :src="avatarUrl"
+            @error="imageErr = true"
+          />
+          <v-icon
+            v-else
+            color="primary"
+            size="88"
+          >
+            mdi-account-circle
+          </v-icon>
+        </v-avatar>
+        <template v-if="editing === 'photo'">
+          <v-text-field
+            v-model="form.photoURL"
+            autofocus
+            class="pl-3"
+            density="compact"
+            hide-details
+            :placeholder="t('profile.photo.placeholder')"
+            rounded="xl"
+            type="url"
+            variant="outlined"
+            @keyup.enter="saveProfile"
+          >
+            <template #append-inner>
+              <v-icon
+                :aria-label="t('common.save')"
+                @click="saveProfile"
+              >
+                mdi-check
+              </v-icon>
+            </template>
+          </v-text-field>
+          <v-btn
+            :aria-label="t('common.cancel')"
+            class="ml-3"
+            icon
+            variant="text"
+            @click="cancelEdit"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </template>
+      </div>
+      <div class="d-flex align-center text-title-large profile__text">
+        <template v-if="editing !== 'name'">
+          <button
+            class="profile__name pt-3 pb-1"
+            type="button"
+            @click="startEdit('name')"
+          >
+            {{ user?.displayName || t('profile.name.empty') }}
+          </button>
+        </template>
+        <template v-else>
+          <v-text-field
+            v-model="form.displayName"
+            autofocus
+            class="pt-2"
+            density="compact"
+            hide-details
+            :placeholder="t('profile.name.placeholder')"
+            rounded="xl"
+            variant="outlined"
+            @keyup.enter="saveProfile"
+          >
+            <template #append-inner>
+              <v-icon
+                :aria-label="t('common.save')"
+                @click="saveProfile"
+              >
+                mdi-check
+              </v-icon>
+            </template>
+          </v-text-field>
+          <v-btn
+            :aria-label="t('common.cancel')"
+            class="ml-3 mt-2"
+            icon
+            variant="text"
+            @click="cancelEdit"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </template>
+      </div>
+      <div class="text-body-small profile__text">
+        {{ user?.email }}
+      </div>
     </div>
+
+    <v-card
+      class="profile__card"
+      color="surface-light"
+      flat
+    >
+      <div class="profile__card-content">
+        <div
+          v-for="item in timeMeta"
+          :key="item.name"
+          class="d-flex align-start pb-8"
+        >
+          <v-icon>{{ item.icon }}</v-icon>
+          <div class="pl-8">
+            <div class="text-body-small">
+              {{ t(item.name) }}
+            </div>
+            <div class="text-title-small">
+              {{ item.value }}
+            </div>
+          </div>
+        </div>
+        <div class="d-flex align-start pb-8">
+          <v-icon>mdi-label-variant</v-icon>
+          <div class="pl-8 flex-grow-1">
+            <div class="text-body-small">
+              {{ t('profile.label.title') }}
+            </div>
+            <div class="text-title-small">
+              {{ t('profile.label.subtitle') }}
+            </div>
+            <div class="d-flex align-center py-2">
+              <v-text-field
+                v-model="labelText"
+                density="compact"
+                :disabled="labelBusy"
+                hide-details
+                :placeholder="t('profile.label.create')"
+                rounded="xl"
+                variant="outlined"
+                @blur="labelFocused = false"
+                @focus="labelFocused = true"
+                @keyup.enter="saveLabel"
+              />
+              <v-btn
+                :aria-label="selectedLabel ? t('common.save') : t('profile.label.create')"
+                color="primary"
+                :disabled="labelBusy || !labelText.trim()"
+                icon
+                variant="text"
+                @click="saveLabel"
+              >
+                <v-icon>{{ selectedLabel ? 'mdi-check' : 'mdi-plus-circle' }}</v-icon>
+              </v-btn>
+            </div>
+            <div>
+              <v-chip
+                v-for="label in library.labels"
+                :key="label.docId"
+                class="mr-3 mt-2"
+                color="primary"
+                size="small"
+                :variant="selectedLabel?.docId === label.docId ? 'flat' : 'outlined'"
+                @click="toggleLabel(label)"
+              >
+                {{ label.label }}
+              </v-chip>
+            </div>
+          </div>
+        </div>
+      </div>
+    </v-card>
+
+    <btn-action
+      v-if="!(xs && labelFocused)"
+      color="primary"
+      height="50"
+      :loading="signingOut"
+      @click="onSignOut"
+    >
+      {{ t('common.signout') }}
+    </btn-action>
+  </div>
 </template>
 
-<script>
-import { navigateToPath, loadData } from '@/util';
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { useDisplay } from 'vuetify';
 import BarTop from '@/components/BarTop.vue';
 import BtnAction from '@/components/BtnAction.vue';
-import FirebaseWeb from '@/firebase';
-const firebase = new FirebaseWeb();
-export default {
-    name: 'Profile',
-    components: { BarTop, BtnAction },
-    data() {
-        return {
-            editingUrl: false,
-            editingName: false,
-            selectedLabel: null,
-            labelLoading: false,
-            hideSignout: false,
-            editLoading: false,
-            label: '',
-            imageErr: false,
-            user: {
-                displayName: '',
-                photoURL: '',
-            },
-            timeMeta: [
-                {
-                    icon: 'mdi-calendar-star',
-                    name: 'profile.member',
-                    key: 'creationTime',
-                },
-                {
-                    icon: 'mdi-clock',
-                    name: 'profile.login',
-                    key: 'lastSignInTime',
-                },
-            ],
-        };
-    },
-    computed: {
-        hideSignoutBtn() {
-            return this.$vuetify.breakpoint.xsOnly ? !this.hideSignout : true;
-        },
-        currentUser() {
-            return this.$store.getters.user;
-        },
-        labels() {
-            return this.$store.getters.labels;
-        },
-        dark() {
-            return this.$vuetify.theme.dark;
-        },
-        userSame() {
-            return (
-                JSON.stringify(this.currentUser) === JSON.stringify(this.user)
-            );
-        },
-    },
-    watch: {
-        selectedLabel: {
-            handler(val) {
-                if (val) {
-                    this.label = this.selectedLabel.label;
-                } else {
-                    this.label = '';
-                }
-            },
-            deep: true,
-        },
-    },
-    methods: {
-        goBack() {
-            navigateToPath('/home');
-        },
-        onSignout() {
-            firebase.signOut().then(() => {
-                navigateToPath('/login');
-            });
-        },
-        onLabelCreate() {
-            this.labelLoading = true;
-            if (this.selectedLabel) {
-                if (this.selectedLabel.label !== this.label) {
-                    firebase
-                        .updateLabel({
-                            ...this.selectedLabel,
-                            label: this.label,
-                        })
-                        .then((res) => {
-                            this.$store.dispatch('UPDATE_LABEL', {
-                                ...this.selectedLabel,
-                                label: this.label,
-                            });
-                        })
-                        .catch((err) => {
-                            // TODO
-                        })
-                        .finally(() => {
-                            this.resetLabel();
-                        });
-                } else {
-                    this.resetLabel();
-                }
-            } else {
-                firebase
-                    .addLabel(this.currentUser, this.label)
-                    .then((res) => {
-                        this.$store.dispatch('ADD_LABEL', {
-                            docId: res.id,
-                            label: this.label,
-                            uid: this.currentUser.uid,
-                        });
-                    })
-                    .catch((err) => {
-                        //TODO
-                    })
-                    .finally(() => {
-                        this.resetLabel();
-                    });
-            }
-        },
-        onLabelClick(label) {
-            if (
-                this.selectedLabel &&
-                this.selectedLabel.docId === label.docId
-            ) {
-                this.selectedLabel = null;
-            } else {
-                this.selectedLabel = label;
-            }
-        },
-        onUserEdit() {
-            this.editLoading = true;
-            firebase
-                .updateUserProfile(this.user)
-                .then(() => {
-                    this.$store.dispatch('SET_LOCAL_USER', {
-                        ...this.user,
-                    });
-                })
-                .catch((e) => {
-                    this.$store.dispatch(
-                        'SHOW_SNACK',
-                        this.$t('toast.error.name.edit')
-                    );
-                })
-                .finally(() => {
-                    this.editingUrl = false;
-                    this.editingName = false;
-                    this.editLoading = false;
-                });
-        },
-        resetLabel() {
-            this.label = '';
-            this.labelLoading = false;
-            this.selectedLabel = null;
-        },
-        resetEdit(type) {
-            switch (type) {
-                case 'url':
-                    this.editingUrl = false;
-                    this.user.photoURL = this.currentUser.photoURL;
-                    break;
-                case 'name':
-                    this.editingName = false;
-                    this.user.displayName = this.currentUser.displayName;
-                    break;
-                default:
-                    break;
-            }
-        },
-    },
-    mounted() {
-        if (!this.$store.getters.landingVisited) {
-            this.labelLoading = true;
-            this.$store.dispatch('LOADING', true);
-            loadData(this.currentUser)
-                .then((data) => {
-                    this.$store.dispatch('SET_FLASH_CARDS', data[0]);
-                    this.$store.dispatch('SET_LABELS', data[1]);
-                    this.$store.dispatch('LANDING_VISITED', true);
-                })
-                .catch(() => {
-                    this.$store.dispatch('SET_FLASH_CARDS', []);
-                    this.$store.dispatch('SET_LABELS', []);
-                    this.$store.dispatch('LANDING_VISITED', false);
-                })
-                .finally(() => {
-                    this.labelLoading = true;
-                    this.$store.dispatch('LOADING', false);
-                });
-        }
-        this.user = { ...this.currentUser };
-    },
-};
+import type { Label } from '@/types';
+import { signOut, updateUserProfile } from '@/services/firebase';
+import { useLibraryStore } from '@/stores/library';
+import { useSessionStore } from '@/stores/session';
+
+const { t, locale } = useI18n();
+const router = useRouter();
+const { xs } = useDisplay();
+const session = useSessionStore();
+const library = useLibraryStore();
+
+const user = computed(() => session.user);
+const editing = ref<'photo' | 'name' | null>(null);
+const form = ref({ displayName: '', photoURL: '' });
+const imageErr = ref(false);
+const signingOut = ref(false);
+
+const labelText = ref('');
+const labelBusy = ref(false);
+const labelFocused = ref(false);
+const selectedLabel = ref<Label | null>(null);
+
+const avatarUrl = computed(() => (editing.value === 'photo' ? form.value.photoURL : user.value?.photoURL) || '');
+
+function formatDate(value: string | undefined, withTime: boolean) {
+  const date = value ? new Date(value) : null;
+  if (!date || Number.isNaN(date.getTime())) {
+    return '-';
+  }
+  return withTime
+    ? date.toLocaleString(locale.value, { dateStyle: 'medium', timeStyle: 'short' })
+    : date.toLocaleDateString(locale.value, { dateStyle: 'medium' });
+}
+
+const timeMeta = computed(() => [
+  { icon: 'mdi-calendar-star', name: 'profile.member', value: formatDate(user.value?.creationTime, false) },
+  { icon: 'mdi-clock', name: 'profile.login', value: formatDate(user.value?.lastSignInTime, true) },
+]);
+
+function startEdit(field: 'photo' | 'name') {
+  form.value = { displayName: user.value?.displayName ?? '', photoURL: user.value?.photoURL ?? '' };
+  imageErr.value = false;
+  editing.value = field;
+}
+
+function cancelEdit() {
+  editing.value = null;
+  imageErr.value = false;
+}
+
+async function saveProfile() {
+  try {
+    await session.track(updateUserProfile(form.value));
+    session.patchUser({ displayName: form.value.displayName.trim(), photoURL: form.value.photoURL.trim() });
+  } catch (err) {
+    session.showError(err, 'toast.error.name.edit');
+  } finally {
+    editing.value = null;
+    imageErr.value = false;
+  }
+}
+
+function toggleLabel(label: Label) {
+  selectedLabel.value = selectedLabel.value?.docId === label.docId ? null : label;
+  labelText.value = selectedLabel.value?.label ?? '';
+}
+
+async function saveLabel() {
+  const text = labelText.value.trim();
+  if (!text || labelBusy.value) {
+    return;
+  }
+  labelBusy.value = true;
+  const ok = selectedLabel.value
+    ? text === selectedLabel.value.label || (await library.renameLabel(selectedLabel.value, text))
+    : !!(await library.createLabel(text));
+  labelBusy.value = false;
+  if (ok) {
+    labelText.value = '';
+    selectedLabel.value = null;
+  }
+}
+
+async function onSignOut() {
+  signingOut.value = true;
+  try {
+    await signOut();
+    await router.push('/login');
+  } catch (err) {
+    session.showError(err);
+  } finally {
+    signingOut.value = false;
+  }
+}
 </script>
 
 <style scoped>
-.profile-container {
-    min-height: 100vh;
+.profile {
+  min-height: 100vh;
 }
-.profile-content {
-    height: calc(100vh - 136px);
+.profile__avatar {
+  min-height: 88px;
 }
-.profile-text {
-    padding-left: 2px;
-    transition: all 0.3s ease-in-out;
+.profile__text {
+  padding-left: 2px;
 }
-.profile-card {
-    padding-top: 1px;
-    height: calc(100vh - 136px);
-    border-bottom-right-radius: 0px !important;
-    border-bottom-left-radius: 0px !important;
-    padding-bottom: 88px !important;
+.profile__name {
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  border: 0;
 }
-.profile-card-content {
-    height: calc(100vh - 317px);
-    padding: 32px 32px 88px 32px;
-    overflow-y: auto;
+.profile__card {
+  min-height: calc(100vh - 340px);
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
 }
-.profile-avatar {
-    min-height: 72px;
+.profile__card-content {
+  padding: 32px 32px 120px;
 }
 </style>
