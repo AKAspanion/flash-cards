@@ -277,7 +277,9 @@ export default {
             navigateToPath('/home');
         },
         onSignout() {
-            firebase.signOut();
+            firebase.signOut().then(() => {
+                navigateToPath('/login');
+            });
         },
         onLabelCreate() {
             this.labelLoading = true;
