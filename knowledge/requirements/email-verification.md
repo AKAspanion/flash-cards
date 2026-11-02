@@ -2,8 +2,8 @@
 type: Requirement
 title: Verify email addresses by link
 description: New email-and-password accounts must verify their address through a link sent by email.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:30:00Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Verify email addresses by link

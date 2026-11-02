@@ -2,8 +2,8 @@
 type: Decision
 title: Rules and functions are deployed by hand
 description: A push to master deploys hosting only; firestore.rules and the Cloud Functions are deployed deliberately by hand.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:30:00Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Rules and functions are deployed by hand

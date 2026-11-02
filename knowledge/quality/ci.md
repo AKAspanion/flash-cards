@@ -2,8 +2,8 @@
 type: Runbook
 title: CI and deploy
 description: GitHub Actions runs lint, types, unit, rules, build, audits and e2e on every pull request; a push to master runs the same checks and then deploys hosting; rules deploy only on a manual run.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # CI and deploy

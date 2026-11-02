@@ -2,8 +2,8 @@
 type: Decision
 title: The bin keeps sets until the user deletes them
 description: Sets moved to the bin stay there indefinitely; nothing purges them automatically.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:30:00Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # The bin keeps sets until the user deletes them

@@ -2,8 +2,8 @@
 type: Feature
 title: Profile and labels
 description: The profile screen — display name and photo URL, account dates, sign out — which is also where labels are created and renamed.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Profile and labels

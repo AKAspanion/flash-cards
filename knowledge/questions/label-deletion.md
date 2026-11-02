@@ -2,8 +2,8 @@
 type: Open Question
 title: Should users be able to delete labels?
 description: The Firestore rules allow deleting a label, but the app has no delete call or screen for it, and sets would keep the deleted label's id.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Should users be able to delete labels?

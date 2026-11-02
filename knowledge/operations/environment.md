@@ -2,8 +2,8 @@
 type: Runbook
 title: Environment variables
 description: Every setting the app and its pipelines read — the VUE_APP_* Firebase web config, the emulator switch, the deploy variables and secret — and where each is read.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Environment variables

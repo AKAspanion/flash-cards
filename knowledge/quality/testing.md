@@ -2,8 +2,8 @@
 type: Test Strategy
 title: Testing
 description: Vitest unit tests for logic and stores, emulator tests for the Firestore rules, and Playwright end-to-end and accessibility tests on a production build against the emulators, on desktop and mobile.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Testing

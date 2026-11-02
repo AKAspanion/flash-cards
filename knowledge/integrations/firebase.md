@@ -2,8 +2,8 @@
 type: Integration
 title: Firebase (Auth, Firestore, Hosting)
 description: The app's whole backend — Auth for sign-in, Firestore for data, Hosting for serving — configured from VUE_APP_* variables, with local emulators for development and tests.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Firebase (Auth, Firestore, Hosting)

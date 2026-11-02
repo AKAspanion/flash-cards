@@ -2,8 +2,8 @@
 type: Convention
 title: Accessibility
 description: Screens must pass axe WCAG 2.1 AA scans on desktop and mobile, text on set colours must meet AA contrast, and the OS reduce-motion setting is respected.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Accessibility

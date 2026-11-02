@@ -2,8 +2,8 @@
 type: Integration
 title: Cloud Billing and budget alerts
 description: The kill-switch function reads budget notifications from Pub/Sub and calls the Cloud Billing API to check and unlink the project's billing account.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Cloud Billing and budget alerts

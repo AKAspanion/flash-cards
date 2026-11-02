@@ -2,8 +2,8 @@
 type: Component Inventory
 title: Components
 description: The app's own Vue components in src/components, what each is for, and which screens use them.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Components

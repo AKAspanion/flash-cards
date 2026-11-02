@@ -2,8 +2,8 @@
 type: Security
 title: Authentication
 description: Firebase Auth (email/password and Google) holds the session; a router guard sends signed-out users to /login, and a watcher follows sign-in changes from other tabs.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Authentication

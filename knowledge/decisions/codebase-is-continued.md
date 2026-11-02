@@ -2,8 +2,8 @@
 type: Decision
 title: This repository's code is continued, not rewritten
 description: The flash-cards code at the repository root is the project's own live codebase, adopted into ga on 2026-11-03; work builds on it in place rather than replacing or migrating it.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:10:12Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # This repository's code is continued, not rewritten

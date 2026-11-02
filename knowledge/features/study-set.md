@@ -2,8 +2,8 @@
 type: Feature
 title: Study a set
 description: Review a set card by card, flip to see the answer, mark cards learned; progress is saved when the user leaves.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Study a set

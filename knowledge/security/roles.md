@@ -2,8 +2,8 @@
 type: Security
 title: Roles and access
 description: There is one role, the signed-in owner; firestore.rules lets each user read and write only documents whose uid is theirs, and checks the stored shape.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Roles and access

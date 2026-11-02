@@ -2,8 +2,8 @@
 type: Data Model
 title: labels collection
 description: A user's labels — a name and an owner uid — referenced from sets by document id.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # labels collection

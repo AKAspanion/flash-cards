@@ -2,8 +2,8 @@
 type: Decision
 title: Compatibility with the original app is no longer required
 description: The code still keeps the original app's Firestore schema, localStorage keys, VUE_APP_ env names and service-worker file name, but the original app is no longer in use, so those shapes may change.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:30:00Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Compatibility with the original app is no longer required

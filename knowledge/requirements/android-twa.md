@@ -2,8 +2,8 @@
 type: Requirement
 title: Publish on Android as a Trusted Web Activity
 description: The PWA will be published on Google Play as a Trusted Web Activity, so it must keep meeting the PWA requirements a TWA depends on.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:30:00Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Publish on Android as a Trusted Web Activity

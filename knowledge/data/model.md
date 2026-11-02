@@ -2,8 +2,8 @@
 type: Data Model
 title: Data model
 description: Two Firestore collections, flash-card-sets and labels, each document owned by one user through its uid; cards are embedded in their set as a JSON string.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Data model

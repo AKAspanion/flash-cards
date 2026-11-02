@@ -2,8 +2,8 @@
 type: Data Model
 title: flash-card-sets collection
 description: Fields of a stored flashcard set, the defaults the mapper applies when reading, and the shape the security rules require.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # flash-card-sets collection

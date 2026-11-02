@@ -2,8 +2,8 @@
 type: Architecture
 title: Architecture
 description: A Vue SPA that reads and writes Firestore directly through one service module, with Pinia stores in between and Firestore rules as the only server-side check; plus one Pub/Sub-triggered Cloud Function.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Architecture

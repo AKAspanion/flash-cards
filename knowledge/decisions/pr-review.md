@@ -2,8 +2,8 @@
 type: Decision
 title: Every pull request is reviewed, Hindi included
 description: The developer reviews every pull request before it merges, including every new or changed Hindi string.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:30:00Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Every pull request is reviewed, Hindi included

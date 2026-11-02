@@ -2,8 +2,8 @@
 type: Technical Debt
 title: Technical debt
 description: Known weak spots worth fixing — whole-set rewrites with no size cap, no offline saves, rules that still allow label deletion, out-of-date compatibility comments, and rules that must be deployed by hand ahead of code.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:30:00Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Technical debt

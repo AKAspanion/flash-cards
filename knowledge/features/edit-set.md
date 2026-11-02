@@ -2,8 +2,8 @@
 type: Feature
 title: Create and edit a set
 description: The set editor — title, colour, labels and cards — which saves when the user leaves it, and never saves an empty new set.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Create and edit a set

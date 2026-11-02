@@ -2,8 +2,8 @@
 type: Requirement
 title: Password reset
 description: Users who signed up with email and password must be able to reset a forgotten password from the login screen.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:30:00Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Password reset

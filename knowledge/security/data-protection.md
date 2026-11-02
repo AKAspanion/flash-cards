@@ -2,8 +2,8 @@
 type: Security
 title: Data protection
 description: What personal data the app holds and where, and the protections around it — owner-only rules, hosting security headers, local env files out of git, and a pinned, audited CI.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Data protection

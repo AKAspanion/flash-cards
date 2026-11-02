@@ -2,8 +2,8 @@
 type: Design Tokens
 title: Design tokens
 description: Brand colours and light/dark surfaces are defined once in the Vuetify theme; set colours are darkened by TEXT_SAFE_FACTOR so white text on them meets WCAG AA.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Design tokens

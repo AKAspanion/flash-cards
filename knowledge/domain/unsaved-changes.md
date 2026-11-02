@@ -2,8 +2,8 @@
 type: Business Rule
 title: Unsaved changes are saved on leave, never lost to an update
 description: Screens with edits save when the user navigates away, warn before the tab closes, and hold back a new app version until nothing is unsaved.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Unsaved changes are saved on leave, never lost to an update

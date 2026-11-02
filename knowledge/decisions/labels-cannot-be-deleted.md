@@ -2,8 +2,8 @@
 type: Decision
 title: Labels cannot be deleted
 description: Users create and rename labels but never delete them, so a set never points at a label that no longer exists.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:30:00Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Labels cannot be deleted

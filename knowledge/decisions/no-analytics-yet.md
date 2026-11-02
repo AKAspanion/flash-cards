@@ -2,8 +2,8 @@
 type: Decision
 title: No analytics for now
 description: The app collects no analytics; VUE_APP_MEASUREMENT_ID is passed to the Firebase config, but Analytics is never started.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:30:00Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # No analytics for now

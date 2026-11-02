@@ -2,8 +2,8 @@
 type: Feature
 title: Sign in and sign up
 description: Email/password sign-in and sign-up, or Google sign-in in a popup, then a return to the page the user first asked for.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Sign in and sign up

@@ -2,8 +2,8 @@
 type: Runbook
 title: Run locally
 description: How to run the app against the real Firebase project or against local emulators, and which ports each uses.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Run locally

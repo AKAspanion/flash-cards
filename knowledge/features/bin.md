@@ -2,8 +2,8 @@
 type: Feature
 title: Bin
 description: Sets moved to the bin are only flagged trashed; from the bin the user restores them or deletes them permanently after confirming.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Bin

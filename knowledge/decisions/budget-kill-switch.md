@@ -2,8 +2,8 @@
 type: Decision
 title: Unlink billing when the monthly budget is spent
 description: Because the Blaze plan has no spending cap, a Cloud Function unlinks the billing account once actual spend reaches the budget, dropping the project to the free Spark limits.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Unlink billing when the monthly budget is spent

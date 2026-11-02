@@ -2,8 +2,8 @@
 type: Application
 title: flash-cards web app
 description: The Vue 3 + Vuetify PWA at the repository root, built by Vite and served by Firebase Hosting; every screen except login needs a signed-in user.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # flash-cards web app

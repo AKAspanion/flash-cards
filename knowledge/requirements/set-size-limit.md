@@ -2,8 +2,8 @@
 type: Requirement
 title: Limit the size of a set
 description: A set must be capped at a size that always saves and stays fast, instead of failing at Firestore's document size limit.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:30:00Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Limit the size of a set

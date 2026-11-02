@@ -2,8 +2,8 @@
 type: Project Overview
 title: Flashcards
 description: A learning and memorisation PWA where signed-in users build flashcard sets, study them and track which cards they have learned.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Flashcards

@@ -2,8 +2,8 @@
 type: Application
 title: Cloud Functions
 description: The functions/ codebase deployed to Firebase, holding one Pub/Sub-triggered function, billingKillSwitch, that unlinks billing when the monthly budget is spent.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Cloud Functions

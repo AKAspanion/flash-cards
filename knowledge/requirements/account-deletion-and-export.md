@@ -2,8 +2,8 @@
 type: Requirement
 title: Account deletion and data export
 description: Users must be able to download all their data and to delete their account along with everything stored for it.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:30:00Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Account deletion and data export
