@@ -64,6 +64,18 @@ function scrollByCards(count: number) {
   container.value?.scrollBy({ left: count * itemSize(), behavior: 'smooth' });
 }
 
+/** Centres the card at `index`; scroll snapping alone keeps the old card in view after an insert. */
+function scrollToCard(index: number) {
+  const el = container.value;
+  const item = el?.querySelectorAll<HTMLElement>('.card-slider__item')[index];
+  if (!el || !item) {
+    return;
+  }
+  const box = el.getBoundingClientRect();
+  const rect = item.getBoundingClientRect();
+  el.scrollTo({ left: el.scrollLeft + rect.left - box.left - (box.width - rect.width) / 2, behavior: 'smooth' });
+}
+
 function updateFocused() {
   const size = itemSize();
   const index = size && container.value ? Math.round(container.value.scrollLeft / size) : 0;
@@ -117,6 +129,8 @@ onMounted(() => {
 onBeforeUnmount(() => {
   container.value?.removeEventListener('wheel', onWheel);
 });
+
+defineExpose({ scrollToCard });
 </script>
 
 <style scoped>

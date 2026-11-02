@@ -117,18 +117,21 @@ onBeforeUnmount(() => {
   left: 0;
   z-index: 2000;
 }
+/* Slides with `left`, not `transform`: a transformed page becomes the containing block
+   for its position: fixed children (option panel, FABs), so they would jump mid-transition. */
 .slide-left-enter-active,
 .slide-left-leave-active {
+  position: relative;
   transition:
     opacity 0.2s cubic-bezier(0.55, 0, 0.1, 1),
-    transform 0.2s cubic-bezier(0.55, 0, 0.1, 1);
+    left 0.2s cubic-bezier(0.55, 0, 0.1, 1);
 }
 .slide-left-enter-from {
+  left: 2em;
   opacity: 0;
-  transform: translate(2em, 0);
 }
 .slide-left-leave-to {
+  left: -2em;
   opacity: 0;
-  transform: translate(-2em, 0);
 }
 </style>

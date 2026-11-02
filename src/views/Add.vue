@@ -77,6 +77,7 @@
       :title="t('empty.add.title')"
     />
     <group-card-flash
+      ref="cardGroup"
       v-model="draft.cards"
       :color="draft.color"
       :disabled="saving"
@@ -110,37 +111,31 @@
       ref="optionsPanel"
       :title="t('common.options')"
     >
-      <div class="option-row">
+      <button
+        v-ripple
+        :aria-pressed="draft.fav"
+        class="option-row option-row--action"
+        type="button"
+        @click.stop="draft.fav = !draft.fav"
+      >
         <span class="option-row__label">{{ t('add.mark-as-fav') }}</span>
-        <v-btn
-          :aria-label="t('add.mark-as-fav')"
-          :aria-pressed="draft.fav"
-          :color="draft.fav ? 'yellow-darken-2' : draft.color"
-          icon
-          size="small"
-          variant="text"
-          @click.stop="draft.fav = !draft.fav"
-        >
-          <v-icon>{{ draft.fav ? 'mdi-star' : 'mdi-star-outline' }}</v-icon>
-        </v-btn>
-      </div>
-      <div
+        <v-icon :color="draft.fav ? 'yellow-darken-2' : draft.color">
+          {{ draft.fav ? 'mdi-star' : 'mdi-star-outline' }}
+        </v-icon>
+      </button>
+      <button
         v-if="isEdit"
-        class="option-row"
+        v-ripple
+        class="option-row option-row--action"
+        :disabled="!canSave"
+        type="button"
+        @click.stop="moveToBin"
       >
         <span class="option-row__label">{{ t('add.move-to-bin') }}</span>
-        <v-btn
-          :aria-label="t('add.move-to-bin')"
-          :color="draft.color"
-          :disabled="!canSave"
-          icon
-          size="small"
-          variant="text"
-          @click.stop="moveToBin"
-        >
-          <v-icon>mdi-trash-can</v-icon>
-        </v-btn>
-      </div>
+        <v-icon :color="draft.color">
+          mdi-trash-can
+        </v-icon>
+      </button>
       <div class="option-row">
         <span class="option-row__label">{{ t('common.color') }}</span>
         <color-palette v-model="draft.color" />
@@ -176,7 +171,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import BarTop from '@/components/BarTop.vue';
@@ -205,6 +200,7 @@ const titleEdit = ref(false);
 const focusedIndex = ref(0);
 const saving = ref(false);
 const optionsPanel = ref<InstanceType<typeof OptionPanel> | null>(null);
+const cardGroup = ref<InstanceType<typeof GroupCardFlash> | null>(null);
 
 const setLabels = computed(() => library.labels.filter((l) => draft.value.labels.includes(l.docId)));
 const dirty = computed(() => JSON.stringify(draft.value) !== snapshot.value);
@@ -260,7 +256,9 @@ if (isEdit) {
 
 function addCard() {
   const card: FlashCard = { id: uid(), front: '', back: '', learned: false, date: new Date().toISOString() };
-  draft.value.cards.splice(focusedIndex.value, 0, card);
+  const index = focusedIndex.value;
+  draft.value.cards.splice(index, 0, card);
+  void nextTick(() => cardGroup.value?.scrollToCard(index));
 }
 
 let undoCardDelete: (() => void) | null = null;
