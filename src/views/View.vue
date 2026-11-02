@@ -36,6 +36,7 @@
       @focused="(index) => (focusedIndex = index)"
     />
     <v-progress-linear
+      :aria-label="t('common.learned')"
       class="view__progress"
       :color="set?.color || 'primary'"
       height="4"

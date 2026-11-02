@@ -22,3 +22,6 @@ npm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+/dist-e2e
+/playwright-report
+/test-results

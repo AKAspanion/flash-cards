@@ -71,6 +71,26 @@ describe('library store', () => {
     expect(api.fetchCardSets).toHaveBeenCalledTimes(1);
   });
 
+  it('does not list a new set twice when a load returns it first', async () => {
+    const pendingLoad = deferred<CardSet[]>();
+    const created = deferred<string>();
+    api.fetchCardSets.mockReturnValueOnce(pendingLoad.promise);
+    api.fetchLabels.mockResolvedValue([]);
+    api.addCardSet.mockReturnValueOnce(created.promise);
+    const library = useLibraryStore();
+    signIn('alice');
+
+    const load = library.load();
+    const create = library.createSet(set('new'));
+    // The load reads the new document before addDoc's promise settles.
+    pendingLoad.resolve([{ ...set('new'), docId: 'd-new' }]);
+    await load;
+    created.resolve('d-new');
+    await create;
+
+    expect(library.sets.map((s) => s.docId)).toEqual(['d-new']);
+  });
+
   it('reports a failed save and keeps local data unchanged', async () => {
     api.fetchCardSets.mockResolvedValue([{ ...set('a'), docId: 'd1' }]);
     api.fetchLabels.mockResolvedValue([]);

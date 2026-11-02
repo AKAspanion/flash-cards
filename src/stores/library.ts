@@ -80,7 +80,8 @@ export const useLibraryStore = defineStore('library', () => {
     try {
       const docId = await session.track(api.addCardSet(set));
       const saved = { ...set, docId };
-      sets.value = [...sets.value, saved];
+      // A load that finished meanwhile may already contain the new document.
+      sets.value = [...sets.value.filter((s) => s.docId !== docId), saved];
       return saved;
     } catch (err) {
       session.showError(err, 'toast.error.save');
@@ -114,7 +115,7 @@ export const useLibraryStore = defineStore('library', () => {
     try {
       const docId = await session.track(api.addLabel(text));
       const label = { docId, label: text };
-      labels.value = [...labels.value, label];
+      labels.value = [...labels.value.filter((l) => l.docId !== docId), label];
       return label;
     } catch (err) {
       session.showError(err, 'toast.error.save');

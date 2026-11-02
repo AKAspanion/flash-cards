@@ -33,6 +33,7 @@
             class="add__title-field"
             density="compact"
             hide-details
+            :aria-label="t('add.set.title')"
             :placeholder="t('add.set.notitle')"
             rounded="xl"
             variant="outlined"

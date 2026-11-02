@@ -11,13 +11,16 @@
     "dev": "vite",
     "dev:emulator": "vite --mode emulator",
     "build": "vue-tsc --noEmit && vite build",
+    "build:e2e": "vite build --mode emulator --outDir dist-e2e",
     "preview": "vite preview",
     "type-check": "vue-tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:rules": "firebase emulators:exec --only firestore --project demo-flash-cards \"vitest run tests/unit/firestore.rules.spec.ts\"",
-    "emulators": "firebase emulators:start --only auth,firestore --project demo-flash-cards"
+    "test:rules": "npx --yes firebase-tools@15.34.2 emulators:exec --only firestore --project demo-flash-cards \"vitest run tests/unit/firestore.rules.spec.ts\"",
+    "test:e2e": "npm run build:e2e && npx --yes firebase-tools@15.34.2 emulators:exec --only auth,firestore --project demo-flash-cards \"playwright test\"",
+    "emulators": "npx --yes firebase-tools@15.34.2 emulators:start --only auth,firestore --project demo-flash-cards",
+    "deploy": "npm run build && npx --yes firebase-tools@15.34.2 deploy --only hosting"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
@@ -29,16 +32,16 @@
     "vuetify": "^4.3.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@firebase/rules-unit-testing": "^6.0.0",
+    "@playwright/test": "^1.64.1",
     "@types/node": "^24.0.0",
     "@vitejs/plugin-vue": "^6.0.10",
     "@vue/devtools-api": "^8.2.1",
     "@vue/eslint-config-typescript": "^14.9.0",
-    "@vue/test-utils": "^2.5.1",
     "@vue/tsconfig": "^0.9.1",
     "eslint": "^10.14.0",
     "eslint-plugin-vue": "^10.12.0",
-    "firebase-tools": "^15.34.2",
     "jsdom": "^30.1.3",
     "typescript": "~6.0.3",
     "vite": "^8.3.5",
@@ -49,6 +52,9 @@
     "workbox-window": "^7.4.1"
   },
   "overrides": {
-    "@grpc/grpc-js": "^1.14.7"
+    "@grpc/grpc-js": "^1.14.7",
+    "ejs": "^7.0.2",
+    "minimatch@>=9 <11": "^11.0.4",
+    "glob@>=9 <14.0.2": "^14.0.3"
   }
 }

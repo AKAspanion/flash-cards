@@ -65,6 +65,7 @@
             </div>
           </div>
           <v-btn
+            v-if="URLS.play"
             :aria-label="t('info.share.play')"
             icon
             size="small"
@@ -83,7 +84,10 @@
             <v-icon>mdi-web</v-icon>
           </v-btn>
         </div>
-        <div class="info__row">
+        <div
+          v-if="URLS.play"
+          class="info__row"
+        >
           <v-icon>mdi-star</v-icon>
           <div class="info__text">
             <div class="text-title-small">
@@ -116,10 +120,11 @@ import { useI18n } from 'vue-i18n';
 import BarTop from '@/components/BarTop.vue';
 import { useSessionStore } from '@/stores/session';
 
+// The web link is wherever the app is served from; the Play Store listing is per deployment (optional).
 const URLS = {
-  play: 'https://play.google.com/store/apps/details?id=com.flashcards.twa',
-  web: 'https://spanion-flash-cards.web.app/',
-} as const;
+  play: import.meta.env.VUE_APP_PLAY_STORE_URL ?? '',
+  web: `${window.location.origin}/`,
+};
 
 const { t } = useI18n();
 const router = useRouter();

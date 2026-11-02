@@ -1,0 +1,85 @@
+name: Deploy
+
+# Every push to master runs the full CI suite, then deploys hosting.
+# Firestore rules deploy only when started by hand with "deploy_rules" ticked.
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      deploy_rules:
+        description: Also deploy firestore.rules
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    name: Build and deploy to Firebase
+    needs: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: production
+      url: https://${{ vars.FIREBASE_PROJECT_ID }}.web.app
+    env:
+      # Public Firebase web config, kept in repository Variables (Settings > Secrets and variables > Actions).
+      VUE_APP_API_KEY: ${{ vars.VUE_APP_API_KEY }}
+      VUE_APP_AUTH_DOMAIN: ${{ vars.VUE_APP_AUTH_DOMAIN }}
+      VUE_APP_DATABASE_URL: ${{ vars.VUE_APP_DATABASE_URL }}
+      VUE_APP_PROJECT_ID: ${{ vars.VUE_APP_PROJECT_ID }}
+      VUE_APP_STORAGE_BUCKET: ${{ vars.VUE_APP_STORAGE_BUCKET }}
+      VUE_APP_MESSAGING_SENDER_ID: ${{ vars.VUE_APP_MESSAGING_SENDER_ID }}
+      VUE_APP_APP_ID: ${{ vars.VUE_APP_APP_ID }}
+      VUE_APP_MEASUREMENT_ID: ${{ vars.VUE_APP_MEASUREMENT_ID }}
+      VUE_APP_PLAY_STORE_URL: ${{ vars.VUE_APP_PLAY_STORE_URL }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Check deploy configuration
+        env:
+          HAS_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
+          FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
+        run: |
+          missing=""
+          for v in VUE_APP_API_KEY VUE_APP_AUTH_DOMAIN VUE_APP_PROJECT_ID VUE_APP_APP_ID FIREBASE_PROJECT_ID; do
+            [ -n "${!v}" ] || missing="$missing $v"
+          done
+          [ "$HAS_SERVICE_ACCOUNT" = "true" ] || missing="$missing FIREBASE_SERVICE_ACCOUNT(secret)"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository settings:$missing. See README > Deploy."
+            exit 1
+          fi
+      - run: npm ci
+      - run: npm run build
+      - name: Deploy hosting
+        uses: FirebaseExtended/action-hosting-deploy@500ac625ca2dd40cbd15f7659af953801858032a # v0.11.0
+        with:
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: ${{ vars.FIREBASE_PROJECT_ID }}
+          channelId: live
+          firebaseToolsVersion: 15.34.2
+      - name: Deploy Firestore rules
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy_rules }}
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
+        run: |
+          creds="$RUNNER_TEMP/sa.json"
+          printf '%s' "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > "$creds"
+          GOOGLE_APPLICATION_CREDENTIALS="$creds" npx --yes firebase-tools@15.34.2 deploy --only firestore:rules --project "$PROJECT_ID" --non-interactive
+          rm -f "$creds"

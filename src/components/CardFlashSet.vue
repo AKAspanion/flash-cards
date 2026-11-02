@@ -16,7 +16,7 @@
     >
       <v-card
         class="pa-6"
-        :color="card.color || 'primary'"
+        :color="headerColor"
         flat
         height="100"
         theme="dark"
@@ -41,6 +41,7 @@
           <v-spacer />
           <v-chip
             v-if="!bin"
+            role="button"
             :aria-label="t('common.edit')"
             class="ml-2"
             :disabled="disabled || !session.online"
@@ -57,6 +58,7 @@
           <v-chip
             v-for="label in labels"
             :key="label.docId"
+            role="button"
             class="mr-1 mt-2"
             size="small"
             variant="outlined"
@@ -106,6 +108,7 @@
         <v-chip
           :disabled="disabled"
           size="small"
+          role="button"
           variant="outlined"
           @click="router.push(`/${card.id}/view`)"
         >
@@ -134,6 +137,7 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import type { CardSet, Label } from '@/types';
 import { learnedCount } from '@/utils/cardSets';
+import { shade } from '@/utils/color';
 import { useLibraryStore } from '@/stores/library';
 import { useSessionStore } from '@/stores/session';
 
@@ -158,6 +162,7 @@ const session = useSessionStore();
 const library = useLibraryStore();
 
 const title = computed(() => props.card.title || t('add.set.notitle'));
+const headerColor = computed(() => shade(props.card.color || '#E91E63'));
 const labels = computed(() => library.labels.filter((label) => props.card.labels.includes(label.docId)));
 const learned = computed(() => learnedCount(props.card));
 const percentage = computed(() =>

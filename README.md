@@ -7,14 +7,16 @@ Live at https://spanion-flash-cards.web.app.
 
 ## Setup
 
-Requires Node 20.19 or newer.
+Requires Node 24 (see `.nvmrc`; 20.19+ works) and, for the emulators, Java 21.
 
 ```bash
 npm install
 cp .env.example .env.local   # then fill in the Firebase web app config
 ```
 
-The config comes from Firebase console > Project settings > Your apps. With the Firebase CLI logged in, you can print it with
+All configuration comes from environment variables (`VUE_APP_*`, listed in `.env.example`); nothing is
+hard-coded. The Firebase web config is public by design, but keep `.env.local` out of git (it is ignored).
+With the Firebase CLI logged in you can print the config with
 `npx firebase-tools apps:sdkconfig WEB --project spanion-flash-cards`.
 
 ## Scripts
@@ -22,20 +24,45 @@ The config comes from Firebase console > Project settings > Your apps. With the 
 | Command | What it does |
 | --- | --- |
 | `npm run serve` | Dev server on http://localhost:8080 against the Firebase project in `.env.local` |
-| `npm run emulators` | Local Auth + Firestore emulators (needs Java) |
+| `npm run emulators` | Local Auth + Firestore emulators |
 | `npm run dev:emulator` | Dev server against the emulators; no real accounts or data are touched |
 | `npm run build` | Type-check and build to `dist/` |
-| `npm run lint` | ESLint |
+| `npm run lint` / `npm run type-check` | ESLint / `vue-tsc` |
 | `npm test` | Unit tests (Vitest) |
 | `npm run test:rules` | Firestore security-rules tests on the emulator |
+| `npm run test:e2e` | Playwright end-to-end + accessibility tests (desktop and mobile) on a production build against the emulators |
+| `npm run deploy` | Build and deploy hosting from your machine |
 
-## Deploy
+The Firebase CLI is run with `npx` at a pinned version, so it is not a project dependency.
 
-```bash
-npm run build && npx firebase-tools deploy --only hosting
-```
+## CI/CD
 
-Security rules live in `firestore.rules` and deploy separately with `npx firebase-tools deploy --only firestore:rules`.
+| Workflow | When | What |
+| --- | --- | --- |
+| `ci.yml` | Every pull request | Lint, type-check, unit tests, security-rules tests, build, `npm audit` of shipped deps, and the Playwright e2e/a11y suite |
+| `preview.yml` | Every pull request from this repo | Deploys a temporary preview channel (7 days) and comments the URL |
+| `deploy.yml` | Push to `master` | Runs CI, then deploys hosting. Run it by hand with **deploy_rules** ticked to also deploy `firestore.rules` |
+| `codeql.yml` | PRs, pushes, weekly | CodeQL security analysis of the app and the workflows |
+| `dependabot.yml` | Weekly | Grouped dependency and GitHub Actions updates |
+
+Actions are pinned to commit SHAs; Dependabot keeps them current.
+
+### One-time setup for deploys
+
+In **Settings > Secrets and variables > Actions**:
+
+- **Secret** `FIREBASE_SERVICE_ACCOUNT`: JSON key of a Google Cloud service account with the
+  *Firebase Hosting Admin* role (plus *Firebase Rules Admin* if you deploy rules from CI).
+  `npx firebase-tools init hosting:github` can create it and add the secret for you.
+- **Variables** `FIREBASE_PROJECT_ID` and the `VUE_APP_*` values from `.env.example`.
+
+Until these exist, `deploy.yml` fails with a message naming what is missing and `preview.yml` is skipped.
+
+## Security
+
+- `firestore.rules` limits every document to its owner (`uid`) and checks the stored shape; tested in `tests/unit/firestore.rules.spec.ts`.
+- Hosting sends a Content-Security-Policy and other security headers (`firebase.json`).
+- Report vulnerabilities privately through GitHub's **Security > Report a vulnerability**.
 
 ## Data model
 

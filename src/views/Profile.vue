@@ -47,6 +47,7 @@
             class="pl-3"
             density="compact"
             hide-details
+            :aria-label="t('profile.photo.edit')"
             :placeholder="t('profile.photo.placeholder')"
             rounded="xl"
             type="url"
@@ -90,6 +91,7 @@
             class="pt-2"
             density="compact"
             hide-details
+            :aria-label="t('profile.name.placeholder')"
             :placeholder="t('profile.name.placeholder')"
             rounded="xl"
             variant="outlined"
@@ -156,6 +158,7 @@
                 density="compact"
                 :disabled="labelBusy"
                 hide-details
+                :aria-label="t('profile.label.create')"
                 :placeholder="t('profile.label.create')"
                 rounded="xl"
                 variant="outlined"

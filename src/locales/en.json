@@ -29,7 +29,9 @@
     "profile": "Profile",
     "retry": "Retry",
     "save": "Save",
-    "undo": "Undo"
+    "undo": "Undo",
+    "back": "Back",
+    "loading": "Loading"
   },
   "home": {
     "set": {
@@ -38,7 +40,8 @@
   },
   "add": {
     "set": {
-      "notitle": "untitled set"
+      "notitle": "untitled set",
+      "title": "Set title"
     },
     "card": "Add card",
     "card-delete": "Card deleted",

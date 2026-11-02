@@ -3,6 +3,7 @@
     <div class="bar-top">
       <div class="bar-top__side">
         <v-btn
+          :aria-label="leftLabel || t('common.back')"
           height="64"
           icon
           variant="text"
@@ -22,6 +23,7 @@
         <slot name="right">
           <template v-if="slots['right-button']">
             <v-btn
+              :aria-label="rightLabel || t('common.options')"
               height="64"
               icon
               variant="text"
@@ -43,9 +45,12 @@
 
 <script setup lang="ts">
 import { useSlots } from 'vue';
+import { useI18n } from 'vue-i18n';
 
+defineProps<{ leftLabel?: string; rightLabel?: string }>();
 const emit = defineEmits<{ 'click:left': []; 'click:right': [] }>();
 const slots = useSlots();
+const { t } = useI18n();
 </script>
 
 <style scoped>
