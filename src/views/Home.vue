@@ -183,23 +183,19 @@
       ref="menuPanel"
       :title="t('common.menu')"
     >
-      <div
+      <button
         v-for="item in menuItems"
         :key="item.path"
-        class="option-row"
+        v-ripple
+        class="option-row option-row--action"
+        type="button"
+        @click.stop="goFromMenu(item.path)"
       >
         <span class="option-row__label">{{ item.title }}</span>
-        <v-btn
-          :aria-label="item.title"
-          color="primary"
-          icon
-          size="small"
-          variant="text"
-          @click.stop="goFromMenu(item.path)"
-        >
-          <v-icon>{{ item.icon }}</v-icon>
-        </v-btn>
-      </div>
+        <v-icon color="primary">
+          {{ item.icon }}
+        </v-icon>
+      </button>
     </option-panel>
   </div>
 </template>
