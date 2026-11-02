@@ -3,7 +3,7 @@ import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescri
 
 export default defineConfigWithVueTs(
   {
-    ignores: ['dist/**', 'dist-e2e/**', 'playwright-report/**', 'test-results/**', 'dev-dist/**', 'coverage/**', 'node_modules/**', '.firebase/**'],
+    ignores: ['dist/**', 'dist-e2e/**', 'playwright-report/**', 'test-results/**', 'dev-dist/**', 'coverage/**', 'node_modules/**', '.firebase/**', 'functions/lib/**'],
   },
   pluginVue.configs['flat/recommended'],
   vueTsConfigs.recommended,

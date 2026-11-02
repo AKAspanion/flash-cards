@@ -32,6 +32,7 @@ With the Firebase CLI logged in you can print the config with
 | `npm run test:rules` | Firestore security-rules tests on the emulator |
 | `npm run test:e2e` | Playwright end-to-end + accessibility tests (desktop and mobile) on a production build against the emulators |
 | `npm run deploy` | Build and deploy hosting from your machine |
+| `npm run deploy:functions` | Build and deploy the Cloud Functions in `functions/` (the budget kill switch) |
 
 The Firebase CLI is run with `npx` at a pinned version, so it is not a project dependency.
 
@@ -39,7 +40,7 @@ The Firebase CLI is run with `npx` at a pinned version, so it is not a project d
 
 | Workflow | When | What |
 | --- | --- | --- |
-| `ci.yml` | Every pull request | Lint, type-check, unit tests, security-rules tests, build, `npm audit` of shipped deps, and the Playwright e2e/a11y suite |
+| `ci.yml` | Every pull request | Lint, type-check, unit tests, security-rules tests, build, `npm audit` of shipped deps, a build and audit of `functions/`, and the Playwright e2e/a11y suite |
 | `deploy.yml` | Push to `master` | Runs CI, then deploys hosting. Run it by hand with **deploy_rules** ticked to also deploy `firestore.rules` |
 | `codeql.yml` | PRs, pushes, weekly | CodeQL security analysis of the app and the workflows |
 | `dependabot.yml` | Weekly | Grouped dependency and GitHub Actions updates |
@@ -75,6 +76,34 @@ Credentials > the *Web client (auto created by Google Service)*:
 
 `firebase.json` allows that domain in the CSP `frame-src`, so sign-in also works when the app is opened on the
 `.web.app` address.
+
+### Budget kill switch
+
+The project is on the Blaze plan, which has no spending cap. `functions/` holds `billingKillSwitch`, a Cloud
+Function that listens to the monthly budget's notifications and **unlinks the billing account** once actual spend
+reaches the budget. Without billing the project falls back to the free Spark limits: Hosting, Auth and Firestore
+keep working within the free quota, and anything beyond it stops instead of being charged. Forecast alerts don't
+trigger it.
+
+Cloud Billing reports spend several hours late, so the final bill can end up a little over the budget.
+
+One-time setup in the Google Cloud console for `spanion-flash-cards`, signed in as the project owner:
+
+1. **Service account:** IAM & Admin > Service accounts > **Create service account** with ID
+   `billing-kill-switch`, and give it the **Project Billing Manager** role. That role is all it needs to turn
+   billing off for this project, and it can't touch the billing account or other projects.
+2. **API:** enable the [Cloud Billing API](https://console.cloud.google.com/apis/library/cloudbilling.googleapis.com?project=spanion-flash-cards).
+3. **Deploy:** `npm run deploy:functions`. This creates the function and its Pub/Sub topic `budget-alerts`.
+4. **Connect the budget:** Billing > Budgets & alerts > the monthly budget > Edit > Actions >
+   **Connect a Pub/Sub topic to this budget** > project `spanion-flash-cards`, topic `budget-alerts` > Save.
+5. **Check the wiring:** Pub/Sub > Topics > `budget-alerts` > Messages > **Publish message** with the body
+   `{"costAmount": 0.5, "budgetAmount": 5, "currencyCode": "USD"}`. The function's logs should show
+   `Budget check: under-budget`. Never publish a `costAmount` at or above `budgetAmount`: that really turns
+   billing off.
+
+To turn billing back on after it fires, raise the budget first. Then link the billing account again in Billing >
+Account management, or in Firebase console > Usage and billing > Modify plan > Blaze. If you re-link while the
+month's spend is still over the budget, the next notification turns billing off again.
 
 ## Security
 

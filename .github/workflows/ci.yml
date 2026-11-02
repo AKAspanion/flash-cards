@@ -41,6 +41,12 @@ jobs:
         run: npx vite build
       - name: Audit shipped dependencies
         run: npm audit --omit=dev --audit-level=moderate
+      - name: Build Cloud Functions
+        run: |
+          npm ci --prefix functions
+          npm run build --prefix functions
+      - name: Audit Cloud Functions dependencies
+        run: npm audit --prefix functions --omit=dev --audit-level=moderate
 
   e2e:
     name: End-to-end (Playwright, emulators)
