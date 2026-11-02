@@ -40,7 +40,6 @@ The Firebase CLI is run with `npx` at a pinned version, so it is not a project d
 | Workflow | When | What |
 | --- | --- | --- |
 | `ci.yml` | Every pull request | Lint, type-check, unit tests, security-rules tests, build, `npm audit` of shipped deps, and the Playwright e2e/a11y suite |
-| `preview.yml` | Every pull request from this repo | Deploys a temporary preview channel (7 days) and comments the URL |
 | `deploy.yml` | Push to `master` | Runs CI, then deploys hosting. Run it by hand with **deploy_rules** ticked to also deploy `firestore.rules` |
 | `codeql.yml` | PRs, pushes, weekly | CodeQL security analysis of the app and the workflows |
 | `dependabot.yml` | Weekly | Grouped dependency and GitHub Actions updates |
@@ -59,7 +58,7 @@ In **Settings > Secrets and variables > Actions**:
 - The service account needs *Firebase Hosting Admin* and *Service Usage Consumer*
   (the CLI checks that the Hosting API is enabled before deploying).
 
-Until these exist, `deploy.yml` fails with a message naming what is missing and `preview.yml` is skipped.
+Until these exist, `deploy.yml` fails with a message naming what is missing.
 
 ### Domains
 
