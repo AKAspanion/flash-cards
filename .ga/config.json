@@ -1,0 +1,22 @@
+{
+  "consent": null,
+  "workflow": {
+    "git": {
+      "message": "free",
+      "ticket": "none",
+      "base": "master",
+      "branch": "<type>/<topic>",
+      "squash": true
+    },
+    "checks": {
+      "commands": {
+        "typecheck": "npm run type-check",
+        "lint": "npm run lint",
+        "lint-fix": null,
+        "format-check": null,
+        "test": "npm test",
+        "e2e": "npm run test:e2e"
+      }
+    }
+  }
+}

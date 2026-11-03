@@ -1,0 +1,38 @@
+---
+type: Runbook
+title: Run locally
+description: How to run the app against the real Firebase project or against local emulators, and which ports each uses.
+generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
+verified: human:panditankit1995@gmail.com
+---
+
+# Run locally
+
+## Prerequisites
+
+- Node at the version in `.nvmrc` (the minimum is `engines.node` in `package.json`).
+- Java 21 for the Firebase emulators (README, "Setup").
+- For the real project: the Firebase web config in `.env.local` ([environment](environment.md)). The README shows
+  how to print it with the Firebase CLI.
+
+## Steps
+
+1. `npm install`.
+2. Against the real project: `npm run serve` (or `npm run dev`). The dev server port is `server.port` in
+   `vite.config.ts`, with `strictPort`. This uses real accounts and data.
+3. Against emulators, touching nothing real: `npm run emulators` in one terminal, `npm run dev:emulator` in another.
+   Emulator ports are the `emulators` block of `firebase.json`; the Firestore one is not the default, and the app's
+   matching host and port are in `getServices` in `src/services/firebase.ts`.
+4. Checks: `npm run lint`, `npm run type-check`, `npm test`, `npm run test:rules`, `npm run test:e2e`
+   ([testing](../quality/testing.md)).
+5. Cloud Functions: `npm run build --prefix functions`; deploy with `npm run deploy:functions`
+   ([functions](../apps/functions.md)).
+
+## Sources
+
+- `.nvmrc`
+- `package.json`
+- `vite.config.ts`
+- `firebase.json`
+- `src/services/firebase.ts`
+- `README.md`
