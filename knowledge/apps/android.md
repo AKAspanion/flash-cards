@@ -19,11 +19,19 @@ app belong together ([requirement](../requirements/android-twa.md)). It holds no
   `android/twa-manifest.json`: package `in.spanion.flashcards.twa` ([why](../decisions/android-package-name.md)),
   portrait ([why](../decisions/twa-orientation.md)), `display: standalone`
   ([why](../decisions/display-standalone.md)), a `customtabs` fallback and no notifications. Compile and target SDK
-  are the generated `36`, minimum `21`, in `android/app/build.gradle`.
+  are the generated `36` and the minimum is `24` (Android 7.0), in `android/app/build.gradle`: `minSdkVersion` is set
+  in `android/twa-manifest.json` because the `androidbrowserhelper` library Bubblewrap adds declares 24, and
+  Bubblewrap's default of 21 fails the build's manifest merge.
+- `android/twa-manifest.json` also sets `splashScreenFadeOutDuration` (`300`): left unset, Bubblewrap writes an empty
+  value and the Gradle build doesn't compile.
 - The site is verified by `public/.well-known/assetlinks.json`; the earlier file is gone
   ([why](../decisions/old-twa-asset-links-dropped.md)).
 - `tests/unit/twa.spec.ts` checks that the Android manifest, the asset-links file and `pwa-manifest.ts` agree.
 - Building and releasing: [the release runbook](../operations/android-release.md).
+
+## History
+
+- 2026-11-04: the minimum SDK was `21`; now `24`, because the first test APK build failed the manifest merge at 21.
 
 ## Sources
 

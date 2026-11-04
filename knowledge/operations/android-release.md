@@ -18,6 +18,18 @@ The ordered steps, from the first build to the Play submission, are in section 8
 - Bubblewrap downloads the icons from the URLs in `android/twa-manifest.json`, so they must be live. If they aren't,
   serve `public/` locally and swap the URLs for the run.
 
+## A test build
+
+- A debug APK needs no keystore: from `android/`, `ANDROID_HOME=~/Library/Android/sdk ./gradlew assembleDebug`
+  writes `android/app/build/outputs/apk/debug/app-debug.apk`, signed with the machine's Android debug key. Install it
+  with `adb install -r` on that path.
+- If the Gradle wrapper's download of its distribution times out, as it did on this machine on 2026-11-04 (the zip is
+  served from GitHub's release-assets host), run any cached Gradle 8.11.1 or later from `~/.gradle/wrapper/dists/`
+  with the same task.
+- The debug key isn't in `public/.well-known/assetlinks.json`, so a debug build opens with a browser bar. To test the
+  full-screen launch, add the debug key's SHA-256 (`apksigner verify --print-certs` on the APK) to the file, deploy
+  hosting, and remove it before release.
+
 ## Each release
 
 - Raise `appVersionCode` in `android/twa-manifest.json` by hand.
