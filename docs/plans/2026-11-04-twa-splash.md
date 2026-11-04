@@ -1,6 +1,8 @@
 # TWA Splash Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: the project's workflow policy names the executor (`run.executor`): ga:implement-with-subagents by default, or ga:implement. Follow the policy and this plan's Checkpoints. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: the project's workflow policy names the executor (`run.executor`): ga:implement-with-subagents by default, or ga:implement. Follow the policy and this plan's Checkpoints. Steps use checkbox (`- [x]`) syntax for tracking.
+
+**Status:** complete
 
 **Goal:** A cold launch of the Android app shows one splash, held until the first screen is ready, then one fade.
 
@@ -68,29 +70,29 @@ private void grantSplashUriPermission();
 - Given the Gradle build, when `./gradlew assembleRelease` runs in `android/` (cached Gradle 8.14, outside the sandbox),
   then it compiles.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case but the build, as a `describe('LauncherActivity.java')`
+- [x] **Step 1: Write the failing tests** for each Acceptance case but the build, as a `describe('LauncherActivity.java')`
   block in `tests/unit/twa.spec.ts` reading the file as text
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npx vitest run tests/unit/twa.spec.ts -t "LauncherActivity"`
 Expected: FAIL on the assertions
 
-- [ ] **Step 3: Write the minimal implementation**: add `grantSplashUriPermission()` and call it first in `onCreate`,
+- [x] **Step 3: Write the minimal implementation**: add `grantSplashUriPermission()` and call it first in `onCreate`,
   with the imports it needs (`android.content.Intent`, `android.util.Log`, `androidx.core.content.FileProvider`,
   `java.io.File`)
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npx vitest run tests/unit/twa.spec.ts -t "LauncherActivity"`
 Expected: PASS
 
-- [ ] **Step 5: Build it**
+- [x] **Step 5: Build it**
 
 Run: `cd android && ./gradlew assembleRelease` (outside the sandbox; use the cached Gradle 8.14 under `~/.gradle/wrapper/dists/` if the wrapper download times out)
 Expected: BUILD SUCCESSFUL. Signing is the session's job afterwards, not this task's.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add android/app/src/main/java/in/spanion/flashcards/twa/LauncherActivity.java tests/unit/twa.spec.ts
@@ -156,30 +158,30 @@ export function hideBootSplash(doc?: Document): void;
 - E2e, in `tests/e2e/boot-splash.spec.ts`: given a fresh visit to `/login`, when the "Login" button is visible, then
   `#boot-splash` has count `0` within `1000` ms, and clicking the Email field focuses it.
 
-- [ ] **Step 1: Write the failing unit tests** for the `hideBootSplash` and `index.html` cases in
+- [x] **Step 1: Write the failing unit tests** for the `hideBootSplash` and `index.html` cases in
   `tests/unit/bootSplash.spec.ts` (jsdom; read `index.html` as text for its cases), and the e2e case in
   `tests/e2e/boot-splash.spec.ts`
 
-- [ ] **Step 2: Run the unit tests to verify they fail**
+- [x] **Step 2: Run the unit tests to verify they fail**
 
 Run: `npx vitest run tests/unit/bootSplash.spec.ts`
 Expected: FAIL on the assertions (create `src/utils/bootSplash.ts` with the real signatures first)
 
-- [ ] **Step 3: Write the minimal implementation**: copy the image, add the overlay, its CSS and the `<noscript>`
+- [x] **Step 3: Write the minimal implementation**: copy the image, add the overlay, its CSS and the `<noscript>`
   style to `index.html` (removing `.boot-logo` and its CSS), write `src/utils/bootSplash.ts`, and in `src/main.ts`,
   after `mount('#app')`, call `hideBootSplash()` in a `requestAnimationFrame` once `router.isReady()` settles
 
-- [ ] **Step 4: Run the unit tests to verify they pass**
+- [x] **Step 4: Run the unit tests to verify they pass**
 
 Run: `npx vitest run tests/unit/bootSplash.spec.ts`
 Expected: PASS
 
-- [ ] **Step 5: Run the e2e test to verify it passes**
+- [x] **Step 5: Run the e2e test to verify it passes**
 
 Run: `npx playwright test tests/e2e/boot-splash.spec.ts`
 Expected: PASS (build first with `npm run build:e2e`, then run it inside the emulators: `npx --yes firebase-tools@15.34.2 emulators:exec --only auth,firestore --project demo-flash-cards "playwright test tests/e2e/boot-splash.spec.ts"`)
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add public/img/splash.png src/utils/bootSplash.ts index.html src/main.ts tests/unit/bootSplash.spec.ts tests/e2e/boot-splash.spec.ts
