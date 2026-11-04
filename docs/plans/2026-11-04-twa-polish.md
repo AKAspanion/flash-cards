@@ -1,6 +1,8 @@
 # TWA Polish Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: the project's workflow policy names the executor (`run.executor`): ga:implement-with-subagents by default, or ga:implement. Follow the policy and this plan's Checkpoints. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: the project's workflow policy names the executor (`run.executor`): ga:implement-with-subagents by default, or ga:implement. Follow the policy and this plan's Checkpoints. Steps use checkbox (`- [x]`) syntax for tracking.
+
+**Status:** complete
 
 **Goal:** Make the deletion screens match the app's list-and-icon style, fix the stuck dialog after a cancelled Google re-confirmation, rename the app "FlashCards", remove the launch jitter, and drop the login screen's Delete account link.
 
@@ -78,21 +80,21 @@ None. The policy sets `run.checkpoints: none`.
 - `index.html`: the `<title>` is `FlashCards`; the description meta and the noscript text use `FlashCards`; `#app` contains an `img.boot-logo`.
 - Given localStorage with the saved dark preference on, when the inline head script runs in jsdom, then `document.documentElement.style.background` (or the class it sets) is the dark background. Given no saved prefs, it is `#ECECEC`. Given unparseable prefs, it is `#ECECEC` and nothing throws.
 
-- [ ] **Step 1: Write the failing tests** in `tests/unit/earlyPaint.spec.ts`, reading `index.html`, `pwa-manifest.ts` and `en.json`, and running the head script's text in jsdom with prepared localStorage.
+- [x] **Step 1: Write the failing tests** in `tests/unit/earlyPaint.spec.ts`, reading `index.html`, `pwa-manifest.ts` and `en.json`, and running the head script's text in jsdom with prepared localStorage.
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npx vitest run tests/unit/earlyPaint.spec.ts`
 Expected: FAIL on the assertions.
 
-- [ ] **Step 3: Write the minimal implementation:** the locale changes, the manifest names, and the `index.html` title, meta, noscript, style, head script and boot logo.
+- [x] **Step 3: Write the minimal implementation:** the locale changes, the manifest names, and the `index.html` title, meta, noscript, style, head script and boot logo.
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npx vitest run tests/unit/earlyPaint.spec.ts tests/unit/locales.spec.ts`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/locales/en.json src/locales/hi.json pwa-manifest.ts index.html tests/unit/earlyPaint.spec.ts
@@ -144,25 +146,25 @@ git commit -m "Rename the app FlashCards and paint the background before the app
 - E2e (mobile project, `hasTouch`): on `/login`, the email field isn't focused after load. On the desktop project it is.
 - The existing axe scans of `/privacy`, `/delete-account`, `/login` and `/profile` pass.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case in `tests/e2e/account-deletion.spec.ts` and `tests/e2e/public-pages.spec.ts`
+- [x] **Step 1: Write the failing tests** for each Acceptance case in `tests/e2e/account-deletion.spec.ts` and `tests/e2e/public-pages.spec.ts`
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm run build:e2e && npx --yes firebase-tools@15.34.2 emulators:exec --only auth,firestore --project demo-flash-cards "npx playwright test tests/e2e/account-deletion.spec.ts tests/e2e/public-pages.spec.ts"`
 Expected: FAIL on the new cases.
 
-- [ ] **Step 3: Write the minimal implementation:**
+- [x] **Step 3: Write the minimal implementation:**
   - The profile row.
   - The dialog fix: lock only during the delete call, plus a `pageshow` listener added on mount and removed on unmount.
   - The two pages as info-style cards.
   - The login link removal, and auto-focus only when `matchMedia('(pointer: coarse)')` doesn't match.
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm run build:e2e && npx --yes firebase-tools@15.34.2 emulators:exec --only auth,firestore --project demo-flash-cards "npx playwright test tests/e2e/account-deletion.spec.ts tests/e2e/public-pages.spec.ts tests/e2e/a11y.spec.ts"`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/views/Profile.vue src/components/DialogDeleteAccount.vue src/views/Deletion.vue src/views/Privacy.vue src/views/Login.vue tests/e2e/account-deletion.spec.ts tests/e2e/public-pages.spec.ts
@@ -208,25 +210,25 @@ git commit -m "Match the deletion screens to the app's list style and unstick th
   - Change the Android project for it only if a fix is found and confirmed on the phone. Otherwise change nothing for it.
   - Never keep screen recordings past the task (they show the developer's notifications).
 
-- [ ] **Step 1: Write the failing test cases** in `tests/unit/twa.spec.ts`
+- [x] **Step 1: Write the failing test cases** in `tests/unit/twa.spec.ts`
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npx vitest run tests/unit/twa.spec.ts`
 Expected: FAIL on the names.
 
-- [ ] **Step 3: Rename and regenerate.** Set the two names in `android/twa-manifest.json`. Serve `public/` with `python3 -m http.server 8099` from `public/`, point the icon URLs at it for the run, run `npm run twa:update`, then restore the production URLs and stop the server.
+- [x] **Step 3: Rename and regenerate.** Set the two names in `android/twa-manifest.json`. Serve `public/` with `python3 -m http.server 8099` from `public/`, point the icon URLs at it for the run, run `npm run twa:update`, then restore the production URLs and stop the server.
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 Run: `npx vitest run tests/unit/twa.spec.ts`
 Expected: PASS
 
-- [ ] **Step 5: Rebuild and sign the artifacts.** Build `bundleRelease assembleRelease` with the cached Gradle 8.14 (`~/.gradle/wrapper/dists/gradle-8.14-all/*/gradle-8.14/bin/gradle`, outside the sandbox). Sign the AAB with `jarsigner -storepass:file`. Zipalign and sign the APK with `apksigner --ks-pass file:`. Replace the files in `~/keys/flashcards/`, delete any `.idsig`, and verify both. Redraw the feature graphic with the new name at 1024×500.
+- [x] **Step 5: Rebuild and sign the artifacts.** Build `bundleRelease assembleRelease` with the cached Gradle 8.14 (`~/.gradle/wrapper/dists/gradle-8.14-all/*/gradle-8.14/bin/gradle`, outside the sandbox). Sign the AAB with `jarsigner -storepass:file`. Zipalign and sign the APK with `apksigner --ks-pass file:`. Replace the files in `~/keys/flashcards/`, delete any `.idsig`, and verify both. Redraw the feature graphic with the new name at 1024×500.
 
-- [ ] **Step 6: Investigate the splash handover** as the Acceptance says, and write what was found to the report.
+- [x] **Step 6: Investigate the splash handover** as the Acceptance says, and write what was found to the report.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add android/twa-manifest.json android/manifest-checksum.txt android/app/build.gradle android/app/src/main/res/raw/web_app_manifest.json tests/unit/twa.spec.ts
