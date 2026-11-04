@@ -133,12 +133,14 @@
         </div>
       </div>
     </v-card>
+    <ad-banner />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import AdBanner from '@/components/AdBanner.vue';
 import BarTop from '@/components/BarTop.vue';
 import { useSessionStore } from '@/stores/session';
 

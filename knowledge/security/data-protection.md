@@ -24,7 +24,11 @@ verified: human:panditankit1995@gmail.com
 
 - Owner-only access in `firestore.rules` ([roles](roles.md)).
 - Firebase Hosting sends a Content-Security-Policy, `X-Frame-Options`, `X-Content-Type-Options`,
-  `Referrer-Policy`, `Permissions-Policy` and `Cross-Origin-Opener-Policy` on every path (`firebase.json`).
+  `Referrer-Policy`, `Permissions-Policy` and `Cross-Origin-Opener-Policy` on every path (`firebase.json`). The CSP
+  allows Google's ad and consent domains in `script-src`, `frame-src` and `connect-src`, and `public/ads.txt` names the
+  publisher ([one AdSense banner](../decisions/adsense-banner-ads.md)).
+- Google's ad script (`adsbygoogle.js`) runs in the app's own origin once Home or Info loads it; this is accepted as
+  the cost of AdSense, and nothing loads without both AdSense env vars ([Google AdSense](../integrations/google-adsense.md)).
 - `.env.local` and other local env files are ignored by `.gitignore`. The committed `.env.emulator` and the e2e
   password in `tests/e2e/helpers.ts` are emulator-only test values ([testing](../quality/testing.md)).
 - The service worker never answers Firebase's reserved `/__/` paths with the app shell (`navigateFallbackDenylist`
@@ -35,12 +39,14 @@ verified: human:panditankit1995@gmail.com
 
 ## History
 
+- 2026-11-04: no third-party ad code in the page; now Google's ad script runs in the app's origin on Home and Info and the CSP allows Google's ad domains, because of the AdSense banner. See [the decision](../decisions/adsense-banner-ads.md).
 - 2026-11-04: users could not remove their data; now they can delete their account and everything in it.
 
 ## Sources
 
 - `firestore.rules`
 - `firebase.json`
+- `public/ads.txt`
 - `.gitignore`
 - `.env.emulator`
 - `tests/e2e/helpers.ts`

@@ -177,6 +177,7 @@
           @star="favOnly = true"
         />
       </transition-group>
+      <ad-banner v-if="library.status !== 'idle' && library.status !== 'loading'" />
     </div>
 
     <option-panel
@@ -205,6 +206,7 @@ import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useDisplay } from 'vuetify';
+import AdBanner from '@/components/AdBanner.vue';
 import BarTop from '@/components/BarTop.vue';
 import CardFlashSet from '@/components/CardFlashSet.vue';
 import ContainerEmpty from '@/components/ContainerEmpty.vue';

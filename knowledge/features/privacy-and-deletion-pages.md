@@ -20,10 +20,13 @@ and Google Play's listing points at them ([Play compliance](../decisions/play-co
 - Who to contact is `CONTACT_EMAIL` in `src/utils/contact.ts` ([privacy contact](../decisions/privacy-contact.md)).
 - Emailed deletions are done by hand within 30 days ([decision](../decisions/deletion-is-permanent.md)); signed-in
   users delete themselves with [Delete account](account-deletion.md).
+- The policy has an Ads section (`privacy.ads` in `src/locales`) saying Google shows ads and linking Google's ad settings
+  and partners; it no longer says the app shows no ads ([decision](../decisions/adsense-banner-ads.md)).
 - The pages are translated like the rest of the app (`src/locales`).
 
 ## History
 
+- 2026-11-04: the policy said the app shows no ads; now it has an Ads section about Google AdSense, because the app shows a banner. See [one AdSense banner](../decisions/adsense-banner-ads.md).
 - 2026-11-04: plain text pages; now info-style cards of icon rows, and login no longer links the deletion page, because the pages looked unlike the rest of the app.
 
 ## Sources
