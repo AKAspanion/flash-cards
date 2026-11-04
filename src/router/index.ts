@@ -6,6 +6,7 @@ import { useLibraryStore } from '@/stores/library';
 declare module 'vue-router' {
   interface RouteMeta {
     requireAuth?: boolean;
+    public?: boolean;
   }
 }
 
@@ -19,6 +20,8 @@ const routes = [
   { path: '/profile', name: 'profile', component: () => import('@/views/Profile.vue'), meta: { requireAuth: true } },
   { path: '/info', name: 'info', component: () => import('@/views/Info.vue'), meta: { requireAuth: true } },
   { path: '/settings', name: 'settings', component: () => import('@/views/Settings.vue'), meta: { requireAuth: true } },
+  { path: '/privacy', name: 'privacy', component: () => import('@/views/Privacy.vue'), meta: { public: true } },
+  { path: '/delete-account', name: 'delete-account', component: () => import('@/views/Deletion.vue'), meta: { public: true } },
   { path: '/login', name: 'login', component: () => import('@/views/Login.vue') },
   { path: '/:pathMatch(.*)*', redirect: '/home' },
 ];
@@ -30,9 +33,12 @@ export function safeRedirect(value: unknown): string {
 
 /** Where to send a navigation given the signed-in state; true = let it through. */
 export function authRedirect(
-  to: { fullPath: string; meta: { requireAuth?: boolean }; query: Record<string, unknown> },
+  to: { fullPath: string; meta: { requireAuth?: boolean; public?: boolean }; query: Record<string, unknown> },
   signedIn: boolean,
 ): true | RouteLocationRaw {
+  if (to.meta.public) {
+    return true;
+  }
   if (to.meta.requireAuth && !signedIn) {
     return { path: '/login', query: { redirect: to.fullPath } };
   }

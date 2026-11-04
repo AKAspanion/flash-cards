@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 import type { User } from 'firebase/auth';
 import type { SessionUser } from '@/types';
 import i18n from '@/plugins/i18n';
+import { getRedirectOutcome, type RedirectOutcome } from '@/services/firebase';
 
 const SLOW_NETWORK_MS = 8000;
 
@@ -33,7 +34,23 @@ export const useSessionStore = defineStore('session', () => {
   /** True while a page holds edits that are not saved yet (blocks app-update reloads). */
   const unsavedChanges = ref(false);
 
+  /** What the Google redirect that brought the user back ended in, read once at start-up. */
+  const redirectOutcome = ref<RedirectOutcome | null>(null);
+
+  /** True once the redirect outcome has been read, even when there was none. */
+  const redirectOutcomeLoaded = ref(false);
+
   const loading = computed(() => authLoading.value || pending.value > 0);
+
+  async function loadRedirectOutcome() {
+    try {
+      redirectOutcome.value = await getRedirectOutcome();
+    } catch (error) {
+      redirectOutcome.value = { error };
+    } finally {
+      redirectOutcomeLoaded.value = true;
+    }
+  }
 
   function setUser(next: User | null) {
     user.value = next ? toSessionUser(next) : null;
@@ -86,7 +103,10 @@ export const useSessionStore = defineStore('session', () => {
     online,
     snack,
     unsavedChanges,
+    redirectOutcome,
+    redirectOutcomeLoaded,
     loading,
+    loadRedirectOutcome,
     setUser,
     patchUser,
     showSnack,

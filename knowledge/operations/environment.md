@@ -17,8 +17,11 @@ verified: human:panditankit1995@gmail.com
   [original app compatibility](../decisions/original-app-compatibility.md)).
 - `.env.emulator` is committed: it is loaded in `emulator` mode (`npm run dev:emulator`, `npm run build:e2e`) and
   points the app at the emulators with demo values; no real project is touched.
-- `VUE_APP_AUTH_DOMAIN` is the custom domain rather than the default `firebaseapp.com` one, so Google's sign-in
-  window shows it; that needs the console settings in the README's "Domains" section.
+- `VUE_APP_AUTH_DOMAIN` is only the fallback auth domain, for emulators and non-browser runs: in a browser the auth
+  domain is the host serving the app ([decision](../decisions/google-sign-in-redirect.md)). Every host needs the
+  console settings in the README's "Domains" section.
+- With `VUE_APP_PROJECT_ID` set, the dev server proxies `/__` to the project's `firebaseapp.com`, so Google sign-in
+  works locally (`vite.config.ts`).
 - Deploys read the same `VUE_APP_*` values, plus `FIREBASE_PROJECT_ID` and optionally `APP_URL`, from GitHub
   repository variables, and the `FIREBASE_SERVICE_ACCOUNT` secret (`.github/workflows/deploy.yml`, README
   "One-time setup for deploys").
@@ -32,6 +35,10 @@ verified: human:panditankit1995@gmail.com
 - `GCLOUD_PROJECT`: the fallback project id in `functions/src/index.ts`.
 - `CI`: retries, workers and reporters in `playwright.config.ts`.
 - `FIRESTORE_EMULATOR_HOST`: set by the emulator for `tests/unit/firestore.rules.spec.ts`.
+
+## History
+
+- 2026-11-04: `VUE_APP_AUTH_DOMAIN` was the auth domain shown to users; now only a fallback, because sign-in redirects through the serving host.
 
 ## Sources
 

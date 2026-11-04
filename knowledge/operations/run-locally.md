@@ -19,7 +19,8 @@ verified: human:panditankit1995@gmail.com
 
 1. `npm install`.
 2. Against the real project: `npm run serve` (or `npm run dev`). The dev server port is `server.port` in
-   `vite.config.ts`, with `strictPort`. This uses real accounts and data.
+   `vite.config.ts`, with `strictPort`. This uses real accounts and data. Google sign-in here needs `http://localhost:8080/__/auth/handler` as a redirect
+   URI on the OAuth web client ([decision](../decisions/google-sign-in-redirect.md)).
 3. Against emulators, touching nothing real: `npm run emulators` in one terminal, `npm run dev:emulator` in another.
    Emulator ports are the `emulators` block of `firebase.json`; the Firestore one is not the default, and the app's
    matching host and port are in `getServices` in `src/services/firebase.ts`.

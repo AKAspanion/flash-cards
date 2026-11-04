@@ -11,7 +11,7 @@ verified: human:panditankit1995@gmail.com
 ## What it does
 
 `/profile` shows the user's photo, name, email, when they joined and last signed in. They can edit their display
-name and photo URL, create a label, select a label to rename it, and sign out.
+name and photo URL, create a label, select a label to rename it, sign out, and [delete their account](account-deletion.md).
 
 ## Screens and routes
 
@@ -28,6 +28,7 @@ name and photo URL, create a label, select a label to rename it, and sign out.
 
 ## History
 
+- 2026-11-04: gained a Delete account action. See [Delete account](account-deletion.md).
 - 2026-11-03: label deletion was an open question; now decided against. See [Labels cannot be deleted](../decisions/labels-cannot-be-deleted.md).
 
 ## Sources

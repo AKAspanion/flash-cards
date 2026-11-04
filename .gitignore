@@ -25,3 +25,13 @@ npm-debug.log*
 /dist-e2e
 /playwright-report
 /test-results
+
+# Android TWA signing and build output
+*.jks
+*.keystore
+android/**/build/
+android/.gradle/
+android/local.properties
+*.aab
+*.apk
+*.idsig

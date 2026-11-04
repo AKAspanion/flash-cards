@@ -18,6 +18,17 @@ test('login page is accessible', async ({ page }) => {
   await expectNoA11yViolations(page);
 });
 
+test('public pages are accessible', async ({ page }) => {
+  for (const [path, heading] of [
+    ['/privacy', 'Privacy policy'],
+    ['/delete-account', 'Delete your Flashcards account'],
+  ]) {
+    await page.goto(path);
+    await expect(page.getByRole('heading', { name: heading })).toBeVisible();
+    await expectNoA11yViolations(page);
+  }
+});
+
 test('signed-in screens are accessible', async ({ page }) => {
   // Seven pages, each with a full axe scan.
   test.setTimeout(120_000);

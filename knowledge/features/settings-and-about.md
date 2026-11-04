@@ -12,7 +12,8 @@ verified: human:panditankit1995@gmail.com
 
 `/settings` sets the language (English or Hindi), dark mode, how sets are ordered on the home screen, and whether
 favourites go on top. `/info` shows the app version and lets the user copy or open the web link and, when one is
-configured, the Google Play listing.
+configured, the Google Play listing. It also links to the [privacy policy and the delete-account
+page](privacy-and-deletion-pages.md).
 
 ## Screens and routes
 
@@ -27,6 +28,10 @@ configured, the Google Play listing.
 - `App.vue` applies the language to vue-i18n and `<html lang>`, and the dark setting to the Vuetify theme.
 - The version is `__APP_VERSION__`, taken from `package.json` by `vite.config.ts`.
 - The Play Store entries show only when `VUE_APP_PLAY_STORE_URL` is set.
+
+## History
+
+- 2026-11-04: `/info` gained links to `/privacy` and `/delete-account`, which Google Play requires.
 
 ## Sources
 

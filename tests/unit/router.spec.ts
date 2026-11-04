@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { authRedirect, safeRedirect } from '@/router';
 
-const route = (fullPath: string, requireAuth?: boolean, query: Record<string, unknown> = {}) => ({
+const route = (fullPath: string, requireAuth?: boolean, query: Record<string, unknown> = {}, isPublic?: boolean) => ({
   fullPath,
-  meta: { requireAuth },
+  meta: { requireAuth, public: isPublic },
   query,
 });
 
@@ -23,6 +23,14 @@ describe('authRedirect', () => {
   it('sends signed-in users away from login to their redirect target', () => {
     expect(authRedirect(route('/login', undefined, { redirect: '/bin' }), true)).toBe('/bin');
     expect(authRedirect(route('/login'), true)).toBe('/home');
+  });
+});
+
+describe('authRedirect for public routes', () => {
+  it('lets signed-out and signed-in users through, even with a redirect query', () => {
+    expect(authRedirect(route('/privacy', undefined, {}, true), false)).toBe(true);
+    expect(authRedirect(route('/privacy', undefined, {}, true), true)).toBe(true);
+    expect(authRedirect(route('/privacy', undefined, { redirect: '/bin' }, true), true)).toBe(true);
   });
 });
 

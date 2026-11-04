@@ -8,16 +8,17 @@ const AUTH_ERROR_KEYS: Record<string, string> = {
   'auth/weak-password': 'auth.error.weak-password',
   'auth/too-many-requests': 'auth.error.too-many-requests',
   'auth/network-request-failed': 'auth.error.network',
-  'auth/popup-blocked': 'auth.error.popup-blocked',
+  'auth/user-mismatch': 'auth.error.user-mismatch',
+  'auth/requires-recent-login': 'auth.error.recent-login',
   'auth/operation-not-allowed': 'auth.error.not-allowed',
   'auth/user-disabled': 'auth.error.disabled',
   'auth/unauthorized-domain': 'auth.error.unauthorized-domain',
 };
 
-/** Popup closed by the user: not worth an error message. */
+/** Sign-in cancelled by the user: not worth an error message. */
 export function isAuthCancel(err: unknown): boolean {
   const code = (err as { code?: string })?.code;
-  return code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request';
+  return code === 'auth/redirect-cancelled-by-user' || code === 'auth/user-cancelled';
 }
 
 export function authErrorMessage(err: unknown, t: (key: string) => string): string {

@@ -21,7 +21,9 @@
     "test:e2e": "npm run build:e2e && npx --yes firebase-tools@15.34.2 emulators:exec --only auth,firestore --project demo-flash-cards \"playwright test\"",
     "emulators": "npx --yes firebase-tools@15.34.2 emulators:start --only auth,firestore --project demo-flash-cards",
     "deploy": "npm run build && npx --yes firebase-tools@15.34.2 deploy --only hosting",
-    "deploy:functions": "npx --yes firebase-tools@15.34.2 deploy --only functions"
+    "deploy:functions": "npx --yes firebase-tools@15.34.2 deploy --only functions",
+    "twa:update": "cd android && npx --yes @bubblewrap/cli@1.27.0 update --skipVersionUpgrade",
+    "twa:build": "cd android && npx --yes @bubblewrap/cli@1.27.0 build"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",

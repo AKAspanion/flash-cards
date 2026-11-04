@@ -1,0 +1,19 @@
+{
+  "packageId": "in.spanion.flashcards.twa",
+  "host": "flashcards.spanion.in",
+  "name": "Flashcards - Learn & Memorize",
+  "launcherName": "Flashcards",
+  "startUrl": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#E91E63",
+  "backgroundColor": "#ECECEC",
+  "fallbackType": "customtabs",
+  "enableNotifications": false,
+  "iconUrl": "https://flashcards.spanion.in/img/icons/android-chrome-512x512.png",
+  "maskableIconUrl": "https://flashcards.spanion.in/img/icons/maskable-512x512.png",
+  "webManifestUrl": "https://flashcards.spanion.in/manifest.webmanifest",
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "signingKey": { "path": "~/keys/flashcards-upload.jks", "alias": "upload" }
+}

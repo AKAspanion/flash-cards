@@ -84,6 +84,28 @@
             <v-icon>mdi-web</v-icon>
           </v-btn>
         </div>
+        <div class="info__row">
+          <v-icon>mdi-shield-lock-outline</v-icon>
+          <div class="info__text">
+            <router-link
+              class="text-title-small info__link"
+              to="/privacy"
+            >
+              {{ t('links.privacy') }}
+            </router-link>
+          </div>
+        </div>
+        <div class="info__row">
+          <v-icon>mdi-account-remove-outline</v-icon>
+          <div class="info__text">
+            <router-link
+              class="text-title-small info__link"
+              to="/delete-account"
+            >
+              {{ t('links.delete') }}
+            </router-link>
+          </div>
+        </div>
         <div
           v-if="URLS.play"
           class="info__row"
@@ -168,6 +190,9 @@ async function copyLink(type: keyof typeof URLS) {
   align-items: flex-start;
   gap: 8px;
   padding-bottom: 32px;
+}
+.info__link {
+  color: inherit;
 }
 .info__text {
   flex: 1 1 auto;

@@ -192,8 +192,22 @@
             </div>
           </div>
         </div>
+        <div v-if="!(xs && labelFocused)">
+          <v-btn
+            color="error"
+            variant="text"
+            @click="deleteOpen = true"
+          >
+            {{ t('account.delete.button') }}
+          </v-btn>
+        </div>
       </div>
     </v-card>
+
+    <dialog-delete-account
+      v-model="deleteOpen"
+      :confirmed="deleteConfirmed"
+    />
 
     <btn-action
       v-if="!(xs && labelFocused)"
@@ -208,14 +222,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useDisplay } from 'vuetify';
 import BarTop from '@/components/BarTop.vue';
 import BtnAction from '@/components/BtnAction.vue';
+import DialogDeleteAccount from '@/components/DialogDeleteAccount.vue';
 import type { Label } from '@/types';
 import { signOut, updateUserProfile } from '@/services/firebase';
+import { authErrorMessage, isAuthCancel } from '@/services/authErrors';
+import { clearPendingDelete, readPendingDelete, shouldResumeDeletion } from '@/utils/pendingDelete';
 import { useLibraryStore } from '@/stores/library';
 import { useSessionStore } from '@/stores/session';
 
@@ -230,6 +247,30 @@ const editing = ref<'photo' | 'name' | null>(null);
 const form = ref({ displayName: '', photoURL: '' });
 const imageErr = ref(false);
 const signingOut = ref(false);
+
+const deleteOpen = ref(false);
+const deleteConfirmed = ref(false);
+
+// Back from Google's reconfirmation: reopen the dialog at its last step, or show why it failed.
+// The stored key goes either way, so a later visit never resumes an old deletion.
+watch(
+  () => session.redirectOutcomeLoaded,
+  (loaded) => {
+    if (!loaded) {
+      return;
+    }
+    const pending = readPendingDelete(sessionStorage);
+    clearPendingDelete(sessionStorage);
+    const outcome = session.redirectOutcome;
+    if (shouldResumeDeletion(pending, outcome, user.value?.uid ?? '', Date.now())) {
+      deleteConfirmed.value = true;
+      deleteOpen.value = true;
+    } else if (pending && outcome && 'error' in outcome && !isAuthCancel(outcome.error)) {
+      session.showSnack(authErrorMessage(outcome.error, t));
+    }
+  },
+  { immediate: true },
+);
 
 const labelText = ref('');
 const labelBusy = ref(false);

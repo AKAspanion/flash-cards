@@ -2,11 +2,16 @@ import { initializeApp, type FirebaseApp } from 'firebase/app';
 import {
   connectAuthEmulator,
   createUserWithEmailAndPassword,
+  deleteUser,
+  EmailAuthProvider,
   getAuth,
+  getRedirectResult,
   GoogleAuthProvider,
   onAuthStateChanged,
+  reauthenticateWithCredential,
+  reauthenticateWithRedirect,
   signInWithEmailAndPassword,
-  signInWithPopup,
+  signInWithRedirect,
   signOut as firebaseSignOut,
   updateProfile,
   type Auth,
@@ -23,9 +28,12 @@ import {
   query,
   updateDoc,
   where,
+  writeBatch,
   type Firestore,
 } from 'firebase/firestore';
 import type { CardSet, Label } from '@/types';
+import { authDomainFor } from './authDomain';
+import { OWNED_COLLECTIONS } from './ownedCollections';
 import { cardSetFromDoc, cardSetToDoc, labelFromDoc } from './cardSetMapper';
 
 const SETS = 'flash-card-sets';
@@ -36,7 +44,11 @@ const useEmulators = env.VUE_APP_USE_EMULATORS === 'true';
 
 const config = {
   apiKey: env.VUE_APP_API_KEY,
-  authDomain: env.VUE_APP_AUTH_DOMAIN,
+  authDomain: authDomainFor(
+    typeof window === 'undefined' ? undefined : window.location.host,
+    useEmulators,
+    env.VUE_APP_AUTH_DOMAIN ?? '',
+  ),
   databaseURL: env.VUE_APP_DATABASE_URL,
   projectId: env.VUE_APP_PROJECT_ID,
   storageBucket: env.VUE_APP_STORAGE_BUCKET,
@@ -102,10 +114,77 @@ export function signUpWithEmail(email: string, password: string) {
   return createUserWithEmailAndPassword(getServices().auth, email.trim(), password);
 }
 
-// Popup rather than redirect: browsers that partition third-party storage
-// break signInWithRedirect when the app is not served from the authDomain.
-export function signInWithGoogle() {
-  return signInWithPopup(getServices().auth, new GoogleAuthProvider());
+/** What a Google redirect came back with: the user it signed in, or the error it failed with. */
+export type RedirectOutcome =
+  | { operationType: 'signIn' | 'reauthenticate' | 'link'; uid: string }
+  | { error: unknown };
+
+// A redirect rather than a popup: the auth domain is the host serving the app (authDomainFor),
+// so Google's handler is same-origin and works where third-party storage is partitioned.
+export async function signInWithGoogle(): Promise<void> {
+  await signInWithRedirect(getServices().auth, new GoogleAuthProvider());
+}
+
+/** Reads the result of a Google redirect once, after the page comes back; null when there was none. */
+export async function getRedirectOutcome(): Promise<RedirectOutcome | null> {
+  try {
+    const result = await getRedirectResult(getServices().auth);
+    if (!result) {
+      return null;
+    }
+    const operationType = result.operationType;
+    if (operationType !== 'signIn' && operationType !== 'reauthenticate' && operationType !== 'link') {
+      return null;
+    }
+    return { operationType, uid: result.user.uid };
+  } catch (error) {
+    return { error };
+  }
+}
+
+/** Which reconfirmation the signed-in user gets before deleting their account. */
+export function confirmMethod(): 'password' | 'google' {
+  const user = getServices().auth.currentUser;
+  return user?.providerData.some((p) => p.providerId === 'password') ? 'password' : 'google';
+}
+
+export async function reauthenticateWithPassword(password: string): Promise<void> {
+  const user = getServices().auth.currentUser;
+  if (!user?.email) {
+    throw new Error('You are signed out. Please log in again.');
+  }
+  await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, password));
+}
+
+/** Starts a redirect to Google; the page leaves and comes back with a `reauthenticate` outcome. */
+export async function reauthenticateWithGoogle(): Promise<void> {
+  const user = getServices().auth.currentUser;
+  if (!user) {
+    throw new Error('You are signed out. Please log in again.');
+  }
+  await reauthenticateWithRedirect(user, new GoogleAuthProvider());
+}
+
+const BATCH_LIMIT = 500;
+
+/** Deletes everything the user owns, then the user. A retry after a failure deletes what is left. */
+export async function deleteAccount(): Promise<void> {
+  const { auth, db } = getServices();
+  const user = auth.currentUser;
+  if (!user) {
+    throw new Error('You are signed out. Please log in again.');
+  }
+  for (const { name, ownerField } of OWNED_COLLECTIONS) {
+    const snapshot = await getDocs(query(collection(db, name), where(ownerField, '==', user.uid)));
+    for (let i = 0; i < snapshot.docs.length; i += BATCH_LIMIT) {
+      const batch = writeBatch(db);
+      for (const d of snapshot.docs.slice(i, i + BATCH_LIMIT)) {
+        batch.delete(d.ref);
+      }
+      await batch.commit();
+    }
+  }
+  await deleteUser(user);
 }
 
 export function signOut() {
