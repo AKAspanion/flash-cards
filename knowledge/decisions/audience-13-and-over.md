@@ -2,8 +2,8 @@
 type: Decision
 title: The app is for people aged 13 and over
 description: The Play listing declares a target audience of 13 and over, and the privacy policy says the app isn't directed at children under 13, which keeps the app outside Google Play's Families policy.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-04T07:33:32Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # The app is for people aged 13 and over

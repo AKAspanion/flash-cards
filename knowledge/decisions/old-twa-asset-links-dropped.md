@@ -2,8 +2,8 @@
 type: Decision
 title: The 2020 TWA's asset links are dropped
 description: The site no longer vouches for the older Android app com.flashcards.twa; assetlinks.json names only in.spanion.flashcards.twa, so any copy of the old app still installed shows a browser bar.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-04T08:12:33Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # The 2020 TWA's asset links are dropped

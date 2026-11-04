@@ -2,8 +2,8 @@
 type: Application
 title: Android app (Trusted Web Activity)
 description: The Bubblewrap-generated Android project in android/ that wraps the live site as a Trusted Web Activity for Google Play.
-status: draft
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-11-04T12:00:00Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Android app (Trusted Web Activity)

@@ -2,8 +2,8 @@
 type: Integration
 title: Google AdSense
 description: The one banner ad on Home and Info, loaded from Google's adsbygoogle.js only through src/services/ads.ts, with a validated publisher ID and no ads unless both env vars are set.
-status: draft
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-11-04T19:00:00Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Google AdSense

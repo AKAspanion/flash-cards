@@ -2,8 +2,8 @@
 type: Decision
 title: Ankit Kumar Pandit is the privacy contact
 description: The privacy policy and the account-deletion page name Ankit Kumar Pandit as responsible for users' data, reachable at panditankit1995@gmail.com.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-04T07:38:06Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Ankit Kumar Pandit is the privacy contact

@@ -2,8 +2,8 @@
 type: Decision
 title: The app displays standalone, not fullscreen
 description: The web manifest's display mode is standalone, so the web app and the Android TWA both keep the status bar and avoid immersive mode's keyboard problems.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-04T07:33:32Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # The app displays standalone, not fullscreen

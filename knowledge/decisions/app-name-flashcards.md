@@ -2,8 +2,8 @@
 type: Decision
 title: The app is called FlashCards
 description: The product name is written "FlashCards" (capital C) in English everywhere it shows, and "FlashCards - Learn & Memorize" where a full name is used; the Hindi name stays फ्लैशकार्ड.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-04T09:18:33Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # The app is called FlashCards

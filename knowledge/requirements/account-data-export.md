@@ -1,9 +1,9 @@
 ---
 type: Requirement
 title: Users can export their data
-description: Users must be able to download all their sets, cards and labels in a file; account deletion, the other half of the earlier requirement, is built.
-status: draft
+description: Users must be able to download all their sets, cards and labels in a file; the deletion half of the earlier requirement is met by Delete account.
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-11-04T12:00:00Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Users can export their data
@@ -11,7 +11,7 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-11-04T12:00:00Z }
 ## Requirement
 
 A user can download all their sets, cards and labels in a file, from the profile screen (`src/views/Profile.vue`).
-This is the half of [account deletion and data export](account-deletion-and-export.md) still to build; deletion is
+Data export is required; the deletion half of [account deletion and data export](account-deletion-and-export.md) is
 met by [Delete account](../features/account-deletion.md).
 
 ## Acceptance

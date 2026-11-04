@@ -2,8 +2,8 @@
 type: Feature
 title: Delete account
 description: Delete account on the profile screen re-confirms the user's identity, then removes every document they own and their Firebase Auth user.
-status: draft
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-11-04T12:00:00Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Delete account

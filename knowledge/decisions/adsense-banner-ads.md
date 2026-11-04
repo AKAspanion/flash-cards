@@ -2,8 +2,8 @@
 type: Decision
 title: One AdSense banner, on Home and Info only
 description: The app shows ads through one manual, responsive AdSense display unit at the bottom of Home and of Info, never while studying; no Auto ads, and nothing loads unless both AdSense env vars are set.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-04T12:34:10Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # One AdSense banner, on Home and Info only

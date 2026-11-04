@@ -2,8 +2,8 @@
 type: Decision
 title: Google holds the app-signing key; we keep only the upload key
 description: The Android app uses Play App Signing with the Google-generated app-signing key; the developer keeps only the upload key, and no key upgrade to a self-supplied key is planned.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-04T14:29:57Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Google holds the app-signing key; we keep only the upload key
