@@ -34,6 +34,21 @@ describe('asset links', () => {
     expect(twa.packageId).toBe('in.spanion.flashcards.twa');
   });
 
+  // The upload key signs builds we install by hand; Play re-signs store installs with its own key. Android 17 phones
+  // check a hybrid signer (RSA + ML-DSA) that Play adds alongside it, so all three of Play's certificates are listed.
+  it('lists the upload key and every Play app-signing certificate, but not the source stamp', () => {
+    const listed = assetLinks[0].target.sha256_cert_fingerprints;
+    expect(listed).toEqual([
+      '46:6E:2A:92:E2:11:9D:31:D7:68:2B:AB:AA:CA:10:EA:58:65:19:76:F2:97:AB:5A:52:87:92:D8:D1:F2:27:F8',
+      '72:25:EF:94:91:50:01:55:00:DF:A0:8E:8C:C7:C1:07:81:AD:B9:54:8C:DC:3C:BD:FD:AB:29:48:08:F6:53:F2',
+      'B5:1E:AB:34:52:A1:2C:0F:AA:34:7D:2E:85:28:F3:C8:14:2F:A8:8A:BD:F0:0E:24:A1:A0:CF:9C:93:4A:E4:9C',
+      '63:7D:3C:37:0B:78:A9:CD:25:5F:41:7A:16:61:24:D8:16:DE:6F:FB:70:F4:D2:24:D7:48:B6:40:A5:DE:C5:35',
+    ]);
+    expect(listed).not.toContain(
+      '32:57:D5:99:A4:9D:2C:96:1A:47:1C:A9:84:3F:59:D3:41:A4:05:88:45:83:FC:08:7D:F4:23:7B:73:3B:BD:6D',
+    );
+  });
+
   it('has only well-formed fingerprints (an empty list passes)', () => {
     expect(badFingerprints(assetLinks)).toEqual([]);
   });
