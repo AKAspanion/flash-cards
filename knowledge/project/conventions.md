@@ -61,18 +61,21 @@ ESLint with the Vue and TypeScript recommended configs (`./eslint.config.js`); E
 
 ## Commands
 
-From `package.json` scripts, npm (`package-lock.json`). Policy: `checks.commands.typecheck`,
+From `package.json` scripts, run with pnpm (`pnpm-lock.yaml`; [pnpm](../decisions/pnpm-package-manager.md)); `functions/` too, with its own lockfile. Policy: `checks.commands.typecheck`,
 `checks.commands.lint`, `checks.commands.test`, `checks.commands.e2e`. There is no lint-fix or format-check
 command.
 
 ## History
 
+- 2026-11-04: commands ran with npm (`package-lock.json`); now pnpm (`pnpm-lock.yaml`), as the developer switched. See [pnpm](../decisions/pnpm-package-manager.md).
 - 2026-11-03: branch names had no convention (mostly `claude/…`); now `<type>/<topic>`, as the developer set, so the history no longer reflects the rule.
 
 ## Sources
 
 - `./eslint.config.js`
 - `./.editorconfig`
+- `./package.json`
+- `./pnpm-workspace.yaml`
 - `package.json`
 - `vite.config.ts`
 - `src/components/CardFlashSet.vue`
