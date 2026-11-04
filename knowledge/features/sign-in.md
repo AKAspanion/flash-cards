@@ -30,10 +30,12 @@ A visitor who is not signed in lands on `/login`. They can sign in with email an
 - Firebase errors are shown as translated messages through `authErrorMessage` (`src/services/authErrors.ts`);
   a failed Google redirect's error is read at start-up and shown on `/login`.
 - Google sign-in is a redirect: see [Google sign-in uses a same-origin redirect](../decisions/google-sign-in-redirect.md).
+- The email field auto-focuses only when `(pointer: coarse)` doesn't match: a touch keyboard opening over the screen hides it.
 - Emails are trimmed before they are sent to Firebase (`signInWithEmail`, `signUpWithEmail`).
 
 ## History
 
+- 2026-11-04: the email field always auto-focused; now only with a fine pointer, because a phone's keyboard hid the screen.
 - 2026-11-04: Google sign-in was a popup; now a same-origin redirect, because a popup isn't dependable in the Android TWA. See [the decision](../decisions/google-sign-in-redirect.md).
 
 ## Sources

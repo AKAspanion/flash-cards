@@ -22,3 +22,4 @@ Start with the [project overview](project/overview.md).
 - [Quality](quality/index.md) - testing and CI
 - [Risks](risks/index.md) - technical debt
 - [Questions](questions/index.md) - open questions
+- [Findings](findings/index.md) - known defects and their status

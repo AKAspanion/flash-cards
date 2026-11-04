@@ -40,6 +40,10 @@ The ordered steps, from the first build to the Play submission, are in section 8
   full-screen launch, add the debug key's SHA-256 (`apksigner verify --print-certs` on the APK) to the file, deploy
   hosting, and remove it before release.
 
+## Device checks
+
+- Also cold-launch the app (force-stop it and Chrome first) and watch for the splash: a black gap before the site is [a known finding](../findings/twa-splash-image-not-transferred.md); check whether a newer Chrome fixes it.
+
 ## Each release
 
 - Raise `appVersionCode` in `android/twa-manifest.json` by hand.
@@ -52,6 +56,7 @@ The ordered steps, from the first build to the Play submission, are in section 8
 
 ## History
 
+- 2026-11-04: the signed bundle, APK and feature graphic in `~/keys/flashcards/` were rebuilt for the FlashCards rename, because the name is in the artifacts. See [the decision](../decisions/app-name-flashcards.md).
 - 2026-11-04: the upload key didn't exist yet; now it is in `~/keys/flashcards/` and its fingerprint is in
   `assetlinks.json`, because the developer asked for the signing key and store assets.
 
