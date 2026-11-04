@@ -53,7 +53,7 @@ The release steps, including signing and the asset links fingerprints, are in
 
 | Workflow | When | What |
 | --- | --- | --- |
-| `ci.yml` | Every pull request | Lint, type-check, unit tests, security-rules tests, build, `pnpm audit` of shipped deps, a build and audit of `functions/`, and the Playwright e2e/a11y suite |
+| `ci.yml` | Every pull request | Lint, type-check, unit tests, security-rules tests, build, `pnpm audit` of shipped deps, and a build and audit of `functions/`. The Playwright e2e/a11y suite runs only when `deploy.yml` calls it |
 | `deploy.yml` | Push to `master` | Runs CI, then deploys hosting. Run it by hand with **deploy_rules** ticked to also deploy `firestore.rules` |
 | `codeql.yml` | PRs, pushes, weekly | CodeQL security analysis of the app and the workflows |
 | `dependabot.yml` | Weekly | Grouped dependency and GitHub Actions updates |

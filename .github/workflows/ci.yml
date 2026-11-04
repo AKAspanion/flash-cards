@@ -51,6 +51,8 @@ jobs:
 
   e2e:
     name: End-to-end (Playwright, emulators)
+    # Runs only when deploy.yml calls this workflow, before a deploy; skipped on pull requests.
+    if: ${{ github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
