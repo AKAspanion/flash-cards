@@ -16,8 +16,9 @@ on firing is in [budget kill switch](../decisions/budget-kill-switch.md).
 ## Stack
 
 TypeScript compiled by `tsc` to `functions/lib/`, using `firebase-functions` (v2 Pub/Sub trigger) and
-`@google-cloud/billing`; versions and the Node runtime are in `functions/package.json`. It has its own
-`package-lock.json` and is built and audited separately in CI ([CI](../quality/ci.md)).
+`@google-cloud/billing`; versions and the Node runtime are in `functions/package.json`. It installs with pnpm on
+its own, with its own `pnpm-lock.yaml` and `pnpm-workspace.yaml`
+([pnpm](../decisions/pnpm-package-manager.md)), and is built and audited separately in CI ([CI](../quality/ci.md)).
 
 ## Entry points
 
@@ -36,6 +37,10 @@ None: the function is triggered by Pub/Sub, not HTTP.
 - [Cloud Billing](../integrations/cloud-billing.md) API and the `budget-alerts` Pub/Sub topic.
 - A dedicated service account, `billing-kill-switch@`, set up by hand as the README's "Budget kill switch" section
   describes.
+
+## History
+
+- 2026-11-04: installed with npm from its own `package-lock.json`; now pnpm with its own `pnpm-lock.yaml`, as the developer switched. See [pnpm](../decisions/pnpm-package-manager.md).
 
 ## Sources
 

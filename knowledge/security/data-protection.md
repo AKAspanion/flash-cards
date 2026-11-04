@@ -34,11 +34,12 @@ verified: human:panditankit1995@gmail.com
 - The service worker never answers Firebase's reserved `/__/` paths with the app shell (`navigateFallbackDenylist`
   in `vite.config.ts`).
 - CI: workflows default to `contents: read` (CodeQL adds `security-events: write`), check out without persisted credentials, pin actions to commit SHAs, run
-  `npm audit` on shipped dependencies, and CodeQL scans the code ([CI](../quality/ci.md)).
+  `pnpm audit --prod` on shipped dependencies and on `functions/`, and CodeQL scans the code ([CI](../quality/ci.md)).
 - Vulnerabilities are reported privately through GitHub (README, "Security").
 
 ## History
 
+- 2026-11-04: CI audited shipped dependencies with `npm audit`; now `pnpm audit --prod`, because the web app and `functions/` moved to pnpm. See [pnpm](../decisions/pnpm-package-manager.md).
 - 2026-11-04: no third-party ad code in the page; now Google's ad script runs in the app's origin on Home and Info and the CSP allows Google's ad domains, because of the AdSense banner. See [the decision](../decisions/adsense-banner-ads.md).
 - 2026-11-04: users could not remove their data; now they can delete their account and everything in it.
 
