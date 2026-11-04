@@ -23,16 +23,22 @@ signs what users install. The developer chose this on 2026-11-04.
 
 ## Consequences
 
-- Building the bundle needs JDK 17 and the Android SDK, which Bubblewrap can install.
+- Building the bundle needs a JDK (JDK 21 works with Bubblewrap `1.27.0`) and the Android SDK.
 - Changing the manifest's name, colours or icons means regenerating `android/` with Bubblewrap and committing the
   result.
 - The fallback on devices with no TWA-capable browser is `customtabs`, never `webview`: Google blocks its sign-in
   page inside WebViews (`disallowed_useragent`). The developer chose this on 2026-11-04.
 - Each release raises `appVersionCode` by hand in `android/twa-manifest.json` (Play refuses an upload whose
-  version code isn't higher), and sets `appVersionName` to the `package.json` version. The developer chose this on
+  version code isn't higher), and sets `appVersion` (Bubblewrap's key for the version name; an `appVersionName` key is ignored) to the
+  `package.json` version. The developer chose this on
   2026-11-04 over deriving both automatically, since releases are rare and Bubblewrap reads them from its own config.
 - `assetlinks.json` lists two certificate fingerprints, the upload key's and Play's app-signing key's. Play's exists
   only after the app is created in Play Console.
+
+## History
+
+- 2026-11-04: named the version-name key `appVersionName`; now `appVersion`, because Bubblewrap ignored the
+  former and built with an empty `versionName`, found by the first test APK build.
 
 ## Sources
 

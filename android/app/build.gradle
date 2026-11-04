@@ -41,7 +41,7 @@ def twaManifest = [
     // - icon: Name of the resource in the drawable folder to use as an icon.
     shortcuts: [],
     // The duration of fade out animation in milliseconds to be played when removing splash screen.
-    splashScreenFadeOutDuration: ,
+    splashScreenFadeOutDuration: 300,
     generatorApp: 'bubblewrap-cli', // Application that generated the Android Project
     // The fallback strategy for when Trusted Web Activity is not available. Possible values are
     // 'customtabs' and 'webview'.
@@ -55,10 +55,10 @@ android {
     namespace "in.spanion.flashcards.twa"
     defaultConfig {
         applicationId "in.spanion.flashcards.twa"
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 36
         versionCode 1
-        versionName ""
+        versionName "1.0.0"
 
         // The name for the application
         resValue "string", "appName", twaManifest.name

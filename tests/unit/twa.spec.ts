@@ -71,8 +71,15 @@ describe('twa-manifest.json', () => {
     expect(twa.webManifestUrl).toBe('https://flashcards.spanion.in/manifest.webmanifest');
   });
 
+  // Bubblewrap reads the version name from `appVersion`; an `appVersionName` key is silently ignored.
   it('versions the app like package.json', () => {
-    expect(twa.appVersionName).toBe(readJson('package.json').version);
+    expect(twa.appVersion).toBe(readJson('package.json').version);
+    expect(twa).not.toHaveProperty('appVersionName');
+  });
+
+  // Left unset, Bubblewrap writes `splashScreenFadeOutDuration: ,` and the Gradle build fails to compile.
+  it('sets the splash fade-out Bubblewrap needs', () => {
+    expect(twa.splashScreenFadeOutDuration).toBe(300);
   });
 });
 
@@ -83,6 +90,16 @@ describe('android/app/build.gradle', () => {
   it('targets API 36 or later', () => {
     expect(sdk('targetSdkVersion')).toBeGreaterThanOrEqual(36);
     expect(sdk('compileSdkVersion')).toBeGreaterThanOrEqual(36);
+  });
+
+  // androidbrowserhelper 2.7.4 declares minSdk 24; Bubblewrap's default of 21 fails the manifest merge.
+  it('supports no Android older than the TWA library does', () => {
+    expect(sdk('minSdkVersion')).toBeGreaterThanOrEqual(24);
+  });
+
+  it('has no value Bubblewrap left empty', () => {
+    expect(gradle).not.toMatch(/:\s*,/);
+    expect(gradle).toMatch(/versionName "\d+\.\d+\.\d+"/);
   });
 });
 

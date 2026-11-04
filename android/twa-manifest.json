@@ -4,16 +4,21 @@
   "name": "Flashcards - Learn & Memorize",
   "launcherName": "Flashcards",
   "startUrl": "/",
+  "minSdkVersion": 24,
   "display": "standalone",
   "orientation": "portrait",
   "themeColor": "#E91E63",
   "backgroundColor": "#ECECEC",
   "fallbackType": "customtabs",
   "enableNotifications": false,
+  "splashScreenFadeOutDuration": 300,
   "iconUrl": "https://flashcards.spanion.in/img/icons/android-chrome-512x512.png",
   "maskableIconUrl": "https://flashcards.spanion.in/img/icons/maskable-512x512.png",
   "webManifestUrl": "https://flashcards.spanion.in/manifest.webmanifest",
-  "appVersionName": "1.0.0",
+  "appVersion": "1.0.0",
   "appVersionCode": 1,
-  "signingKey": { "path": "~/keys/flashcards-upload.jks", "alias": "upload" }
+  "signingKey": {
+    "path": "/Users/ankitkumarpandit/keys/flashcards/upload.keystore",
+    "alias": "upload"
+  }
 }
