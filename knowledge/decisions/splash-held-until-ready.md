@@ -2,8 +2,8 @@
 type: Decision
 title: One splash, held until the first screen is ready
 description: A cold launch shows the native splash image throughout (Android, Chrome, then the web page), and the page hides it with one fade once the first screen has rendered, with no minimum time; the Android app self-grants its splash URI so Chrome 152+ accepts the handover.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-04T11:38:32Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # One splash, held until the first screen is ready

@@ -2,8 +2,8 @@
 type: Feature
 title: Privacy policy and delete-account pages
 description: Two public pages, /privacy and /delete-account, that Google Play's listing points at; anyone can open them without signing in.
-status: draft
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-11-04T12:00:00Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Privacy policy and delete-account pages

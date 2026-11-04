@@ -2,8 +2,8 @@
 type: Decision
 title: Account deletion and a privacy page ship with the TWA
 description: Google Play rejects an app that lets people create accounts unless they can delete them in the app and from the web, and needs a privacy policy URL, so both are built as part of the TWA work; data export stays a separate feature.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-04T07:24:21Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Account deletion and a privacy page ship with the TWA

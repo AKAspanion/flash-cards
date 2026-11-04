@@ -2,8 +2,8 @@
 type: Decision
 title: Google sign-in uses a same-origin redirect
 description: Google sign-in uses signInWithRedirect with the auth domain set to the host serving the app, so it needs neither popups nor cross-site storage and works inside the Android TWA.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-04T07:33:32Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Google sign-in uses a same-origin redirect

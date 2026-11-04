@@ -2,8 +2,8 @@
 type: Requirement
 title: Account deletion covers every collection a user owns
 description: Deleting an account must remove the user's documents from every Firestore collection they own, including collections added later; the list lives in one constant that a unit test checks.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-04T07:33:32Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Account deletion covers every collection a user owns

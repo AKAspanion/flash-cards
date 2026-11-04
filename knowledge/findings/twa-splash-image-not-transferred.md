@@ -2,8 +2,8 @@
 type: Finding
 title: "Fixed: The Android splash image wasn't handed to Chrome"
 description: On Chrome 152+ the app's splash image transfer failed, so a cold start showed about 0.6 s of black before the site; the app now grants itself read access to its splash URI.
-status: draft
 generated: { by: agent:after-finish/claude-sonnet-5-5, at: 2026-11-04T15:00:00Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Fixed: The Android splash image wasn't handed to Chrome

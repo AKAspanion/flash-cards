@@ -2,8 +2,8 @@
 type: Runbook
 title: Release the Android app
 description: The steps to rebuild and submit the Trusted Web Activity to Google Play, and the snags found building it the first time.
-status: draft
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-11-04T12:00:00Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Release the Android app

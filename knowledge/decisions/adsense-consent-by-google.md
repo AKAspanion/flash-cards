@@ -2,8 +2,8 @@
 type: Decision
 title: Ad consent is AdSense's own Privacy & messaging banner
 description: Consent for ads in the EEA, the UK and Switzerland comes from AdSense's own GDPR message, configured in the AdSense dashboard; the app ships no consent code of its own.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-04T12:34:10Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Ad consent is AdSense's own Privacy & messaging banner

@@ -2,8 +2,8 @@
 type: Decision
 title: The Android app is portrait on phones, any orientation on large screens
 description: The TWA declares portrait orientation; Android 16 ignores orientation locks on screens 600dp and wider for apps targeting API 36, so tablets and unfolded foldables rotate freely.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-04T07:38:06Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # The Android app is portrait on phones, any orientation on large screens

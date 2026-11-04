@@ -2,8 +2,8 @@
 type: Decision
 title: Deleted data is gone at once, and emailed requests are done within 30 days
 description: The Firebase project keeps no Firestore backups or point-in-time recovery, so a deleted account's data is gone immediately; people who can't sign in can email for deletion, done by hand within 30 days.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-04T07:43:18Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # Deleted data is gone at once, and emailed requests are done within 30 days

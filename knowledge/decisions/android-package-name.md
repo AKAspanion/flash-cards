@@ -2,8 +2,8 @@
 type: Decision
 title: The Android package name is in.spanion.flashcards.twa
 description: The TWA's Android application id is in.spanion.flashcards.twa, the production domain reversed plus .twa; Google Play never lets it change after the first upload.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-04T07:24:21Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # The Android package name is in.spanion.flashcards.twa
