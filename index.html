@@ -19,22 +19,38 @@
         margin: 0;
         background: #ECECEC;
       }
-      .boot-logo {
+      #boot-splash {
         position: fixed;
-        top: 50%;
-        left: 50%;
-        width: 96px;
-        height: 96px;
-        transform: translate(-50%, -50%);
+        inset: 0;
+        z-index: 2147483647;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #ECECEC;
+        opacity: 1;
+        transition: opacity 300ms ease-out;
+      }
+      #boot-splash img {
+        width: 300px;
+        height: 300px;
+      }
+      .boot-splash--hiding {
+        opacity: 0;
       }
     </style>
     <script src="/early-paint.js"></script>
   </head>
   <body>
     <noscript>
+      <style>
+        #boot-splash {
+          display: none;
+        }
+      </style>
       <strong>FlashCards needs JavaScript to work. Please enable it to continue.</strong>
     </noscript>
-    <div id="app"><img class="boot-logo" src="/img/icons/android-chrome-192x192.png" alt="" /></div>
+    <div id="boot-splash" aria-hidden="true"><img src="/img/splash.png" alt="" /></div>
+    <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
