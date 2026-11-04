@@ -4,6 +4,8 @@ title: Google sign-in uses a popup, not a redirect
 description: signInWithPopup is used because browsers that partition third-party storage break signInWithRedirect when the app isn't served from the auth domain.
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
 verified: human:panditankit1995@gmail.com
+superseded_by: decisions/google-sign-in-redirect
+status: superseded
 ---
 
 # Google sign-in uses a popup, not a redirect

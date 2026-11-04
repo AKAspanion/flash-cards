@@ -197,11 +197,12 @@
       "weak-password": "Password is too weak. Use at least 6 characters.",
       "too-many-requests": "Too many attempts. Please wait a moment and try again.",
       "network": "Network error. Check your connection and try again.",
-      "popup-blocked": "The sign-in popup was blocked. Allow popups for this site and try again.",
       "not-allowed": "This sign-in method is not enabled.",
       "disabled": "This account has been disabled.",
       "generic": "Something went wrong. Please try again.",
-      "unauthorized-domain": "Google sign-in is not enabled for this web address yet. Use email and password, or try again from the main site."
+      "unauthorized-domain": "Google sign-in is not enabled for this web address yet. Use email and password, or try again from the main site.",
+      "user-mismatch": "That's a different Google account. Choose the account you signed in with.",
+      "recent-login": "Please confirm it's you again, then try once more."
     }
   },
   "card": {
@@ -225,5 +226,68 @@
   },
   "view": {
     "discard-confirm": "Your progress could not be saved. Leave anyway and lose it?"
+  },
+  "account": {
+    "delete": {
+      "button": "Delete account",
+      "title": "Delete your account?",
+      "body": "This deletes your account and all your sets, cards and labels. It can't be undone.",
+      "password": "Password",
+      "confirm": "Delete my account",
+      "google": "Continue with Google",
+      "confirmed": "You're confirmed. Delete your account now?",
+      "done": "Your account has been deleted.",
+      "error": "Couldn't delete your account. Please try again."
+    }
+  },
+  "links": {
+    "privacy": "Privacy policy",
+    "delete": "Delete account"
+  },
+  "privacy": {
+    "title": "Privacy policy",
+    "updated": "Last updated: 4 November 2026",
+    "intro": "Flashcards is made by Ankit Kumar Pandit. This policy explains what the app stores and what you can do about it.",
+    "store": {
+      "title": "What we store",
+      "account": "Your account: your email address, and, if you add them or sign in with Google, your name and profile photo link.",
+      "content": "What you create: your sets, cards and labels.",
+      "settings": "Settings such as language and dark mode stay on your device only."
+    },
+    "use": {
+      "title": "How it is used",
+      "body": "Only to sign you in and to show and save your sets. We don't show ads, we don't use analytics, and we don't sell or share your data with anyone."
+    },
+    "where": {
+      "title": "Where it is kept",
+      "body": "With Google Firebase (Authentication and Cloud Firestore), which stores it for us. Data travels encrypted."
+    },
+    "delete": {
+      "title": "Deleting your data",
+      "body": "You can delete your account and everything in it from your profile in the app. Deletion is immediate and permanent; we keep no backups. If you can't sign in, see Delete account."
+    },
+    "children": {
+      "title": "Children",
+      "body": "Flashcards is meant for people aged 13 and over and is not directed at children under 13."
+    },
+    "contact": {
+      "title": "Contact",
+      "body": "Ankit Kumar Pandit, {email}"
+    },
+    "changes": "If this policy changes, the date above changes with it."
+  },
+  "deletion": {
+    "title": "Delete your Flashcards account",
+    "intro": "Deleting your account removes your sign-in, your sets, cards and labels, straight away and for good. Nothing is kept.",
+    "app": {
+      "title": "In the app:",
+      "body": "open your profile, choose Delete account, and confirm it's you."
+    },
+    "signin": "Sign in to delete",
+    "profile": "Go to profile",
+    "email": {
+      "title": "Can't sign in?",
+      "body": "Email {email} from the address on your account, asking to delete it. We delete it within 30 days and reply to confirm."
+    }
   }
 }

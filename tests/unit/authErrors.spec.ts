@@ -14,8 +14,19 @@ describe('authErrorMessage', () => {
     expect(authErrorMessage({}, t)).toBe('t:auth.error.generic');
   });
 
-  it('treats a closed popup as a cancel, not an error', () => {
-    expect(isAuthCancel({ code: 'auth/popup-closed-by-user' })).toBe(true);
+  it('maps re-authentication errors', () => {
+    expect(authErrorMessage({ code: 'auth/user-mismatch' }, t)).toBe('t:auth.error.user-mismatch');
+    expect(authErrorMessage({ code: 'auth/requires-recent-login' }, t)).toBe('t:auth.error.recent-login');
+  });
+
+  it('no longer maps a blocked popup', () => {
+    expect(authErrorMessage({ code: 'auth/popup-blocked', message: 'Raw' }, t)).toBe('Raw');
+  });
+
+  it('treats only a cancelled redirect as a cancel, not an error', () => {
+    expect(isAuthCancel({ code: 'auth/redirect-cancelled-by-user' })).toBe(true);
+    expect(isAuthCancel({ code: 'auth/user-cancelled' })).toBe(true);
+    expect(isAuthCancel({ code: 'auth/popup-closed-by-user' })).toBe(false);
     expect(isAuthCancel({ code: 'auth/unauthorized-domain' })).toBe(false);
   });
 });

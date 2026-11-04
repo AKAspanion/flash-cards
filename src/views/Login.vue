@@ -66,7 +66,7 @@
             color="primary"
             flat
             height="48"
-            :loading="busy"
+            :loading="busy && !googleBusy"
             type="submit"
           >
             {{ isSignIn ? t('login.login') : t('login.signup') }}
@@ -80,6 +80,7 @@
         :aria-label="t('login.google')"
         :disabled="busy"
         icon
+        :loading="googleBusy"
         :title="t('login.google')"
         variant="text"
         @click="onGoogle"
@@ -98,12 +99,26 @@
           {{ isSignIn ? t('login.signup') : t('login.login') }}
         </button>
       </div>
+      <div class="text-body-small pb-6 login__legal">
+        <router-link
+          class="login__link"
+          to="/privacy"
+        >
+          {{ t('links.privacy') }}
+        </router-link>
+        <router-link
+          class="login__link"
+          to="/delete-account"
+        >
+          {{ t('links.delete') }}
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { signInWithEmail, signInWithGoogle, signUpWithEmail } from '@/services/firebase';
@@ -123,6 +138,7 @@ const password = ref('');
 const repassword = ref('');
 const isSignIn = ref(true);
 const busy = ref(false);
+const googleBusy = ref(false);
 const form = ref<{ validate: () => Promise<{ valid: boolean; errors: { errorMessages: string[] }[] }> } | null>(null);
 
 const rules = {
@@ -181,9 +197,45 @@ async function onSubmit() {
   }
 }
 
-function onGoogle() {
-  void run(() => signInWithGoogle());
+// The page leaves for Google, so the button stays loading until it comes back; only a failure
+// to start the redirect ends it here.
+async function onGoogle() {
+  if (busy.value) {
+    return;
+  }
+  busy.value = true;
+  googleBusy.value = true;
+  try {
+    await signInWithGoogle();
+  } catch (err) {
+    busy.value = false;
+    googleBusy.value = false;
+    if (!isAuthCancel(err)) {
+      session.showSnack(authErrorMessage(err, t));
+    }
+  }
 }
+
+// A failed redirect comes back to this page: show why. A cancelled one shows nothing.
+watch(
+  () => session.redirectOutcome,
+  (outcome) => {
+    if (outcome && 'error' in outcome && !isAuthCancel(outcome.error)) {
+      session.showSnack(authErrorMessage(outcome.error, t));
+    }
+  },
+  { immediate: true },
+);
+
+// Back from Google's page can restore this page from the browser cache with the button still loading.
+function resetGoogle(event: PageTransitionEvent) {
+  if (event.persisted) {
+    busy.value = false;
+    googleBusy.value = false;
+  }
+}
+onMounted(() => window.addEventListener('pageshow', resetGoogle));
+onBeforeUnmount(() => window.removeEventListener('pageshow', resetGoogle));
 </script>
 
 <style scoped>
@@ -211,6 +263,11 @@ function onGoogle() {
 }
 .login__submit {
   border-radius: 0;
+}
+.login__legal {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
 }
 .login__link {
   color: #ba124b;
