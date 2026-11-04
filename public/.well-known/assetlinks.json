@@ -7,7 +7,10 @@
       "namespace": "android_app",
       "package_name": "in.spanion.flashcards.twa",
       "sha256_cert_fingerprints": [
-        "46:6E:2A:92:E2:11:9D:31:D7:68:2B:AB:AA:CA:10:EA:58:65:19:76:F2:97:AB:5A:52:87:92:D8:D1:F2:27:F8"
+        "46:6E:2A:92:E2:11:9D:31:D7:68:2B:AB:AA:CA:10:EA:58:65:19:76:F2:97:AB:5A:52:87:92:D8:D1:F2:27:F8",
+        "72:25:EF:94:91:50:01:55:00:DF:A0:8E:8C:C7:C1:07:81:AD:B9:54:8C:DC:3C:BD:FD:AB:29:48:08:F6:53:F2",
+        "B5:1E:AB:34:52:A1:2C:0F:AA:34:7D:2E:85:28:F3:C8:14:2F:A8:8A:BD:F0:0E:24:A1:A0:CF:9C:93:4A:E4:9C",
+        "63:7D:3C:37:0B:78:A9:CD:25:5F:41:7A:16:61:24:D8:16:DE:6F:FB:70:F4:D2:24:D7:48:B6:40:A5:DE:C5:35"
       ]
     }
   }

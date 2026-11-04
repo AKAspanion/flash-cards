@@ -16,8 +16,16 @@ The ordered steps, from the first build to the Play submission, are in section 8
 - The upload keystore, its password, the public certificate, the signed release files and the Play store graphics
   live outside the repository, in `~/keys/flashcards/` on the developer's machine; its `README.txt` lists each file.
   The keystore and the password are never committed.
-- The upload key's SHA-256 is in `public/.well-known/assetlinks.json`. Play's app-signing key SHA-256 joins it once
-  the app exists in Play Console with Play App Signing.
+- `public/.well-known/assetlinks.json` lists the upload key's SHA-256 (for builds installed by hand) and Play's
+  app-signing certificates (for store installs, which Play re-signs). Without Play's, a store install opens with a
+  browser URL bar.
+- Play signs with more than one certificate. Besides the app-signing key (`72:25:EF…`, the one Play Console shows), it
+  adds a hybrid post-quantum signer (RSA `B5:1E:AB…` plus ML-DSA `63:7D:3C…`) that Android 17 and later use. All three
+  are listed.
+  - To read them, pull a store-installed APK (`adb shell pm path`, then `adb pull`) and extract every certificate from
+    its signing block. `apksigner` can't parse the ML-DSA block without `--max-sdk-version 36`, which hides the hybrid
+    signer.
+  - Never list Play's source-stamp certificate (`32:57:D5…`, block `0x6dff800d`): it is Play's own, not this app's.
 - `signingKey.path` in `android/twa-manifest.json` is that keystore's absolute path, because Bubblewrap passes the path
   to the shell in quotes and a `~` there doesn't expand. On another machine, change the path before `npm run twa:build`.
 
@@ -60,6 +68,7 @@ The ordered steps, from the first build to the Play submission, are in section 8
 
 ## History
 
+- 2026-11-04: assetlinks.json listed only the upload key and the runbook said Play's key would join it; now it lists Play's app-signing key and its Android 17 hybrid signer, because the first internal-test install opened with a URL bar.
 - 2026-11-04: the black gap on cold launch was a known open finding; now the runbook says to re-apply the splash self-grant after regeneration, because the grant fixed it.
 - 2026-11-04: the signed bundle, APK and feature graphic in `~/keys/flashcards/` were rebuilt for the FlashCards rename, because the name is in the artifacts. See [the decision](../decisions/app-name-flashcards.md).
 - 2026-11-04: the upload key didn't exist yet; now it is in `~/keys/flashcards/` and its fingerprint is in
@@ -74,3 +83,4 @@ The ordered steps, from the first build to the Play submission, are in section 8
 - `android/app/src/main/java/in/spanion/flashcards/twa/LauncherActivity.java`
 - `tests/unit/twa.spec.ts`
 - `package.json`
+- `public/.well-known/assetlinks.json`
