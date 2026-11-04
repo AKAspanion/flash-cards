@@ -6,19 +6,35 @@
     <meta name="theme-color" content="#E91E63" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-    <meta name="description" content="Flashcards: a learning and memorization helper app." />
+    <meta name="description" content="FlashCards: a learning and memorization helper app." />
     <link rel="icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/img/icons/apple-touch-icon-180x180.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
-    <title>FLASHCARDS</title>
+    <title>FlashCards</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #ECECEC;
+      }
+      .boot-logo {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 96px;
+        height: 96px;
+        transform: translate(-50%, -50%);
+      }
+    </style>
+    <script src="/early-paint.js"></script>
   </head>
   <body>
     <noscript>
-      <strong>Flashcards needs JavaScript to work. Please enable it to continue.</strong>
+      <strong>FlashCards needs JavaScript to work. Please enable it to continue.</strong>
     </noscript>
-    <div id="app"></div>
+    <div id="app"><img class="boot-logo" src="/img/icons/android-chrome-192x192.png" alt="" /></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

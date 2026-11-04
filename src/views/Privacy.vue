@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="legal">
     <bar-top @click:left="router.push(backPath)">
       <template #left-button>
         <v-icon
@@ -13,83 +13,114 @@
         {{ session.user ? t('common.home') : t('login.login') }}
       </template>
     </bar-top>
-    <main class="legal">
+    <div class="legal__head">
       <h1 class="text-headline-small">
         {{ t('privacy.title') }}
       </h1>
       <p class="text-body-small legal__updated">
         {{ t('privacy.updated') }}
       </p>
-      <p class="text-body-large">
+      <p class="text-body-large legal__intro">
         {{ t('privacy.intro') }}
       </p>
-
-      <h2 class="text-title-medium">
-        {{ t('privacy.store.title') }}
-      </h2>
-      <ul class="text-body-large">
-        <li>{{ t('privacy.store.account') }}</li>
-        <li>{{ t('privacy.store.content') }}</li>
-        <li>{{ t('privacy.store.settings') }}</li>
-      </ul>
-
-      <h2 class="text-title-medium">
-        {{ t('privacy.use.title') }}
-      </h2>
-      <p class="text-body-large">
-        {{ t('privacy.use.body') }}
-      </p>
-
-      <h2 class="text-title-medium">
-        {{ t('privacy.where.title') }}
-      </h2>
-      <p class="text-body-large">
-        {{ t('privacy.where.body') }}
-      </p>
-
-      <h2 class="text-title-medium">
-        {{ t('privacy.delete.title') }}
-      </h2>
-      <p class="text-body-large">
-        <template
-          v-for="(part, i) in deleteParts"
-          :key="i"
-        >
-          <router-link
-            v-if="i > 0"
-            to="/delete-account"
-          >
-            {{ t('links.delete') }}
-          </router-link>{{ part }}
-        </template>
-      </p>
-
-      <h2 class="text-title-medium">
-        {{ t('privacy.children.title') }}
-      </h2>
-      <p class="text-body-large">
-        {{ t('privacy.children.body') }}
-      </p>
-
-      <h2 class="text-title-medium">
-        {{ t('privacy.contact.title') }}
-      </h2>
-      <p class="text-body-large">
-        <template
-          v-for="(part, i) in contactParts"
-          :key="i"
-        >
-          <a
-            v-if="i > 0"
-            :href="`mailto:${CONTACT_EMAIL}`"
-          >{{ CONTACT_EMAIL }}</a>{{ part }}
-        </template>
-      </p>
-
-      <p class="text-body-large">
-        {{ t('privacy.changes') }}
-      </p>
-    </main>
+    </div>
+    <v-card
+      class="legal__card"
+      color="surface-light"
+      flat
+    >
+      <main class="legal__content">
+        <div class="legal__row">
+          <v-icon>mdi-database-outline</v-icon>
+          <div class="legal__text">
+            <div class="text-title-small">
+              {{ t('privacy.store.title') }}
+            </div>
+            <ul class="text-body-small">
+              <li>{{ t('privacy.store.account') }}</li>
+              <li>{{ t('privacy.store.content') }}</li>
+              <li>{{ t('privacy.store.settings') }}</li>
+            </ul>
+          </div>
+        </div>
+        <div class="legal__row">
+          <v-icon>mdi-eye-outline</v-icon>
+          <div class="legal__text">
+            <div class="text-title-small">
+              {{ t('privacy.use.title') }}
+            </div>
+            <p class="text-body-small">
+              {{ t('privacy.use.body') }}
+            </p>
+          </div>
+        </div>
+        <div class="legal__row">
+          <v-icon>mdi-cloud-outline</v-icon>
+          <div class="legal__text">
+            <div class="text-title-small">
+              {{ t('privacy.where.title') }}
+            </div>
+            <p class="text-body-small">
+              {{ t('privacy.where.body') }}
+            </p>
+          </div>
+        </div>
+        <div class="legal__row">
+          <v-icon>mdi-delete-outline</v-icon>
+          <div class="legal__text">
+            <div class="text-title-small">
+              {{ t('privacy.delete.title') }}
+            </div>
+            <p class="text-body-small">
+              <template
+                v-for="(part, i) in deleteParts"
+                :key="i"
+              >
+                <router-link
+                  v-if="i > 0"
+                  to="/delete-account"
+                >
+                  {{ t('links.delete') }}
+                </router-link>{{ part }}
+              </template>
+            </p>
+          </div>
+        </div>
+        <div class="legal__row">
+          <v-icon>mdi-account-child-outline</v-icon>
+          <div class="legal__text">
+            <div class="text-title-small">
+              {{ t('privacy.children.title') }}
+            </div>
+            <p class="text-body-small">
+              {{ t('privacy.children.body') }}
+            </p>
+          </div>
+        </div>
+        <div class="legal__row">
+          <v-icon>mdi-email-outline</v-icon>
+          <div class="legal__text">
+            <div class="text-title-small">
+              {{ t('privacy.contact.title') }}
+            </div>
+            <p class="text-body-small">
+              <template
+                v-for="(part, i) in contactParts"
+                :key="i"
+              >
+                <a
+                  v-if="i > 0"
+                  :href="`mailto:${CONTACT_EMAIL}`"
+                >{{ CONTACT_EMAIL }}</a>{{ part }}
+              </template>
+            </p>
+          </div>
+        </div>
+      </main>
+    </v-card>
+    <p class="text-body-small legal__changes">
+      {{ t('privacy.changes') }}
+    </p>
   </div>
 </template>
 
@@ -112,24 +143,50 @@ const contactParts = computed(() => t('privacy.contact.body', { email: CONTACT_E
 </script>
 
 <style scoped>
-.legal {
+.legal__head {
   max-width: 640px;
-  padding: 16px 32px 96px;
+  padding: 16px 32px 24px;
 }
-.legal h2 {
-  padding-top: 24px;
+.legal__card {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
 }
-.legal p,
-.legal ul {
-  padding-top: 8px;
+.legal__content {
+  max-width: 640px;
+  padding: 32px 32px 32px;
 }
-.legal ul {
+.legal__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding-bottom: 32px;
+}
+.legal__row:last-child {
+  padding-bottom: 0;
+}
+.legal__text {
+  flex: 1 1 auto;
+  padding-left: 24px;
+}
+.legal__text p,
+.legal__text ul {
+  padding-top: 4px;
+}
+.legal__text ul {
   padding-left: 20px;
 }
+.legal a:not(.v-btn) {
+  color: #ba124b;
+}
 .legal__updated {
+  padding-top: 4px;
   opacity: 0.8;
 }
-.legal a {
-  color: #ba124b;
+.legal__intro {
+  padding-top: 16px;
+}
+.legal__changes {
+  max-width: 640px;
+  padding: 16px 32px 96px;
 }
 </style>

@@ -24,8 +24,8 @@ def twaManifest = [
     applicationId: 'in.spanion.flashcards.twa',
     hostName: 'flashcards.spanion.in', // The domain being opened in the TWA.
     launchUrl: '/', // The start path for the TWA. Must be relative to the domain.
-    name: 'Flashcards - Learn & Memorize', // The application name.
-    launcherName: 'Flashcards', // The name shown on the Android Launcher.
+    name: 'FlashCards - Learn & Memorize', // The application name.
+    launcherName: 'FlashCards', // The name shown on the Android Launcher.
     themeColor: '#E91E63', // The color used for the status bar.
     themeColorDark: '#000000', // The color used for the dark status bar.
     navigationColor: '#000000', // The color used for the navigation bar.

@@ -4,6 +4,7 @@
 
 - [Deleting an account always confirms who you are first](account-deletion-confirms-identity.md) - Account deletion shows a can't-be-undone dialog, then always re-confirms identity (password, or a Google redirect followed by a final tap) before anything is deleted; there's no typed confirmation.
 - [The Android package name is in.spanion.flashcards.twa](android-package-name.md) - The TWA's Android application id is in.spanion.flashcards.twa, the production domain reversed plus .twa; Google Play never lets it change after the first upload.
+- [The app is called FlashCards](app-name-flashcards.md) - The product name is written "FlashCards" (capital C) in English everywhere it shows, and "FlashCards - Learn & Memorize" where a full name is used; the Hindi name stays फ्लैशकार्ड.
 - [The app is for people aged 13 and over](audience-13-and-over.md) - The Play listing declares a target audience of 13 and over, and the privacy policy says the app isn't directed at children under 13, which keeps the app outside Google Play's Families policy.
 - [The bin keeps sets until the user deletes them](bin-keeps-sets-indefinitely.md) - Sets moved to the bin stay there indefinitely; nothing purges them automatically.
 - [Unlink billing when the monthly budget is spent](budget-kill-switch.md) - Because the Blaze plan has no spending cap, a Cloud Function unlinks the billing account once actual spend reaches the budget, dropping the project to the free Spark limits.

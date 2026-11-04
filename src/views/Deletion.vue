@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="legal">
     <bar-top @click:left="router.push(backPath)">
       <template #left-button>
         <v-icon
@@ -13,42 +13,69 @@
         {{ session.user ? t('common.home') : t('login.login') }}
       </template>
     </bar-top>
-    <main class="legal">
+    <div class="legal__head">
       <h1 class="text-headline-small">
         {{ t('deletion.title') }}
       </h1>
-      <p class="text-body-large">
-        {{ t('deletion.intro') }}
-      </p>
-      <p class="text-body-large">
-        <strong>{{ t('deletion.app.title') }}</strong>
-        {{ t('deletion.app.body') }}
-      </p>
-      <v-btn
-        class="legal__action"
-        color="primary"
-        flat
-        height="48"
-        :to="session.user ? '/profile' : '/login?redirect=/profile'"
-      >
-        {{ session.user ? t('deletion.profile') : t('deletion.signin') }}
-      </v-btn>
-
-      <h2 class="text-title-medium">
-        {{ t('deletion.email.title') }}
-      </h2>
-      <p class="text-body-large">
-        <template
-          v-for="(part, i) in emailParts"
-          :key="i"
-        >
-          <a
-            v-if="i > 0"
-            :href="`mailto:${CONTACT_EMAIL}`"
-          >{{ CONTACT_EMAIL }}</a>{{ part }}
-        </template>
-      </p>
-    </main>
+    </div>
+    <v-card
+      class="legal__card"
+      color="surface-light"
+      flat
+    >
+      <main class="legal__content">
+        <div class="legal__row">
+          <v-icon>mdi-delete-forever-outline</v-icon>
+          <div class="legal__text">
+            <div class="text-title-small">
+              {{ t('deletion.what.title') }}
+            </div>
+            <p class="text-body-small">
+              {{ t('deletion.intro') }}
+            </p>
+          </div>
+        </div>
+        <div class="legal__row">
+          <v-icon>mdi-account-cog-outline</v-icon>
+          <div class="legal__text">
+            <div class="text-title-small">
+              {{ t('deletion.app.title') }}
+            </div>
+            <p class="text-body-small">
+              {{ t('deletion.app.body') }}
+            </p>
+            <v-btn
+              class="legal__action"
+              color="primary"
+              flat
+              height="48"
+              :to="session.user ? '/profile' : '/login?redirect=/profile'"
+            >
+              {{ session.user ? t('deletion.profile') : t('deletion.signin') }}
+            </v-btn>
+          </div>
+        </div>
+        <div class="legal__row">
+          <v-icon>mdi-email-outline</v-icon>
+          <div class="legal__text">
+            <div class="text-title-small">
+              {{ t('deletion.email.title') }}
+            </div>
+            <p class="text-body-small">
+              <template
+                v-for="(part, i) in emailParts"
+                :key="i"
+              >
+                <a
+                  v-if="i > 0"
+                  :href="`mailto:${CONTACT_EMAIL}`"
+                >{{ CONTACT_EMAIL }}</a>{{ part }}
+              </template>
+            </p>
+          </div>
+        </div>
+      </main>
+    </v-card>
   </div>
 </template>
 
@@ -69,20 +96,42 @@ const emailParts = computed(() => t('deletion.email.body', { email: CONTACT_EMAI
 </script>
 
 <style scoped>
-.legal {
+.legal__head {
   max-width: 640px;
-  padding: 16px 32px 96px;
+  padding: 16px 32px 24px;
 }
-.legal h2 {
-  padding-top: 24px;
+.legal__card {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
 }
-.legal p {
-  padding-top: 8px;
+.legal__content {
+  max-width: 640px;
+  padding: 32px 32px 32px;
 }
-.legal__action {
-  margin-top: 16px;
+.legal__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding-bottom: 32px;
+}
+.legal__row:last-child {
+  padding-bottom: 0;
+}
+.legal__text {
+  flex: 1 1 auto;
+  padding-left: 24px;
+}
+.legal__text p,
+.legal__text ul {
+  padding-top: 4px;
+}
+.legal__text ul {
+  padding-left: 20px;
 }
 .legal a:not(.v-btn) {
   color: #ba124b;
+}
+.legal__action {
+  margin-top: 16px;
 }
 </style>

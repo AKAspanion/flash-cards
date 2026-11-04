@@ -4,8 +4,8 @@ import type { ManifestOptions } from 'vite-plugin-pwa';
 export const pwaManifest: Partial<ManifestOptions> = {
   id: '/',
   scope: '/',
-  name: 'Flashcards - Learn & Memorize',
-  short_name: 'Flashcards',
+  name: 'FlashCards - Learn & Memorize',
+  short_name: 'FlashCards',
   description: 'A learning and memorization helper app',
   theme_color: '#E91E63',
   background_color: '#ECECEC',

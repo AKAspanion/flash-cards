@@ -8,6 +8,16 @@ test('a signed-out visitor can read the privacy policy', async ({ page }) => {
   await expect(page).toHaveURL(/\/privacy$/);
   await expect(page.getByRole('heading', { name: 'Privacy policy' })).toBeVisible();
   await expect(page.getByText('Last updated: 4 November 2026')).toBeVisible();
+  for (const title of [
+    'What we store',
+    'How it is used',
+    'Where it is kept',
+    'Deleting your data',
+    'Children',
+    'Contact',
+  ]) {
+    await expect(page.getByText(title, { exact: true })).toBeVisible();
+  }
   await expect(page.locator(`a[href="${MAILTO}"]`)).toBeVisible();
   await expect(page.getByRole('link', { name: 'Delete account' })).toHaveAttribute('href', '/delete-account');
   await page.getByRole('button', { name: 'Back' }).click();
@@ -31,7 +41,10 @@ test('a signed-out visitor is led through sign-in to the profile from delete-acc
 
   await page.goto('/delete-account');
   await expect(page).toHaveURL(/\/delete-account$/);
-  await expect(page.getByRole('heading', { name: 'Delete your Flashcards account' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Delete your FlashCards account' })).toBeVisible();
+  for (const title of ["What's deleted", 'In the app', "Can't sign in?"]) {
+    await expect(page.getByText(title, { exact: true })).toBeVisible();
+  }
   await page.getByRole('link', { name: 'Sign in to delete' }).click();
   await expect(page).toHaveURL(/\/login\?redirect=\/profile$/);
 
@@ -56,10 +69,21 @@ test('delete-account explains the email route', async ({ page }) => {
   await expect(page.locator(`a[href="${MAILTO}"]`)).toBeVisible();
 });
 
-test('the login screen links to both pages', async ({ page }) => {
+test('the login screen links only to the privacy policy', async ({ page }) => {
   await page.goto('/login');
   await expect(page.getByRole('link', { name: 'Privacy policy' })).toHaveAttribute('href', '/privacy');
-  await expect(page.getByRole('link', { name: 'Delete account' })).toHaveAttribute('href', '/delete-account');
+  await expect(page.getByRole('link', { name: 'Delete account' })).toHaveCount(0);
+});
+
+test('the login email field takes focus only with a fine pointer', async ({ page }, testInfo) => {
+  await page.goto('/login');
+  const email = page.getByLabel('Email');
+  await expect(email).toBeVisible();
+  if (testInfo.project.name === 'mobile') {
+    await expect(email).not.toBeFocused();
+  } else {
+    await expect(email).toBeFocused();
+  }
 });
 
 test('the info screen links to both pages', async ({ page }) => {

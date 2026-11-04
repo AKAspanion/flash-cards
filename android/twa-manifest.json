@@ -1,8 +1,8 @@
 {
   "packageId": "in.spanion.flashcards.twa",
   "host": "flashcards.spanion.in",
-  "name": "Flashcards - Learn & Memorize",
-  "launcherName": "Flashcards",
+  "name": "FlashCards - Learn & Memorize",
+  "launcherName": "FlashCards",
   "startUrl": "/",
   "minSdkVersion": 24,
   "display": "standalone",
