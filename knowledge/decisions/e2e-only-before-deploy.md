@@ -2,8 +2,8 @@
 type: Decision
 title: E2E tests run only before a deploy
 description: The Playwright e2e job is skipped on pull requests and runs only when deploy.yml calls CI, so every hosting deploy still waits for it.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-04T17:45:10Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # E2E tests run only before a deploy

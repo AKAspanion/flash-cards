@@ -2,8 +2,8 @@
 type: Decision
 title: The project installs with pnpm
 description: The web app and functions/ both install with pnpm, pinned by packageManager in package.json, each with its own overrides and build-script policy in a pnpm-workspace.yaml.
-status: draft
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-04T17:34:46Z }
+verified: human:panditankit1995@gmail.com
 ---
 
 # The project installs with pnpm
