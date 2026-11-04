@@ -12,7 +12,7 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-11-04T12:00:00Z }
 
 `/privacy` (`src/views/Privacy.vue`) is the privacy policy and `/delete-account` (`src/views/Deletion.vue`) explains
 how to delete an account, including by email for people who can no longer sign in. Both are routes with `meta.public`,
-so the router guard lets everyone in ([auth](../security/auth.md)). They are linked from the login and info screens,
+so the router guard lets everyone in ([auth](../security/auth.md)). Both are info-style cards of icon rows. The login screen links only to the privacy policy; the info screen links to both,
 and Google Play's listing points at them ([Play compliance](../decisions/play-compliance-in-twa-work.md)).
 
 ## Rules
@@ -21,6 +21,10 @@ and Google Play's listing points at them ([Play compliance](../decisions/play-co
 - Emailed deletions are done by hand within 30 days ([decision](../decisions/deletion-is-permanent.md)); signed-in
   users delete themselves with [Delete account](account-deletion.md).
 - The pages are translated like the rest of the app (`src/locales`).
+
+## History
+
+- 2026-11-04: plain text pages; now info-style cards of icon rows, and login no longer links the deletion page, because the pages looked unlike the rest of the app.
 
 ## Sources
 

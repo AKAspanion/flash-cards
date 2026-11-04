@@ -23,7 +23,7 @@
           <v-text-field
             v-model="email"
             autocomplete="email"
-            autofocus
+            :autofocus="finePointer"
             class="login__field login__field--first"
             flat
             height="48"
@@ -106,12 +106,6 @@
         >
           {{ t('links.privacy') }}
         </router-link>
-        <router-link
-          class="login__link"
-          to="/delete-account"
-        >
-          {{ t('links.delete') }}
-        </router-link>
       </div>
     </div>
   </div>
@@ -132,6 +126,9 @@ const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const session = useSessionStore();
+
+// A touch keyboard popping open over the sign-in screen hides it, so focus the field only with a mouse.
+const finePointer = !window.matchMedia('(pointer: coarse)').matches;
 
 const email = ref('');
 const password = ref('');

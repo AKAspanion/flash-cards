@@ -46,6 +46,19 @@ describe('asset links', () => {
 });
 
 describe('twa-manifest.json', () => {
+  it('names the app like the web manifest', () => {
+    expect(twa.name).toBe(pwaManifest.name);
+    expect(twa.launcherName).toBe(pwaManifest.short_name);
+  });
+
+  it('ships the web manifest with the new name, standalone and no local URL', () => {
+    const raw = readFileSync(resolve(root, 'android/app/src/main/res/raw/web_app_manifest.json'), 'utf8');
+    const web = JSON.parse(raw);
+    expect(web.name).toBe('FlashCards - Learn & Memorize');
+    expect(web.display).toBe('standalone');
+    expect(raw).not.toContain('localhost');
+  });
+
   it('uses the production host', () => {
     expect(twa.host).toBe('flashcards.spanion.in');
   });

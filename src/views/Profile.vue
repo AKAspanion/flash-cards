@@ -192,15 +192,24 @@
             </div>
           </div>
         </div>
-        <div v-if="!(xs && labelFocused)">
-          <v-btn
-            color="error"
-            variant="text"
-            @click="deleteOpen = true"
-          >
-            {{ t('account.delete.button') }}
-          </v-btn>
-        </div>
+        <button
+          v-if="!(xs && labelFocused)"
+          class="d-flex align-start profile__row"
+          type="button"
+          @click="deleteOpen = true"
+        >
+          <v-icon color="error">
+            mdi-account-remove-outline
+          </v-icon>
+          <div class="pl-8">
+            <div class="text-title-small">
+              {{ t('account.delete.button') }}
+            </div>
+            <div class="text-body-small">
+              {{ t('account.delete.row') }}
+            </div>
+          </div>
+        </button>
       </div>
     </v-card>
 
@@ -375,6 +384,14 @@ async function onSignOut() {
   flex: 1 0 auto;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
+}
+.profile__row {
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  border: 0;
 }
 .profile__card-content {
   padding: 32px 32px 120px;

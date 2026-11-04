@@ -21,7 +21,7 @@ test('login page is accessible', async ({ page }) => {
 test('public pages are accessible', async ({ page }) => {
   for (const [path, heading] of [
     ['/privacy', 'Privacy policy'],
-    ['/delete-account', 'Delete your Flashcards account'],
+    ['/delete-account', 'Delete your FlashCards account'],
   ]) {
     await page.goto(path);
     await expect(page.getByRole('heading', { name: heading })).toBeVisible();
@@ -41,7 +41,7 @@ test('signed-in screens are accessible', async ({ page }) => {
     ['/profile', 'Member Since'],
     ['/settings', 'Card-sets order'],
     ['/info', 'Learn & Memorize'],
-    ['/bin', 'Flashcards trash bin'],
+    ['/bin', 'FlashCards trash bin'],
   ];
   for (const [path, text] of pages) {
     await page.goto(path);

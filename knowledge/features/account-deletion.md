@@ -10,7 +10,7 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-11-04T12:00:00Z }
 
 ## What it does
 
-`/profile` has a Delete account action. It opens `DialogDeleteAccount.vue`, which says deletion can't be undone, and
+`/profile` ends its card with a Delete account row (icon `mdi-account-remove-outline`, error colour). It opens `DialogDeleteAccount.vue`, which says deletion can't be undone, and
 then always re-confirms who the user is ([why](../decisions/account-deletion-confirms-identity.md)). Only then does
 `src/stores/account.ts` delete the user's data and, last, their Auth user. Google Play requires this action from apps
 with accounts ([requirement](../requirements/account-deletion-and-export.md)).
@@ -24,8 +24,13 @@ with accounts ([requirement](../requirements/account-deletion-and-export.md)).
 - Data goes first: every collection in `OWNED_COLLECTIONS` (`src/services/ownedCollections.ts`) has the user's
   documents removed in batches of 500, then the Auth user, so a failure part-way never leaves data without an owner.
   [A requirement](../requirements/account-deletion-covers-every-collection.md) keeps the list complete.
+- The dialog is persistent and Cancel is disabled only while the deletion itself runs; the Google step has its own spinner. A `pageshow` listener resets both when the browser restores the page from the back-forward cache, because the Google redirect can be cancelled and leave the dialog stuck.
 - Nothing is kept: [deleted data is gone at once](../decisions/deletion-is-permanent.md). People who can't sign in use
   the [delete-account page](privacy-and-deletion-pages.md).
+
+## History
+
+- 2026-11-04: the dialog stayed locked after a cancelled Google redirect; now only a running deletion locks it, because users were stuck.
 
 ## Sources
 

@@ -97,12 +97,13 @@ test('a Google user reconfirms on Google, then deletes with one more tap', async
   await expect(page).toHaveURL(/\/home$/);
 
   await page.goto('/profile');
+  const email = (await page.locator('.profile__text', { hasText: '@' }).innerText()).trim();
   await page.getByRole('button', { name: 'Delete account' }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Continue with Google' }).click();
 
-  // The emulator lists the account that just signed in; choose it again.
+  // The emulator lists every account tests made; choose this one again.
   await expect(page.getByRole('button', { name: 'Add new account' })).toBeVisible();
-  await page.locator('.mdc-list-item, li, [role="listitem"], button').filter({ hasText: /@/ }).first().click();
+  await page.locator('.mdc-list-item, li, [role="listitem"], button').filter({ hasText: email }).first().click();
 
   await expect(page).toHaveURL(/\/profile$/);
   const dialog = page.getByRole('dialog');
@@ -110,6 +111,59 @@ test('a Google user reconfirms on Google, then deletes with one more tap', async
   await dialog.getByRole('button', { name: 'Delete my account' }).click();
   await expect(page).toHaveURL(/\/login/);
   await expect(page.getByText('Your account has been deleted.')).toBeVisible();
+});
+
+test('delete account is a row in the profile card, not a red text button', async ({ page }) => {
+  await signUp(page);
+  await page.goto('/profile');
+  const row = page.locator('.profile__card').getByRole('button', { name: 'Delete account' });
+  await expect(row).toBeVisible();
+  await expect(page.locator('.v-btn', { hasText: 'Delete account' })).toHaveCount(0);
+  await row.click();
+  await expect(page.getByRole('dialog').getByText('Delete your account?')).toBeVisible();
+});
+
+test('the dialog locks Cancel only while the deletion runs', async ({ page }) => {
+  await signUp(page);
+  await page.goto('/profile');
+  // Hold the final request so the running state can be seen.
+  await page.route('**/accounts:delete*', async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 2500));
+    await route.continue();
+  });
+  await page.getByRole('button', { name: 'Delete account' }).click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog.getByRole('button', { name: 'Cancel' })).toBeEnabled();
+
+  await dialog.getByLabel('Password').fill(PASSWORD);
+  await dialog.getByRole('button', { name: 'Delete my account' }).click();
+  await expect(dialog.getByRole('button', { name: 'Cancel' })).toBeDisabled();
+  await expect(page).toHaveURL(/\/login/);
+});
+
+test('coming back from Google without reconfirming leaves the dialog cancellable', async ({ page }) => {
+  await page.goto('/login');
+  await page.getByRole('button', { name: 'Continue with Google' }).click();
+  await chooseNewGoogleAccount(page);
+  await expect(page).toHaveURL(/\/home$/);
+
+  await page.goto('/profile');
+  await page.getByRole('button', { name: 'Delete account' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Continue with Google' }).click();
+  await expect(page.getByRole('button', { name: 'Add new account' })).toBeVisible();
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\/profile$/);
+  await expect(page.getByRole('button', { name: 'Sign out' })).toBeVisible();
+  // Either the page reloaded and the dialog is closed, or it came from the cache and Cancel works.
+  const dialog = page.getByRole('dialog');
+  if (await dialog.isVisible()) {
+    await expect(dialog.getByText('Delete your account?')).toBeVisible();
+    await expect(dialog.getByRole('button', { name: 'Cancel' })).toBeEnabled();
+    await dialog.getByRole('button', { name: 'Cancel' }).click();
+  }
+  await expect(dialog).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Sign out' })).toBeVisible();
 });
 
 async function chooseNewGoogleAccount(page: Page) {
