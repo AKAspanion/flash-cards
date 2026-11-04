@@ -11,6 +11,16 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-11-04T12:00:00Z }
 The ordered steps, from the first build to the Play submission, are in section 8 of
 `docs/specs/2026-11-04-android-twa.md`; follow them in that order. What the first build added:
 
+## The upload key
+
+- The upload keystore, its password, the public certificate, the signed release files and the Play store graphics
+  live outside the repository, in `~/keys/flashcards/` on the developer's machine; its `README.txt` lists each file.
+  The keystore and the password are never committed.
+- The upload key's SHA-256 is in `public/.well-known/assetlinks.json`. Play's app-signing key SHA-256 joins it once
+  the app exists in Play Console with Play App Signing.
+- `signingKey.path` in `android/twa-manifest.json` is that keystore's absolute path, because Bubblewrap passes the path
+  to the shell in quotes and a `~` there doesn't expand. On another machine, change the path before `npm run twa:build`.
+
 ## Before you build
 
 - the Bubblewrap config file, ~/.bubblewrap/config.json, must point `jdkPath` at a JDK (JDK 21 worked) and `androidSdkPath` at
@@ -39,6 +49,11 @@ The ordered steps, from the first build to the Play submission, are in section 8
 - Google sign-in needs `https://spanion-flash-cards.web.app/__/auth/handler` and
   `http://localhost:8080/__/auth/handler` as redirect URIs on the OAuth web client, besides the production host
   ([decision](../decisions/google-sign-in-redirect.md)). Try sign-in on a real device before each submission.
+
+## History
+
+- 2026-11-04: the upload key didn't exist yet; now it is in `~/keys/flashcards/` and its fingerprint is in
+  `assetlinks.json`, because the developer asked for the signing key and store assets.
 
 ## Sources
 
