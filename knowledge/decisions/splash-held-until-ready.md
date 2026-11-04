@@ -45,3 +45,4 @@ The developer asked for the splash to stay until the app is ready, then the app 
 - `android/app/src/main/java/in/spanion/flashcards/twa/LauncherActivity.java`
 - `index.html`
 - `src/main.ts`
+- `src/utils/bootSplash.ts`
