@@ -24,7 +24,7 @@ verified: human:panditankit1995@gmail.com
 - With `VUE_APP_PROJECT_ID` set, the dev server proxies `/__` to the project's `firebaseapp.com`, so Google sign-in
   works locally (`vite.config.ts`).
 - Deploys read the same `VUE_APP_*` values, plus `FIREBASE_PROJECT_ID` and optionally `APP_URL`, from GitHub
-  repository variables, and the `FIREBASE_SERVICE_ACCOUNT` secret (`.github/workflows/deploy.yml`, README
+  repository variables (`APP_URL` is only the address a deploy shows, and defaults to the custom domain), and the `FIREBASE_SERVICE_ACCOUNT` secret (`.github/workflows/deploy.yml`, README
   "One-time setup for deploys").
 
 ## Where each is read
@@ -41,6 +41,7 @@ verified: human:panditankit1995@gmail.com
 
 ## History
 
+- 2026-11-04: a deploy without `APP_URL` showed `https://<FIREBASE_PROJECT_ID>.web.app`; now it shows `https://flashcards.spanion.in`, because the custom domain is the primary address.
 - 2026-11-04: no ad settings; now `VUE_APP_ADSENSE_CLIENT` and `VUE_APP_ADSENSE_SLOT` are optional, because the app shows an AdSense banner. See [one AdSense banner](../decisions/adsense-banner-ads.md).
 - 2026-11-04: `VUE_APP_AUTH_DOMAIN` was the auth domain shown to users; now only a fallback, because sign-in redirects through the serving host.
 

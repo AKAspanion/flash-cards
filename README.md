@@ -68,7 +68,7 @@ In **Settings > Secrets and variables > Actions**:
   *Firebase Hosting Admin* role (plus *Firebase Rules Admin* if you deploy rules from CI).
   `npx firebase-tools init hosting:github` can create it and add the secret for you.
 - **Variables** `FIREBASE_PROJECT_ID` and the `VUE_APP_*` values from `.env.example`; optionally `APP_URL`
-  (the address shown on deploys, e.g. `https://flashcards.spanion.in`).
+  (the address shown on deploys; it defaults to `https://flashcards.spanion.in`).
 - The service account needs *Firebase Hosting Admin* and *Service Usage Consumer*
   (the CLI checks that the Hosting API is enabled before deploying).
 
