@@ -12,7 +12,7 @@ verified: human:panditankit1995@gmail.com
 
 - **Auth**: sign-in and the session ([auth](../security/auth.md)).
 - **Firestore**: all user data ([data model](../data/model.md)), guarded by `firestore.rules`.
-- **Hosting**: serves `dist/`, rewrites every path to `/index.html`, and sets the cache and security headers
+- **Hosting**: serves `dist/`, rewrites every path to /index.html, and sets the cache and security headers
   (`firebase.json`). The default project is in `.firebaserc`.
 
 ## Configuration
@@ -30,7 +30,14 @@ verified: human:panditankit1995@gmail.com
 - Slow network: `session.track` shows a warning after `SLOW_NETWORK_MS`.
 - Failed loads or writes: the library store shows a translated error and leaves the in-memory list unchanged.
 - Offline: saves from the editor and study screens are refused with a snack; nothing is queued.
-- Google sign-in fails on a domain not listed under Authorized domains in Firebase Auth (README, "Domains").
+- Google sign-in fails on a domain not listed under Authorized domains in Firebase Auth, or whose `/__/auth/handler`
+  isn't a redirect URI on the OAuth web client (README, "Domains"; [decision](../decisions/google-sign-in-redirect.md)).
+- Account deletion batches Firestore deletes of 500 per commit, then deletes the Auth user
+  ([Delete account](../features/account-deletion.md)).
+
+## History
+
+- 2026-11-04: Google sign-in failed on unlisted domains; now it also needs the redirect URI, because sign-in is a redirect.
 
 ## Sources
 

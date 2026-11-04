@@ -1,7 +1,7 @@
 ---
 type: Application
 title: flash-cards web app
-description: The Vue 3 + Vuetify PWA at the repository root, built by Vite and served by Firebase Hosting; every screen except login needs a signed-in user.
+description: The Vue 3 + Vuetify PWA at the repository root, built by Vite and served by Firebase Hosting; every screen except login and the two public pages needs a signed-in user.
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
 verified: human:panditankit1995@gmail.com
 ---
@@ -22,6 +22,7 @@ Vue 3, Vuetify, Pinia, Vue Router, vue-i18n and the Firebase web SDK, in TypeScr
 
 - `index.html` loads `src/main.ts`, which mounts `src/App.vue` (bottom navigation `BarNav`, the global snack bar,
   online/offline tracking and the leave-page warning).
+- `pwa-manifest.ts`: the web manifest, kept apart so a unit test can compare it with the [Android app](android.md).
 - `vite.config.ts`: the dev server port (`server.port`), the `VUE_APP_` env prefix (`envPrefix`), the PWA manifest
   and service worker, vendor chunk splitting, and the Vitest setup.
 - `src/plugins/vuetify.ts` and `src/plugins/i18n.ts`: theme and translations.
@@ -29,7 +30,7 @@ Vue 3, Vuetify, Pinia, Vue Router, vue-i18n and the Firebase web SDK, in TypeScr
 ## Screens and routes
 
 The routes are the `routes` array in `src/router/index.ts`; each loads a view from `src/views/` lazily. Every route
-has `meta.requireAuth` except `/login`; unknown paths redirect to `/home`. The guard is described in
+has `meta.requireAuth` except `/login` and the routes with `meta.public` (`/privacy`, `/delete-account`), which are open to everyone; unknown paths redirect to `/home`. The guard is described in
 [auth](../security/auth.md). Each screen is a feature:
 
 - `/home`: [library](../features/library.md)
@@ -39,12 +40,22 @@ has `meta.requireAuth` except `/login`; unknown paths redirect to `/home`. The g
 - `/profile`: [profile and labels](../features/profile-and-labels.md)
 - `/settings`, `/info`: [settings and about](../features/settings-and-about.md)
 - `/login`: [sign-in](../features/sign-in.md)
+- `/privacy`, `/delete-account`: [privacy and deletion pages](../features/privacy-and-deletion-pages.md)
+- `/profile` also hosts [account deletion](../features/account-deletion.md)
+
+## Also built from this repository
+
+- [Android app](android.md): the Trusted Web Activity in `android/` that wraps this site for Google Play.
 
 ## Depends on
 
 - [Firebase](../integrations/firebase.md) Auth and Firestore, configured from `VUE_APP_*` variables
   ([environment](../operations/environment.md)).
 - Firebase Hosting for serving, headers and the CSP (`firebase.json`).
+
+## History
+
+- 2026-11-04: every route but `/login` needed sign-in; now `/privacy` and `/delete-account` are public, for Google Play's listing. See [privacy and deletion pages](../features/privacy-and-deletion-pages.md).
 
 ## Sources
 
@@ -55,6 +66,7 @@ has `meta.requireAuth` except `/login`; unknown paths redirect to `/home`. The g
 - `src/main.ts`
 - `src/App.vue`
 - `src/router/index.ts`
+- `pwa-manifest.ts`
 - `src/plugins/vuetify.ts`
 - `src/plugins/i18n.ts`
 - `firebase.json`

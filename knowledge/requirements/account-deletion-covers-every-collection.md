@@ -31,3 +31,4 @@ owner's `delete` in `firestore.rules`. Stated by the developer on 2026-11-04.
 
 - [requirements/account-deletion-and-export](account-deletion-and-export.md)
 - `docs/specs/2026-11-02-usability-features.md`
+- `src/services/ownedCollections.ts`

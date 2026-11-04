@@ -11,7 +11,9 @@ verified: human:panditankit1995@gmail.com
 ## How users sign in
 
 Through Firebase Auth, from the [sign-in feature](../features/sign-in.md): `signInWithEmail`, `signUpWithEmail` and
-`signInWithGoogle` in `src/services/firebase.ts`. Which providers are enabled is set in the Firebase console, not in
+`signInWithGoogle` in `src/services/firebase.ts`. The Firebase auth domain is the host serving the app
+(`authDomainFor` in `src/services/authDomain.ts`), so Google's redirect returns to the same origin; emulators and
+non-browser runs use the configured one ([decision](../decisions/google-sign-in-redirect.md)). Which providers are enabled is set in the Firebase console, not in
 this repository.
 
 ## Tokens and sessions
@@ -21,16 +23,25 @@ this repository.
 - `router.beforeEach` (`src/router/index.ts`) waits for the saved session to be restored (`getAuthUser`, which awaits
   `authStateReady`) before every navigation, then applies `authRedirect`: a route with `meta.requireAuth` sends a
   signed-out user to `/login?redirect=<path>`, and `/login` sends a signed-in user on.
-- Every route except `/login` has `meta.requireAuth` (the `routes` array in the same file). The guard only hides
+- Every route except `/login` has `meta.requireAuth`, apart from the routes with `meta.public` (`/privacy`,
+  `/delete-account`), which anyone can open (the `routes` array in the same file). The guard only hides
   screens; the data is protected by the Firestore rules.
 - `watchAuthChanges` reacts to sign-in or sign-out outside navigation (another tab, a revoked token): it swaps the
   loaded library and moves to `/login` or `/home`.
+- `getRedirectResult` runs once at start-up, through `session.loadRedirectOutcome` called from `src/main.ts`, before
+  the first navigation settles on `/login`.
 - Service calls fail with "You are signed out" when there is no current user (`requireUid`).
+
+## History
+
+- 2026-11-04: Google sign-in used a popup and every route but `/login` needed sign-in; now a redirect on the app's own host, with two public routes. See [the decision](../decisions/google-sign-in-redirect.md).
 
 ## Sources
 
 - `src/services/firebase.ts`
 - `src/router/index.ts`
 - `src/stores/session.ts`
+- `src/services/authDomain.ts`
+- `src/main.ts`
 - `tests/unit/router.spec.ts`
 - `tests/e2e/auth.spec.ts`

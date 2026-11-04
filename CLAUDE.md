@@ -103,24 +103,25 @@ Never configurable, whatever the project sets:
 
 _Generated from `knowledge/`. Do not edit by hand._
 
-_58 concepts, so sections other than project/ and apps/ show counts. Follow `knowledge/index.md` into them._
+_63 concepts, so sections other than project/ and apps/ show counts. Follow `knowledge/index.md` into them._
 
 - [data/](knowledge/data/) — 3 concepts
 - [decisions/](knowledge/decisions/) — 21 concepts
 - [design-system/](knowledge/design-system/) — 3 concepts
 - [domain/](knowledge/domain/) — 1 concept
-- [features/](knowledge/features/) — 7 concepts
+- [features/](knowledge/features/) — 9 concepts
 - [integrations/](knowledge/integrations/) — 2 concepts
-- [operations/](knowledge/operations/) — 2 concepts
+- [operations/](knowledge/operations/) — 3 concepts
 - [quality/](knowledge/quality/) — 2 concepts
 - [questions/](knowledge/questions/) — 1 concept
-- [requirements/](knowledge/requirements/) — 7 concepts
+- [requirements/](knowledge/requirements/) — 8 concepts
 - [risks/](knowledge/risks/) — 1 concept
 - [security/](knowledge/security/) — 3 concepts
 
 ### apps
 
-- [flash-cards web app](knowledge/apps/flash-cards.md) _(Application)_ — The Vue 3 + Vuetify PWA at the repository root, built by Vite and served by Firebase Hosting; every screen except login needs a signed-in user.
+- [Android app (Trusted Web Activity)](knowledge/apps/android.md) _(Application)_ — The Bubblewrap-generated Android project in android/ that wraps the live site as a Trusted Web Activity for Google Play.
+- [flash-cards web app](knowledge/apps/flash-cards.md) _(Application)_ — The Vue 3 + Vuetify PWA at the repository root, built by Vite and served by Firebase Hosting; every screen except login and the two public pages needs a signed-in user.
 - [Cloud Functions](knowledge/apps/functions.md) _(Application)_ — The functions/ codebase deployed to Firebase, holding one Pub/Sub-triggered function, billingKillSwitch, that unlinks billing when the monthly budget is spent.
 
 ### project

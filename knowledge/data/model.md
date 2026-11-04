@@ -26,8 +26,13 @@ see [original app compatibility](../decisions/original-app-compatibility.md).
   label.
 - Cards have no collection of their own: they live in their set's `cards` field.
 
+- `OWNED_COLLECTIONS` in `src/services/ownedCollections.ts` lists the collections a user owns and each owner field;
+  [account deletion](../features/account-deletion.md) wipes exactly those, and
+  [a requirement](../requirements/account-deletion-covers-every-collection.md) keeps the list complete.
+
 ## History
 
+- 2026-11-04: account deletion made the owned-collection list explicit; the model itself is unchanged.
 - 2026-11-03: whether a label could be deleted, leaving its id on sets, was open; now labels cannot be deleted. See [Labels cannot be deleted](../decisions/labels-cannot-be-deleted.md).
 
 ## Sources
@@ -36,3 +41,4 @@ see [original app compatibility](../decisions/original-app-compatibility.md).
 - `src/services/cardSetMapper.ts`
 - `src/services/firebase.ts`
 - `firestore.rules`
+- `src/services/ownedCollections.ts`

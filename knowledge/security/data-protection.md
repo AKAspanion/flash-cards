@@ -18,6 +18,10 @@ verified: human:panditankit1995@gmail.com
 
 ## Protections
 
+- A user can delete all their data from the app, and nothing is kept: see [account deletion](../features/account-deletion.md)
+  and [deleted data is gone at once](../decisions/deletion-is-permanent.md). The privacy policy is public at `/privacy`
+  ([pages](../features/privacy-and-deletion-pages.md)).
+
 - Owner-only access in `firestore.rules` ([roles](roles.md)).
 - Firebase Hosting sends a Content-Security-Policy, `X-Frame-Options`, `X-Content-Type-Options`,
   `Referrer-Policy`, `Permissions-Policy` and `Cross-Origin-Opener-Policy` on every path (`firebase.json`).
@@ -28,6 +32,10 @@ verified: human:panditankit1995@gmail.com
 - CI: workflows default to `contents: read` (CodeQL adds `security-events: write`), check out without persisted credentials, pin actions to commit SHAs, run
   `npm audit` on shipped dependencies, and CodeQL scans the code ([CI](../quality/ci.md)).
 - Vulnerabilities are reported privately through GitHub (README, "Security").
+
+## History
+
+- 2026-11-04: users could not remove their data; now they can delete their account and everything in it.
 
 ## Sources
 

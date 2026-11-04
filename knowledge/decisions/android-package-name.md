@@ -21,7 +21,7 @@ The developer chose it on 2026-11-04.
 
 ## Consequences
 
-- The same id goes in the Bubblewrap config (`android/twa-manifest.json`) and in `/.well-known/assetlinks.json`; the
+- The same id goes in the Bubblewrap config (`android/twa-manifest.json`) and in /.well-known/assetlinks.json; the
   two must match, or Android shows the browser bar over the app. `tests/unit/twa.spec.ts` checks they do.
 - Publishing under another id later means a new Play listing, with no installs or reviews carried over.
 
