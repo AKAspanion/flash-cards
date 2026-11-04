@@ -30,8 +30,8 @@ jobs:
     timeout-minutes: 15
     environment:
       name: production
-      # Primary address; set the APP_URL variable to change it (the .web.app address keeps working).
-      url: ${{ vars.APP_URL || format('https://{0}.web.app', vars.FIREBASE_PROJECT_ID) }}
+      # The custom domain is the primary address; set the APP_URL variable to change it (the .web.app address keeps working).
+      url: ${{ vars.APP_URL || 'https://flashcards.spanion.in' }}
     env:
       # Public Firebase web config, kept in repository Variables (Settings > Secrets and variables > Actions).
       VUE_APP_API_KEY: ${{ vars.VUE_APP_API_KEY }}
