@@ -12,7 +12,8 @@ verified: human:panditankit1995@gmail.com
 
 - The app's variables are listed, with comments, in `.env.example`: the Firebase web config (`VUE_APP_API_KEY`,
   `VUE_APP_AUTH_DOMAIN`, `VUE_APP_PROJECT_ID`, `VUE_APP_APP_ID` and the rest), the optional
-  `VUE_APP_PLAY_STORE_URL`, and `VUE_APP_USE_EMULATORS`. Locally they go in `.env.local`, which git ignores.
+  `VUE_APP_PLAY_STORE_URL`, the optional AdSense pair `VUE_APP_ADSENSE_CLIENT` and `VUE_APP_ADSENSE_SLOT`, and
+  `VUE_APP_USE_EMULATORS`. Locally they go in `.env.local`, which git ignores.
 - Only names starting `VUE_APP_` reach the app (`envPrefix` in `vite.config.ts`; why is in
   [original app compatibility](../decisions/original-app-compatibility.md)).
 - `.env.emulator` is committed: it is loaded in `emulator` mode (`npm run dev:emulator`, `npm run build:e2e`) and
@@ -31,6 +32,8 @@ verified: human:panditankit1995@gmail.com
 - Firebase config and `VUE_APP_USE_EMULATORS`: `getServices` in `src/services/firebase.ts`, which names any required
   key that is missing.
 - `VUE_APP_PLAY_STORE_URL`: `src/views/Info.vue`.
+- `VUE_APP_ADSENSE_CLIENT` and `VUE_APP_ADSENSE_SLOT`: `adsConfig` in `src/services/ads.ts`. Both are optional: unset
+  or malformed means no script loads and no ad shows ([Google AdSense](../integrations/google-adsense.md)).
 - `BASE_URL` (set by Vite): the router history in `src/router/index.ts`.
 - `GCLOUD_PROJECT`: the fallback project id in `functions/src/index.ts`.
 - `CI`: retries, workers and reporters in `playwright.config.ts`.
@@ -38,6 +41,7 @@ verified: human:panditankit1995@gmail.com
 
 ## History
 
+- 2026-11-04: no ad settings; now `VUE_APP_ADSENSE_CLIENT` and `VUE_APP_ADSENSE_SLOT` are optional, because the app shows an AdSense banner. See [one AdSense banner](../decisions/adsense-banner-ads.md).
 - 2026-11-04: `VUE_APP_AUTH_DOMAIN` was the auth domain shown to users; now only a fallback, because sign-in redirects through the serving host.
 
 ## Sources
@@ -47,6 +51,7 @@ verified: human:panditankit1995@gmail.com
 - `vite.config.ts`
 - `src/services/firebase.ts`
 - `src/views/Info.vue`
+- `src/services/ads.ts`
 - `src/router/index.ts`
 - `functions/src/index.ts`
 - `playwright.config.ts`

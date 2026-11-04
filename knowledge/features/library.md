@@ -13,7 +13,8 @@ verified: human:panditankit1995@gmail.com
 `/home` shows every set not in the bin as a card with its colour, labels and learned progress (`learnedCount`). The
 user can search by title, filter by one label or by favourites, open a set to study or edit, star it, or move it to
 the bin, with an Undo in the snack bar. A menu leads to the bin, labels (profile), about and settings. A floating
-button starts a new set.
+button starts a new set. Below the sets list, once the sets have loaded, an AdSense banner shows when ads are configured
+([one AdSense banner](../decisions/adsense-banner-ads.md)).
 
 ## Screens and routes
 
@@ -28,11 +29,18 @@ button starts a new set.
   `tests/unit/cardSets.spec.ts`.
 - On touch screens a set card swipes right to favourite and left to move to the bin (`CardFlashSet.vue`).
 - Starring or moving to the bin saves the whole set through `library.saveSet`.
+- The banner is `AdBanner` (`src/components/AdBanner.vue`), the only place an ad is requested; each mount asks AdSense
+  for one ad ([Google AdSense](../integrations/google-adsense.md)).
 - The bin is a flag (`trashed`), not a delete: see [bin](bin.md).
+
+## History
+
+- 2026-11-04: no ads; now an AdSense banner sits below the sets list, because the developer wants the app to earn. See [the decision](../decisions/adsense-banner-ads.md).
 
 ## Sources
 
 - `src/views/Home.vue`
+- `src/components/AdBanner.vue`
 - `src/components/CardFlashSet.vue`
 - `src/components/ShimmerCardFlashSet.vue`
 - `src/utils/cardSets.ts`

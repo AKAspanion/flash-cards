@@ -40,3 +40,7 @@ Decided by the developer on 2026-11-04:
 ## Sources
 
 - `docs/specs/2026-11-04-adsense.md`
+- `public/ads.txt`
+- `src/services/ads.ts`
+- `src/components/AdBanner.vue`
+- `firebase.json`

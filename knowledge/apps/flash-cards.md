@@ -53,9 +53,11 @@ has `meta.requireAuth` except `/login` and the routes with `meta.public` (`/priv
 - [Firebase](../integrations/firebase.md) Auth and Firestore, configured from `VUE_APP_*` variables
   ([environment](../operations/environment.md)).
 - Firebase Hosting for serving, headers and the CSP (`firebase.json`).
+- [Google AdSense](../integrations/google-adsense.md) for the banner on Home and Info, loaded only from `src/services/ads.ts`.
 
 ## History
 
+- 2026-11-04: no outside services beyond Firebase; now Google AdSense shows one banner on Home and Info. See [one AdSense banner](../decisions/adsense-banner-ads.md).
 - 2026-11-04: a small `img.boot-logo` showed until Vue mounted; now `#boot-splash` shows until the first route is ready, then fades, because the launch showed five different screens. See [the decision](../decisions/splash-held-until-ready.md).
 - 2026-11-04: the page was blank white until the app mounted; now an early background and a logo show first, because the Android launch showed a white flash.
 - 2026-11-04: every route but `/login` needed sign-in; now `/privacy` and `/delete-account` are public, for Google Play's listing. See [privacy and deletion pages](../features/privacy-and-deletion-pages.md).
@@ -68,6 +70,7 @@ has `meta.requireAuth` except `/login` and the routes with `meta.public` (`/priv
 - `.nvmrc`
 - `vite.config.ts`
 - `src/main.ts`
+- `src/services/ads.ts`
 - `src/utils/bootSplash.ts`
 - `src/App.vue`
 - `src/router/index.ts`

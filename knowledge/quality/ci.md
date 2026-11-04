@@ -14,7 +14,7 @@ verified: human:panditankit1995@gmail.com
   tests, rules tests, production build, `npm audit` of shipped dependencies, build and audit of `functions/`) and
   job `e2e` (the Playwright suite; the report is uploaded on failure).
 - `.github/workflows/deploy.yml`, on push to `master` or by hand: runs `ci.yml`, checks that the deploy variables
-  and secret exist, builds, and deploys hosting to the live channel. Run by hand with `deploy_rules` ticked, it also
+  and secret exist, builds, and deploys hosting to the live channel, passing the optional AdSense variables `VUE_APP_ADSENSE_CLIENT` and `VUE_APP_ADSENSE_SLOT` to the build ([environment](../operations/environment.md)). Run by hand with `deploy_rules` ticked, it also
   deploys `firestore.rules`. One deploy runs at a time (concurrency group `deploy-production`).
 - `.github/workflows/codeql.yml`: CodeQL analysis on pull requests, pushes and weekly.
 - `.github/dependabot.yml`: weekly grouped npm and GitHub Actions updates.
