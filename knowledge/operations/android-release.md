@@ -42,10 +42,14 @@ The ordered steps, from the first build to the Play submission, are in section 8
 
 ## Device checks
 
-- Also cold-launch the app (force-stop it and Chrome first) and watch for the splash: a black gap before the site is [a known finding](../findings/twa-splash-image-not-transferred.md); check whether a newer Chrome fixes it.
+- Also cold-launch the app (force-stop it and Chrome first) and watch for the splash: a black gap before the site, or "Failed to transfer splash image." in logcat, means the splash grant is missing ([fixed finding](../findings/twa-splash-image-not-transferred.md)).
 
 ## Each release
 
+- After Bubblewrap regenerates `android/` (`npm run twa:update`), re-apply the self-grant of read access to the splash URI in
+  `LauncherActivity.java` before `super.onCreate()`; `tests/unit/twa.spec.ts` fails without it. Remove it once
+  [android-browser-helper#623](https://github.com/GoogleChrome/android-browser-helper/issues/623) is fixed
+  ([why](../decisions/splash-held-until-ready.md)).
 - Raise `appVersionCode` in `android/twa-manifest.json` by hand.
 - After every `npm run twa:update`, check `compileSdkVersion` and `targetSdkVersion` in `android/app/build.gradle` are
   still at least 36, which Play requires ([why](../decisions/play-compliance-in-twa-work.md)).
@@ -56,6 +60,7 @@ The ordered steps, from the first build to the Play submission, are in section 8
 
 ## History
 
+- 2026-11-04: the black gap on cold launch was a known open finding; now the runbook says to re-apply the splash self-grant after regeneration, because the grant fixed it.
 - 2026-11-04: the signed bundle, APK and feature graphic in `~/keys/flashcards/` were rebuilt for the FlashCards rename, because the name is in the artifacts. See [the decision](../decisions/app-name-flashcards.md).
 - 2026-11-04: the upload key didn't exist yet; now it is in `~/keys/flashcards/` and its fingerprint is in
   `assetlinks.json`, because the developer asked for the signing key and store assets.
@@ -66,4 +71,6 @@ The ordered steps, from the first build to the Play submission, are in section 8
 - `android/twa-manifest.json`
 - `android/app/build.gradle`
 - `android/manifest-checksum.txt`
+- `android/app/src/main/java/in/spanion/flashcards/twa/LauncherActivity.java`
+- `tests/unit/twa.spec.ts`
 - `package.json`

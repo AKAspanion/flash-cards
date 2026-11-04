@@ -116,6 +116,41 @@ describe('android/app/build.gradle', () => {
   });
 });
 
+// Chrome 152+ checks that the sender holds a grant on the splash URI; the library never grants it to itself
+// (GoogleChrome/android-browser-helper#623), so LauncherActivity does it before the launch starts.
+describe('LauncherActivity.java', () => {
+  const java = readFileSync(
+    resolve(root, 'android/app/src/main/java/in/spanion/flashcards/twa/LauncherActivity.java'),
+    'utf8',
+  );
+  const grantBody = /private void grantSplashUriPermission\(\)\s*\{([\s\S]*?)\n    \}\n/.exec(java)?.[1] ?? '';
+
+  it('grants the splash URI before super.onCreate(', () => {
+    const grantCall = java.indexOf('grantSplashUriPermission();');
+    const superCall = java.indexOf('super.onCreate(');
+    expect(grantCall).toBeGreaterThan(-1);
+    expect(grantCall).toBeLessThan(superCall);
+  });
+
+  it('grants the app itself read and persistable access', () => {
+    expect(grantBody).toContain('grantUriPermission(');
+    expect(grantBody).toContain('getPackageName()');
+    expect(grantBody).toContain('Intent.FLAG_GRANT_READ_URI_PERMISSION');
+    expect(grantBody).toContain('Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION');
+  });
+
+  it('builds the URI from the provider authority and the splash file under getFilesDir()', () => {
+    expect(grantBody).toContain('FileProvider.getUriForFile');
+    expect(grantBody).toContain('getString(R.string.providerAuthority)');
+    expect(grantBody).toContain('getFilesDir()');
+    expect(grantBody).toContain('twa_splash/splash_image.png');
+  });
+
+  it('logs a failure with Log.w and lets the launch go on', () => {
+    expect(grantBody).toMatch(/try\s*\{[\s\S]*\}\s*catch\s*\(Exception \w+\)\s*\{[\s\S]*Log\.w\(/);
+  });
+});
+
 describe('git ignore', () => {
   it.each(['android/app/build/', 'android/local.properties', 'x.jks'])('ignores %s', (path) => {
     const out = execFileSync('git', ['check-ignore', path], { cwd: root }).toString().trim();

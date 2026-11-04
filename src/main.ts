@@ -6,6 +6,7 @@ import { useSessionStore } from './stores/session';
 import vuetify from './plugins/vuetify';
 import i18n from './plugins/i18n';
 import { setupPwaUpdates } from './pwa';
+import { hideBootSplash } from './utils/bootSplash';
 import './assets/style.css';
 
 const pinia = createPinia();
@@ -15,6 +16,9 @@ const app = createApp(App).use(pinia);
 void useSessionStore(pinia).loadRedirectOutcome();
 
 app.use(router).use(vuetify).use(i18n).mount('#app');
+
+// Hold the launch splash until the first navigation settles (success or failure) and a frame has painted.
+void router.isReady().finally(() => requestAnimationFrame(() => hideBootSplash()));
 
 setupPwaUpdates();
 
