@@ -55,6 +55,34 @@
           </div>
         </div>
         <div class="legal__row">
+          <v-icon>mdi-bullhorn-outline</v-icon>
+          <div class="legal__text">
+            <div class="text-title-small">
+              {{ t('privacy.ads.title') }}
+            </div>
+            <i18n-t
+              keypath="privacy.ads.body"
+              tag="p"
+              class="text-body-small"
+            >
+              <template #settings>
+                <a
+                  href="https://adssettings.google.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >{{ t('privacy.ads.settingsLink') }}</a>
+              </template>
+              <template #partners>
+                <a
+                  href="https://policies.google.com/technologies/partner-sites"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >{{ t('privacy.ads.partnersLink') }}</a>
+              </template>
+            </i18n-t>
+          </div>
+        </div>
+        <div class="legal__row">
           <v-icon>mdi-cloud-outline</v-icon>
           <div class="legal__text">
             <div class="text-title-small">

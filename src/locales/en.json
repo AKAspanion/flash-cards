@@ -257,7 +257,13 @@
     },
     "use": {
       "title": "How it is used",
-      "body": "Only to sign you in and to show and save your sets. We don't show ads, we don't use analytics, and we don't sell or share your data with anyone."
+      "body": "To sign you in and to show and save your sets. We don't use analytics, and we don't sell your data."
+    },
+    "ads": {
+      "title": "Ads",
+      "body": "FlashCards shows ads from Google AdSense at the bottom of some screens, never while you study. Google and its partners use cookies and device identifiers to show and measure these ads, and may personalise them. If you are in the EEA, the UK or Switzerland, you are asked for your consent first. You can turn off personalised ads at {settings}, and read how Google uses this data at {partners}.",
+      "settingsLink": "adssettings.google.com",
+      "partnersLink": "policies.google.com/technologies/partner-sites"
     },
     "where": {
       "title": "Where it is kept",

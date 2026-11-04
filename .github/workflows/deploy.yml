@@ -43,6 +43,8 @@ jobs:
       VUE_APP_APP_ID: ${{ vars.VUE_APP_APP_ID }}
       VUE_APP_MEASUREMENT_ID: ${{ vars.VUE_APP_MEASUREMENT_ID }}
       VUE_APP_PLAY_STORE_URL: ${{ vars.VUE_APP_PLAY_STORE_URL }}
+      VUE_APP_ADSENSE_CLIENT: ${{ vars.VUE_APP_ADSENSE_CLIENT }}
+      VUE_APP_ADSENSE_SLOT: ${{ vars.VUE_APP_ADSENSE_SLOT }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

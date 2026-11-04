@@ -15,6 +15,10 @@ interface ImportMetaEnv {
   readonly VUE_APP_PLAY_STORE_URL?: string;
   /** "true" connects to the local Auth and Firestore emulators (see `npm run emulators`). */
   readonly VUE_APP_USE_EMULATORS?: string;
+  /** Google AdSense publisher ID (`ca-pub-` and digits); no ads when unset or malformed. */
+  readonly VUE_APP_ADSENSE_CLIENT?: string;
+  /** AdSense display unit's `data-ad-slot` (digits); no ads when unset or malformed. */
+  readonly VUE_APP_ADSENSE_SLOT?: string;
 }
 
 interface ImportMeta {
