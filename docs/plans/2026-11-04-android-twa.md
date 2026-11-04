@@ -2,6 +2,8 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: the project's workflow policy names the executor (`run.executor`): ga:implement-with-subagents by default, or ga:implement. Follow the policy and this plan's Checkpoints. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+**Status:** complete
+
 **Goal:** Package the flashcards PWA as a Google Play Trusted Web Activity, with the sign-in, account deletion, privacy policy, asset links and icon Play needs so the listing isn't rejected.
 
 **Architecture:**
@@ -185,14 +187,14 @@ New locale keys, English copy exactly as here, Hindi in `hi.json` under the same
 - E2e (emulators): back on `/login`, cancelling on the emulator's page or pressing back leaves the user on `/login` with no error message.
 - The web manifest built by `npx vite build` has `id` `/`, `scope` `/`, `display` `standalone`, no `orientation`, the 512 icon with purpose `any`, and `img/icons/maskable-512x512.png` with purpose `maskable`. The maskable PNG is 512×512 (`sips -g pixelWidth -g pixelHeight`).
 
-- [ ] **Step 1: Write the failing tests** for the unit Acceptance cases in `tests/unit/authDomain.spec.ts`, `tests/unit/authErrors.spec.ts` (replace the popup case) and `tests/unit/router.spec.ts`, and the two e2e cases in `tests/e2e/google-sign-in.spec.ts`. Create `src/services/authDomain.ts` with the real signature returning the configured value, so the tests fail on behaviour.
+- [x] **Step 1: Write the failing tests** for the unit Acceptance cases in `tests/unit/authDomain.spec.ts`, `tests/unit/authErrors.spec.ts` (replace the popup case) and `tests/unit/router.spec.ts`, and the two e2e cases in `tests/e2e/google-sign-in.spec.ts`. Create `src/services/authDomain.ts` with the real signature returning the configured value, so the tests fail on behaviour.
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npx vitest run tests/unit/authDomain.spec.ts tests/unit/authErrors.spec.ts tests/unit/router.spec.ts`
 Expected: FAIL on the assertions for the new cases.
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces:
+- [x] **Step 3: Write the minimal implementation** to the Interfaces:
   - `authDomainFor` and its use in `firebase.ts`'s config.
   - `signInWithRedirect` and `getRedirectOutcome`.
   - `redirectOutcome` and `loadRedirectOutcome` in the session store, called once from `src/main.ts` after Pinia is installed.
@@ -204,17 +206,17 @@ Expected: FAIL on the assertions for the new cases.
   - The maskable icon, made with `sips --padToHeightWidth 580 580 --padColor ECECEC` on a copy of `public/img/icons/android-chrome-512x512.png`, then `sips -z 512 512`.
   - The npm scripts, the `.gitignore` lines, and the README "Domains" redirect URIs, replacing the popup wording there.
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npx vitest run tests/unit/authDomain.spec.ts tests/unit/authErrors.spec.ts tests/unit/router.spec.ts tests/unit/locales.spec.ts`
 Expected: PASS
 
-- [ ] **Step 5: Run the new e2e test**
+- [x] **Step 5: Run the new e2e test**
 
 Run: `npm run build:e2e && npx --yes firebase-tools@15.34.2 emulators:exec --only auth,firestore --project demo-flash-cards "npx playwright test tests/e2e/google-sign-in.spec.ts"`
 Expected: PASS on both projects.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/services/authDomain.ts src/services/firebase.ts src/services/authErrors.ts src/stores/session.ts src/main.ts src/views/Login.vue src/router/index.ts src/locales/en.json src/locales/hi.json pwa-manifest.ts vite.config.ts tsconfig.json public/img/icons/maskable-512x512.png package.json .gitignore README.md tests/unit/authDomain.spec.ts tests/unit/authErrors.spec.ts tests/unit/router.spec.ts tests/e2e/google-sign-in.spec.ts
@@ -307,14 +309,14 @@ interface AccountStore {
 - E2e (emulators, Google): a user signed in through the emulator's Google page opens Delete account and sees "Continue with Google". Choosing the same account on the emulator's page brings them back to `/profile` with "You're confirmed. Delete your account now?". "Delete my account" lands on `/login` with "Your account has been deleted.".
 - E2e: "Cancel" in the first step closes the dialog, and the user stays signed in on `/profile`.
 
-- [ ] **Step 1: Write the failing tests** for the unit cases in `tests/unit/ownedCollections.spec.ts` and `tests/unit/pendingDelete.spec.ts`, and the e2e cases in `tests/e2e/account-deletion.spec.ts`. Create `src/services/ownedCollections.ts` with an empty `OWNED_COLLECTIONS`, and `src/utils/pendingDelete.ts` with the real signatures returning `null` or `false`.
+- [x] **Step 1: Write the failing tests** for the unit cases in `tests/unit/ownedCollections.spec.ts` and `tests/unit/pendingDelete.spec.ts`, and the e2e cases in `tests/e2e/account-deletion.spec.ts`. Create `src/services/ownedCollections.ts` with an empty `OWNED_COLLECTIONS`, and `src/utils/pendingDelete.ts` with the real signatures returning `null` or `false`.
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npx vitest run tests/unit/ownedCollections.spec.ts tests/unit/pendingDelete.spec.ts`
 Expected: FAIL on the assertions.
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces:
+- [x] **Step 3: Write the minimal implementation** to the Interfaces:
   - The service functions.
   - The account store, following the store error convention.
   - `DialogDeleteAccount.vue`: first step, the confirmed step, and loading.
@@ -322,17 +324,17 @@ Expected: FAIL on the assertions.
   - `Profile.vue` reopening the dialog on mount when `shouldResumeDeletion` is true, and clearing the key either way.
   - A failed reconfirmation outcome on `/profile` shows its error through `authErrorMessage`.
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npx vitest run tests/unit/ownedCollections.spec.ts tests/unit/pendingDelete.spec.ts`
 Expected: PASS
 
-- [ ] **Step 5: Run the new e2e test**
+- [x] **Step 5: Run the new e2e test**
 
 Run: `npm run build:e2e && npx --yes firebase-tools@15.34.2 emulators:exec --only auth,firestore --project demo-flash-cards "npx playwright test tests/e2e/account-deletion.spec.ts"`
 Expected: PASS on both projects.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/services/ownedCollections.ts src/services/firebase.ts src/utils/pendingDelete.ts src/stores/account.ts src/components/DialogDeleteAccount.vue src/views/Profile.vue tests/unit/ownedCollections.spec.ts tests/unit/pendingDelete.spec.ts tests/e2e/account-deletion.spec.ts
@@ -389,25 +391,25 @@ export const CONTACT_EMAIL = 'panditankit1995@gmail.com';
 - On `/info`, "Privacy policy" and "Delete account" lead to the same pages.
 - `/privacy` and `/delete-account` pass the axe scan in `tests/e2e/a11y.spec.ts`, signed out, at both Playwright projects' widths.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case in `tests/e2e/public-pages.spec.ts`, and add the two pages to the scans in `tests/e2e/a11y.spec.ts`.
+- [x] **Step 1: Write the failing tests** for each Acceptance case in `tests/e2e/public-pages.spec.ts`, and add the two pages to the scans in `tests/e2e/a11y.spec.ts`.
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm run build:e2e && npx --yes firebase-tools@15.34.2 emulators:exec --only auth,firestore --project demo-flash-cards "npx playwright test tests/e2e/public-pages.spec.ts tests/e2e/a11y.spec.ts"`
 Expected: FAIL: the pages redirect to `/home` or `/login`.
 
-- [ ] **Step 3: Write the minimal implementation**:
+- [x] **Step 3: Write the minimal implementation**:
   - The contact constant.
   - The two views, in the existing screen style (a `BarTop` with a back button, then text).
   - The two routes with `meta: { public: true }`.
   - The links on `Login.vue` and `Info.vue`.
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm run build:e2e && npx --yes firebase-tools@15.34.2 emulators:exec --only auth,firestore --project demo-flash-cards "npx playwright test tests/e2e/public-pages.spec.ts tests/e2e/a11y.spec.ts"`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/utils/contact.ts src/views/Privacy.vue src/views/Deletion.vue src/router/index.ts src/views/Login.vue src/views/Info.vue tests/e2e/a11y.spec.ts tests/e2e/public-pages.spec.ts
@@ -483,31 +485,31 @@ git commit -m "Add public privacy policy and delete-account pages."
 - `android/app/build.gradle` has `targetSdkVersion` and `compileSdkVersion` of at least `36`.
 - `git check-ignore` reports `android/app/build/`, `android/local.properties` and a file `x.jks` as ignored.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case in `tests/unit/twa.spec.ts`.
+- [x] **Step 1: Write the failing tests** for each Acceptance case in `tests/unit/twa.spec.ts`.
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npx vitest run tests/unit/twa.spec.ts`
 Expected: FAIL: the files are missing or don't match.
 
-- [ ] **Step 3: Write `public/.well-known/assetlinks.json` and `android/twa-manifest.json`** as in Interfaces, with `appVersionName` equal to `package.json`'s `version`.
+- [x] **Step 3: Write `public/.well-known/assetlinks.json` and `android/twa-manifest.json`** as in Interfaces, with `appVersionName` equal to `package.json`'s `version`.
 
-- [ ] **Step 4: Generate the Android project.**
+- [x] **Step 4: Generate the Android project.**
   1. Write `~/.bubblewrap/config.json`, pointing `jdkPath` at the installed JDK (`/usr/libexec/java_home`) and `androidSdkPath` at `~/Library/Android/sdk`.
   2. Bubblewrap downloads the icons from the URLs in `twa-manifest.json`, and the maskable one isn't live yet. Serve `public/` locally with `python3 -m http.server 8099` from `public/`, point both icon URLs at `http://localhost:8099/...` for the run, then restore the production URLs.
   3. Run `npm run twa:update`.
   4. If Bubblewrap refuses the JDK, offers to download a JDK or SDK packages, or asks to accept a licence, stop and report to the developer instead.
 
-- [ ] **Step 5: Raise the target SDK** in `android/app/build.gradle` to `36` if the generated value is lower.
+- [x] **Step 5: Raise the target SDK** in `android/app/build.gradle` to `36` if the generated value is lower.
 
-- [ ] **Step 6: Add a README section "Android app"** pointing at `android/`, the two npm scripts, and the release runbook in `knowledge/operations/android-release.md`.
+- [x] **Step 6: Add a README section "Android app"** pointing at `android/`, the two npm scripts, and the release runbook in `knowledge/operations/android-release.md`.
 
-- [ ] **Step 7: Run the tests to verify they pass**
+- [x] **Step 7: Run the tests to verify they pass**
 
 Run: `npx vitest run tests/unit/twa.spec.ts`
 Expected: PASS
 
-- [ ] **Step 8: Commit.** Stage `android/` file by file, from the list `git status --porcelain android/` prints, never the directory.
+- [x] **Step 8: Commit.** Stage `android/` file by file, from the list `git status --porcelain android/` prints, never the directory.
 
 ```bash
 git add android/twa-manifest.json public/.well-known/assetlinks.json README.md tests/unit/twa.spec.ts
