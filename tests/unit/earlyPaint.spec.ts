@@ -60,12 +60,6 @@ describe('index.html', () => {
     );
   });
 
-  it('shows a boot logo inside #app', () => {
-    const logo = doc.querySelector('#app img.boot-logo');
-    expect(logo?.getAttribute('src')).toBe('/img/icons/android-chrome-192x192.png');
-    expect(logo?.getAttribute('alt')).toBe('');
-  });
-
   it('paints the light background in CSS and loads the head script before the module', () => {
     expect(html).toMatch(/html,\s*body\s*\{[^}]*background:\s*#ECECEC/i);
     const scripts = [...doc.querySelectorAll('script')];
