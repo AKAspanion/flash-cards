@@ -2,9 +2,10 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { setCard, signUp } from './helpers';
+import { DEV_PORTS } from '../../dev-ports';
 
-const AUTH = 'http://127.0.0.1:9099';
-const FIRESTORE = 'http://127.0.0.1:8085';
+const AUTH = `http://127.0.0.1:${DEV_PORTS.auth}`;
+const FIRESTORE = `http://127.0.0.1:${DEV_PORTS.firestore}`;
 const PROJECT = 'demo-flash-cards';
 const DOCS = `${FIRESTORE}/v1/projects/${PROJECT}/databases/(default)/documents`;
 const OWNER = { Authorization: 'Bearer owner' };
