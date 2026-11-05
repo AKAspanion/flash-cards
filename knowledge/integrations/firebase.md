@@ -34,17 +34,21 @@ verified: human:panditankit1995@gmail.com
 - Slow network: `session.track` shows a warning after `SLOW_NETWORK_MS`.
 - Failed loads or writes: the library store shows a translated error and leaves the in-memory list unchanged.
 - Offline: Firestore uses a persistent IndexedDB cache (memory where unavailable), so saves count as done once cached
-  and sync later; delete forever, sign-in, profile changes, Delete account, sharing and restore refuse offline
+  and sync later; delete forever, profile changes, Delete account, sharing and restore refuse offline
   ([offline study](../features/offline-study.md)). Sign-out waits at most `SIGN_OUT_DEADLINE_MS` for unsynced writes.
 - Two collections are written only after a rules deploy: `user-stats` and `shared-sets`
   ([manual deploys](../decisions/manual-rules-and-functions-deploy.md)).
 - Google sign-in fails on a domain not listed under Authorized domains in Firebase Auth, or whose `/__/auth/handler`
   isn't a redirect URI on the OAuth web client (README, "Domains"; [decision](../decisions/google-sign-in-redirect.md)).
+- The password reset email's continue URL is the serving host's `/login`, so that host must also be an authorised
+  domain, or the request fails with `auth/unauthorized-continue-uri`
+  ([decision](../decisions/password-reset-uses-firebase-action-page.md)).
 - Account deletion batches Firestore deletes of 500 per commit, then deletes the Auth user
   ([Delete account](../features/account-deletion.md)).
 
 ## History
 
+- 2026-11-05: the offline list named sign-in as refused offline, which the code never did (it shows Firebase's network error); removed. The authorised-domain rule now also covers the password reset link, because of the password reset plan.
 - 2026-11-05: offline saves were refused and nothing was queued; now a persistent cache keeps them and they sync later, because of the offline-study plan. See [offline study](../features/offline-study.md).
 - 2026-11-05: the emulators were always reached at `127.0.0.1`; now at the page's own loopback hostname, because Google sign-in on the Auth emulator failed silently from `localhost`.
 - 2026-11-04: Google sign-in failed on unlisted domains; now it also needs the redirect URI, because sign-in is a redirect.

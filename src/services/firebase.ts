@@ -10,6 +10,7 @@ import {
   onAuthStateChanged,
   reauthenticateWithCredential,
   reauthenticateWithRedirect,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithRedirect,
   signOut as firebaseSignOut,
@@ -132,6 +133,26 @@ export function signInWithEmail(email: string, password: string) {
 
 export function signUpWithEmail(email: string, password: string) {
   return createUserWithEmailAndPassword(getServices().auth, email.trim(), password);
+}
+
+/**
+ * Sends a password reset email. Resolves the same way whether or not the address has an account:
+ * an `auth/user-not-found` rejection resolves instead. Every other error rejects, for authErrorMessage.
+ */
+export async function sendPasswordReset(email: string): Promise<void> {
+  try {
+    await sendPasswordResetEmail(getServices().auth, email.trim(), { url: `${window.location.origin}/login` });
+  } catch (err) {
+    // "No such account" and "account disabled" are answers only the existence of an account decides,
+    // so both read as sent, and nothing is logged: a console line would tell the difference too.
+    // This only keeps the screen's reply the same. The network response differs unless the Firebase
+    // project has Email Enumeration Protection on, so the same-reply promise depends on that setting.
+    const code = (err as { code?: string })?.code;
+    if (code === 'auth/user-not-found' || code === 'auth/user-disabled') {
+      return;
+    }
+    throw err;
+  }
 }
 
 /** What a Google redirect came back with: the user it signed in, or the error it failed with. */

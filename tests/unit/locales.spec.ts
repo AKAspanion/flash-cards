@@ -49,6 +49,14 @@ describe('locales', () => {
     }
   });
 
+  it('both languages say when password reset is unavailable, with one wording for a missing email', () => {
+    for (const keys of [enKeys, hiKeys]) {
+      expect(keys).toContain('auth.error.reset-unavailable');
+      expect(keys).toContain('email.enter');
+      expect(keys).not.toContain('auth.error.missing-email');
+    }
+  });
+
   it('every t("...") key used in the source exists', () => {
     const used = new Set<string>();
     for (const file of sourceFiles(join(__dirname, '../../src'))) {

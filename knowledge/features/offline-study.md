@@ -23,9 +23,10 @@ gone.
   server later refuses it, the save error is shown and the data reloads. New sets and labels get their ids on the
   device (`doc(collection(…))` and `setDoc`, not `addDoc`), and `uid()` no longer needs `crypto.randomUUID`, which an
   http address lacks.
-- Online-only, refusing offline with the standard message: delete forever, sign-in and sign-up, profile changes,
+- Online-only, refusing offline with the standard message: delete forever, profile changes,
   [Delete account](account-deletion.md), [sharing](sharing.md) and restore from backup. Reading a set offline never
-  needs the network.
+  needs the network. Sign-in and sign-up need it too but have no check of their own: offline, Firebase's network error
+  shows ([sign in](sign-in.md)).
 - Sign-out waits for unsynced writes, terminates Firestore, deletes the IndexedDB cache and signs out
   (`signOutAndClear`), so the next person on the device sees nothing of the last user. It runs through the busy bar,
   and past `SIGN_OUT_DEADLINE_MS` (15 s) with unsynced changes it clears nothing, the user stays signed in and is told
@@ -37,6 +38,10 @@ gone.
   that sees the user signed out elsewhere does the same; a tab signing out or deleting the account itself loads it only
   once its cache is cleared.
 - The old sign-out that left the cache behind is no longer exported.
+
+## History
+
+- 2026-11-05: listed sign-in and sign-up as refused offline with the standard message; now says they have no check of their own and show Firebase's network error, because `Login.vue` never had one.
 
 ## Sources
 
