@@ -35,7 +35,10 @@
   },
   "home": {
     "set": {
-      "add": "Add flashcard set"
+      "add": "Add flashcard set",
+      "matches": "Matches in 1 card | Matches in {n} cards",
+      "studied": "Studied {time}",
+      "not-studied": "Not studied yet"
     }
   },
   "add": {
@@ -166,7 +169,9 @@
     "order-items": {
       "al": "Alphabetically",
       "nf": "New first",
-      "of": "Old first"
+      "of": "Old first",
+      "progress": "Least learned first",
+      "rs": "Recently studied"
     },
     "backup": {
       "title": "Back up all sets",

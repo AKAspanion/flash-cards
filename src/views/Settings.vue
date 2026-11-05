@@ -133,6 +133,7 @@
             item-title="label"
             item-value="value"
             :items="orderItems"
+            :list-props="orderListProps"
             rounded="xl"
             variant="outlined"
           />
@@ -216,10 +217,14 @@ const session = useSessionStore();
 const fileInput = ref<HTMLInputElement | null>(null);
 const restoring = ref(false);
 
+const orderListProps = computed(() => ({ 'aria-label': t('settings.card-set.title') }) as Record<string, string>);
+
 const orderItems = computed(() => [
   { label: t('settings.order-items.al'), value: 'Alphabetically' },
   { label: t('settings.order-items.nf'), value: 'New first' },
   { label: t('settings.order-items.of'), value: 'Old first' },
+  { label: t('settings.order-items.progress'), value: 'Progress' },
+  { label: t('settings.order-items.rs'), value: 'Recently studied' },
 ]);
 
 async function backUp() {

@@ -9,6 +9,14 @@ describe('prefs store', () => {
     setActivePinia(createPinia());
   });
 
+  it('accepts the new orders and rejects unknown ones', () => {
+    localStorage.setItem('card-set-order', 'Recently studied');
+    expect(usePrefsStore().setOrder).toBe('Recently studied');
+    setActivePinia(createPinia());
+    localStorage.setItem('card-set-order', 'Bogus');
+    expect(usePrefsStore().setOrder).toBe('Alphabetically');
+  });
+
   it('reads settings saved by the original app', () => {
     localStorage.setItem('lang', 'hi');
     localStorage.setItem('dark', 'true');

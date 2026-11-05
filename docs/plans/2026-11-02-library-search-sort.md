@@ -18,6 +18,8 @@
 - §2.7: unit tests in `tests/unit/<name>.spec.ts` (Vitest); end-to-end tests in `tests/e2e/<flow>.spec.ts` (Playwright, emulators, `npm run test:e2e`).
 - §2.9: "Every string with a count uses vue-i18n plural forms, singular | plural." Locale values below are written `singular | plural`, and the code passes the count (`t(key, { n }, n)`).
 - Stored order values already in people's browsers (`Alphabetically`, `New first`, `Old first`) keep working unchanged.
+- E2E tests that read or seed the emulators directly use the ports in `DEV_PORTS` (`dev-ports.ts`); never a literal port. Amended 2026-11-05.
+- The spaced-repetition plan is merged (#42): `CardFlashSet.vue` already shows "{n} due" and "{m} new" in its lower half, and `dueQueue` in `src/utils/srs.ts` sorts by `title.localeCompare` on its own, so changing `filterAndSortSets` doesn't move it. Amended 2026-11-05.
 
 ## Checkpoints
 
@@ -173,7 +175,7 @@ git commit -m "feat(library): offer the progress and recently-studied orders in 
 defineProps<{ card: CardSet; bin?: boolean; disabled?: boolean; search?: string }>();
 ```
 
-The card shows "Matches in {n} cards" only when `search` is not empty, the title does not match, and `cardMatchCount` is above 0. It shows "Studied {time}" from `relativeTime(studiedAt, now, prefs.lang)`, or "Not studied yet" when `studiedAt` is missing, except in the Bin. Both lines sit in the card's lower half and fit at 390 px wide without growing the card past its 182 px height.
+The card shows "Matches in {n} cards" only when `search` is not empty, the title does not match, and `cardMatchCount` is above 0. It shows "Studied {time}" from `relativeTime(studiedAt, now, prefs.lang)`, or "Not studied yet" when `studiedAt` is missing, except in the Bin. Both lines sit in the card's lower half beside the existing due/new counts (spaced-repetition plan) and, with them, fit at 390 px wide without growing the card past its 182 px height.
 
 **Spec:**
 - §7.1: "Search matches a set when the text appears in its title or in any card's front or back, ignoring case."

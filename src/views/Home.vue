@@ -186,6 +186,7 @@
           :key="set.id"
           :card="set"
           :disabled="session.loading"
+          :search="search"
           @delete="moveToBin"
           @fav="toggleFav"
           @label="(label) => (filterLabel = label)"

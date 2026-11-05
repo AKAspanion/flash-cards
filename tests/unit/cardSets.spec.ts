@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { filterAndSortSets, isSetOrder, learnedCount } from '@/utils/cardSets';
+import { cardMatchCount, filterAndSortSets, isSetOrder, learnedCount, learnedPercent, titleMatches } from '@/utils/cardSets';
 import type { CardSet } from '@/types';
 
 function makeSet(partial: Partial<CardSet>): CardSet {
@@ -66,5 +66,74 @@ describe('helpers', () => {
     expect(isSetOrder('New first')).toBe(true);
     expect(isSetOrder('Random')).toBe(false);
     expect(isSetOrder(null)).toBe(false);
+  });
+});
+
+const card = (front: string, back: string, learned = false) => ({ id: front + back, front, back, learned, date: '' });
+
+describe('card search', () => {
+  const spanish = makeSet({ title: 'Spanish', cards: [card('hablar', 'to speak')] });
+  const chem = makeSet({ title: 'Chemistry', cards: [card('Fe', 'Iron')] });
+  const both = [spanish, chem];
+
+  it('matches titles and card text ignoring case', () => {
+    expect(titles(filterAndSortSets(both, { search: 'SPEAK' }))).toEqual(['Spanish']);
+    expect(titles(filterAndSortSets(both, { search: 'iron' }))).toEqual(['Chemistry']);
+    expect(titles(filterAndSortSets(both, { search: 'chem' }))).toEqual(['Chemistry']);
+    expect(titles(filterAndSortSets(both, { search: '  speak  ' }))).toEqual(['Spanish']);
+  });
+
+  it('keeps every live set for an empty search and never a binned one', () => {
+    const binned = makeSet({ title: 'Binned', trashed: true, cards: [card('speak', 'x')] });
+    expect(titles(filterAndSortSets([...both, binned], { search: '' }))).toEqual(['Chemistry', 'Spanish']);
+    expect(titles(filterAndSortSets([...both, binned], { search: 'speak' }))).toEqual(['Spanish']);
+  });
+
+  it('exposes titleMatches and cardMatchCount', () => {
+    expect(titleMatches(spanish, ' SPAN ')).toBe(true);
+    expect(titleMatches(spanish, 'speak')).toBe(false);
+    expect(titleMatches(spanish, '')).toBe(true);
+    const set = makeSet({ cards: [card('a', 'b'), card('x', 'A'), card('x', 'y'), card('a', 'a')] });
+    expect(cardMatchCount(set, 'a')).toBe(3);
+    expect(cardMatchCount(makeSet({ cards: [card('a', 'b'), card('x', 'A'), card('x', 'y')] }), 'a')).toBe(2);
+    expect(cardMatchCount(set, '  ')).toBe(0);
+  });
+});
+
+describe('new orders', () => {
+  const half = makeSet({ title: 'Aaa', cards: [card('a', 'b', true), card('c', 'd')] });
+  const beta = makeSet({ title: 'Beta', cards: [card('a', 'b')] });
+  const alpha = makeSet({ title: 'Alpha', cards: [card('a', 'b')] });
+  const empty = makeSet({ title: 'Empty' });
+
+  it('computes learned percent, 0 for no cards', () => {
+    expect(learnedPercent(half)).toBe(50);
+    expect(learnedPercent(empty)).toBe(0);
+  });
+
+  it('orders by least learned, ties by title', () => {
+    expect(titles(filterAndSortSets([half, beta, alpha, empty], { order: 'Progress' }))).toEqual(['Alpha', 'Beta', 'Empty', 'Aaa']);
+  });
+
+  const nov = makeSet({ title: 'Nov', studiedAt: new Date('2026-11-01') });
+  const oct = makeSet({ title: 'Oct', studiedAt: new Date('2026-10-01') });
+  const zed = makeSet({ title: 'Zed' });
+  const abc = makeSet({ title: 'Abc' });
+
+  it('orders by recent study, never-studied last by title', () => {
+    expect(titles(filterAndSortSets([oct, zed, nov, abc], { order: 'Recently studied' }))).toEqual(['Nov', 'Oct', 'Abc', 'Zed']);
+  });
+
+  it('keeps favourites first with the new orders', () => {
+    const favZed = { ...zed, fav: true };
+    expect(titles(filterAndSortSets([oct, favZed, nov, abc], { order: 'Recently studied', favOnTop: true }))).toEqual(['Zed', 'Nov', 'Oct', 'Abc']);
+    const favHalf = { ...half, fav: true };
+    expect(titles(filterAndSortSets([favHalf, beta, alpha], { order: 'Progress', favOnTop: true }))).toEqual(['Aaa', 'Alpha', 'Beta']);
+  });
+
+  it('recognises the new stored values', () => {
+    expect(isSetOrder('Progress')).toBe(true);
+    expect(isSetOrder('Recently studied')).toBe(true);
+    expect(isSetOrder('Newest')).toBe(false);
   });
 });

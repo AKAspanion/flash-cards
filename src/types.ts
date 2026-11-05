@@ -41,4 +41,4 @@ export interface SessionUser {
   lastSignInTime: string;
 }
 
-export type SetOrder = 'Alphabetically' | 'New first' | 'Old first';
+export type SetOrder = 'Alphabetically' | 'New first' | 'Old first' | 'Progress' | 'Recently studied';
