@@ -16,6 +16,12 @@ configured, the Google Play listing. It also links to the [privacy policy and th
 page](privacy-and-deletion-pages.md). The screen ends with the AdSense banner
 (`src/components/AdBanner.vue`, [decision](../decisions/adsense-banner-ads.md)).
 
+Settings also has "Back up all sets" and "Restore from backup". Backup downloads every set not in the bin and every
+label as one JSON file (`buildBackup`, `backupFileName` in `src/utils/cardExport.ts`, saved with `downloadText()`).
+Restore reads such a file (`parseBackup`) and adds its sets as new sets; labels are matched to existing ones by their
+text and created when missing. Both are online-only and refuse offline with the offline-save snack. See
+[export in Settings](../requirements/data-export-in-settings.md).
+
 ## Screens and routes
 
 - `/settings`: `src/views/Settings.vue`.
@@ -33,6 +39,7 @@ page](privacy-and-deletion-pages.md). The screen ends with the AdSense banner
 
 ## History
 
+- 2026-11-05: Settings had only device-local preferences; now it also backs up and restores the user's sets, because the usability spec's 5.3 put data export there.
 - 2026-11-05: the prefs store held only the Settings values; now it also holds three study options.
 - 2026-11-04: `/info` showed no ads; now it ends with the AdSense banner. See [one AdSense banner](../decisions/adsense-banner-ads.md).
 - 2026-11-04: `/info` gained links to `/privacy` and `/delete-account`, which Google Play requires.
@@ -41,6 +48,9 @@ page](privacy-and-deletion-pages.md). The screen ends with the AdSense banner
 
 - `src/views/Settings.vue`
 - `src/views/Info.vue`
+- `src/utils/cardExport.ts`
+- `src/utils/download.ts`
+- `tests/e2e/backup.spec.ts`
 - `src/components/AdBanner.vue`
 - `src/stores/prefs.ts`
 - `src/App.vue`

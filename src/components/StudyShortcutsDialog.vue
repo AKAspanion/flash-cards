@@ -49,6 +49,7 @@ const rows = computed(() => [
   { keys: '←', label: t('study.shortcuts.prev') },
   { keys: 'K', label: t('study.shortcuts.learn') },
   { keys: 'J', label: t('study.shortcuts.unlearn') },
+  { keys: '1–4', label: t('study.shortcuts.rate') },
   { keys: '?', label: t('study.shortcuts.help') },
 ]);
 </script>

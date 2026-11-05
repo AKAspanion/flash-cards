@@ -37,6 +37,7 @@ has `meta.requireAuth` except `/login` and the routes with `meta.public` (`/priv
 - `/home`: [library](../features/library.md)
 - `/add`, `/:id/edit`: [edit a set](../features/edit-set.md)
 - `/:id/view`: [study a set](../features/study-set.md)
+- `/due`: [spaced repetition](../features/spaced-repetition.md)
 - `/bin`: [bin](../features/bin.md)
 - `/profile`: [profile and labels](../features/profile-and-labels.md)
 - `/settings`, `/info`: [settings and about](../features/settings-and-about.md)
@@ -74,6 +75,7 @@ has `meta.requireAuth` except `/login` and the routes with `meta.public` (`/priv
 - `src/utils/bootSplash.ts`
 - `src/App.vue`
 - `src/router/index.ts`
+- `src/views/Due.vue`
 - `pwa-manifest.ts`
 - `src/plugins/vuetify.ts`
 - `src/plugins/i18n.ts`

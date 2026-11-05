@@ -1,5 +1,7 @@
 # Spaced Repetition Implementation Plan
 
+**Status:** complete
+
 > **For agentic workers:** REQUIRED SUB-SKILL: the project's workflow policy names the executor (`run.executor`): ga:implement-with-subagents by default, or ga:implement. Follow the policy and this plan's Checkpoints. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Schedule every card with SM-2 so people review what is due: rate cards Again / Hard / Good / Easy, see
@@ -30,6 +32,8 @@ GitHub Actions CI (`.github/workflows/ci.yml`).
 - 2.7: Unit tests are Vitest in `tests/unit/<name>.spec.ts`; e2e tests are Playwright in `tests/e2e/<flow>.spec.ts`, run with `npm run test:e2e`.
 - `learned` stays correct on every card, because the live app reads only `learned` (spec 3.2, 6.3).
 - Dates are the device's local date from `localDate()` (existing, from the study-modes plan). E2E tests that depend on the date fix the browser clock with Playwright's `page.clock`.
+- E2E tests that read or seed the emulators directly use the ports in `DEV_PORTS` (`dev-ports.ts`), as `tests/e2e/study-modes.spec.ts` does; never a literal port. Amended 2026-11-05 after the 2100 port block (#40).
+- The faster-authoring plan is merged (#41): `CardFlash.vue` also emits `add-after` and exposes `edit(side)`, and `GroupCardFlash.vue` exposes `scrollToCard`. Task 2 keeps all of them. Amended 2026-11-05.
 
 ## Checkpoints
 
@@ -127,21 +131,21 @@ export function setDueCounts(set: CardSet, today: string): { due: number; new: n
 - Given a set with one card due `'2026-11-01'`, one due `'2026-11-09'` and two new cards, then `setDueCounts(set, '2026-11-02')` is `{ due: 1, new: 2 }`; the same set in the bin gives the same counts.
 - The existing `tests/unit/locales.spec.ts` passes with the new keys in both files.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/srs.spec.ts`
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/srs.spec.ts`
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm test`
 Expected: FAIL on the assertions. Create `src/utils/srs.ts` with the exported names and signatures first.
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces (srs module, `FlashCard.srs`, both locale files), until they pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces (srs module, `FlashCard.srs`, both locale files), until they pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/utils/srs.ts src/types.ts src/locales/en.json src/locales/hi.json tests/unit/srs.spec.ts
@@ -155,7 +159,7 @@ git commit -m "feat(srs): add SM-2 scheduler and due queue"
 **Files:**
 - Modify: `src/components/CardFlash.vue`
 - Modify: `src/components/GroupCardFlash.vue`
-- Test: `tests/unit/CardFlash.spec.ts`
+- Test: `tests/unit/CardFlash.spec.ts` (new file)
 - Test: `tests/unit/GroupCardFlash.spec.ts`
 
 **Interfaces:**
@@ -167,12 +171,12 @@ git commit -m "feat(srs): add SM-2 scheduler and due queue"
 // CardFlash.vue
 props: { rating?: boolean }           // default false; true = show the rating row once revealed
 emits: { rate: [rating: Rating] }
-defineExpose({ flip(): void; rate(rating: Rating): boolean }) // rate() is false (and emits nothing) until revealed
+defineExpose({ flip(): void; edit(side): void; rate(rating: Rating): boolean }) // rate() is false (and emits nothing) until revealed; edit is the faster-authoring plan's
 
 // GroupCardFlash.vue
 props: { rating?: boolean }           // passed to every CardFlash
 emits: { rate: [payload: { card: FlashCard; rating: Rating }] }
-defineExpose({ next(); prev(); goTo(index: number); flipFocused(); rateFocused(rating: Rating): boolean })
+defineExpose({ scrollToCard(index: number); next(); prev(); goTo(index: number); flipFocused(); rateFocused(rating: Rating): boolean })
 ```
 
 - A card is revealed once it has been flipped at least once (from either starting face). With `rating` on and
@@ -195,21 +199,21 @@ defineExpose({ next(); prev(); goTo(index: number); flipFocused(); rateFocused(r
 - Given `browse` on, a learned card and the app online, when the card is flipped, then no `update:modelValue` is emitted (the peek rule is gone).
 - Given a `GroupCardFlash` with `rating` on and three cards, when `flipFocused()` then `rateFocused('hard')` are called, then `rate` is emitted with the first card and `'hard'`; `rateFocused('hard')` before any flip returns `false`.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/CardFlash.spec.ts` and `tests/unit/GroupCardFlash.spec.ts`
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/CardFlash.spec.ts` and `tests/unit/GroupCardFlash.spec.ts`
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm test`
 Expected: FAIL on the assertions (no rating row; the peek case still emits).
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/components/CardFlash.vue src/components/GroupCardFlash.vue tests/unit/CardFlash.spec.ts tests/unit/GroupCardFlash.spec.ts
@@ -264,26 +268,26 @@ git commit -m "feat(srs): add the rating row to cards and drop the peek rule"
 - Given the review screen with a revealed card, when axe scans the page at desktop and mobile widths, then there are no violations.
 - Given the save on leave fails (`context.setOffline(true)` before leaving), then the existing discard confirm is shown, and accepting it reaches `/home`.
 
-- [ ] **Step 1: Write the failing e2e tests** for each Acceptance case, in `tests/e2e/srs-review.spec.ts`, using the account and set helpers in `tests/e2e/helpers.ts` and Playwright's `page.clock`
+- [x] **Step 1: Write the failing e2e tests** for each Acceptance case, in `tests/e2e/srs-review.spec.ts`, using the account and set helpers in `tests/e2e/helpers.ts` and Playwright's `page.clock`
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm run test:e2e`
 Expected: the new tests FAIL (no rating row on the review screen); existing suites pass.
 
-- [ ] **Step 3: Write the minimal implementation** in `View.vue` to the Interfaces, until they pass
+- [x] **Step 3: Write the minimal implementation** in `View.vue` to the Interfaces, until they pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm run test:e2e`
 Expected: PASS
 
-- [ ] **Step 5: Run the type check**
+- [x] **Step 5: Run the type check**
 
 Run: `npm run type-check`
 Expected: no errors
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/views/View.vue src/components/StudyShortcutsDialog.vue tests/e2e/srs-review.spec.ts
@@ -306,7 +310,7 @@ git commit -m "feat(srs): rate cards on the review screen"
 - Consumes: `dueQueue`, `dueCount`, `setDueCounts`, `schedule`, `DueEntry` and the `due.*`, `empty.due.*` keys (Task 1);
   `CardFlash` `rating` prop, `rate` event, `flip()` and `rate()` (Task 2); `localDate` and `useStudyShortcuts`
   (existing, from the study-modes plan); `StudySummaryDialog` (existing, from the study-modes plan); existing
-  `library.saveSet`, `ContainerEmpty`, `BarTop`, the user-store `unsavedChanges` flag
+  `library.saveSet`, `ContainerEmpty`, `BarTop`, the `unsavedChanges` flag in `useSessionStore()` (`src/stores/session.ts`)
 - Produces:
 
 | Route | Name | Component | Meta |
@@ -358,38 +362,38 @@ git commit -m "feat(srs): rate cards on the review screen"
 - Given a card is rated on `/due` and the save fails on leave (`context.setOffline(true)`), then the discard confirm is shown; dismissing it keeps the person on `/due`.
 - Given `/due` with a revealed card, `/due` with the summary open, and Home with the banner, when axe scans each at desktop and mobile widths, then there are no violations.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/router.spec.ts` and `tests/e2e/due-review.spec.ts`
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/router.spec.ts` and `tests/e2e/due-review.spec.ts`
 
-- [ ] **Step 2: Run the unit tests to verify they fail**
+- [x] **Step 2: Run the unit tests to verify they fail**
 
 Run: `npm test`
 Expected: the new router case FAILS (`/due` falls through to the catch-all).
 
-- [ ] **Step 3: Run the e2e tests to verify they fail**
+- [x] **Step 3: Run the e2e tests to verify they fail**
 
 Run: `npm run test:e2e`
 Expected: the new tests FAIL (no banner, no `/due` screen).
 
-- [ ] **Step 4: Add the route and build `Due.vue`** to the Interfaces
+- [x] **Step 4: Add the route and build `Due.vue`** to the Interfaces
 
-- [ ] **Step 5: Add the Home banner and the per-set count**, until the tests pass
+- [x] **Step 5: Add the Home banner and the per-set count**, until the tests pass
 
-- [ ] **Step 6: Run the unit tests to verify they pass**
+- [x] **Step 6: Run the unit tests to verify they pass**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 7: Run the e2e tests to verify they pass**
+- [x] **Step 7: Run the e2e tests to verify they pass**
 
 Run: `npm run test:e2e`
 Expected: PASS
 
-- [ ] **Step 8: Run the linter**
+- [x] **Step 8: Run the linter**
 
 Run: `npm run lint`
 Expected: no errors
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add src/views/Due.vue src/router/index.ts src/views/Home.vue src/components/CardFlashSet.vue tests/unit/router.spec.ts tests/e2e/due-review.spec.ts

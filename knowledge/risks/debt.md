@@ -1,7 +1,7 @@
 ---
 type: Technical Debt
 title: Technical debt
-description: Known weak spots worth fixing — whole-set rewrites with no size cap, no offline saves, out-of-date compatibility comments, and rules that must be deployed by hand ahead of code.
+description: Known weak spots worth fixing — whole-set rewrites, no offline saves, out-of-date compatibility comments, and rules that must be deployed by hand ahead of code.
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:30:00Z }
 verified: human:panditankit1995@gmail.com
 ---
@@ -10,9 +10,9 @@ verified: human:panditankit1995@gmail.com
 
 ## Items
 
-- **Whole-set writes, no size cap.** Cards are a JSON string inside their set, so every change rewrites the whole
-  document, and a large enough set stops saving at Firestore's per-document size limit. The cap is a requirement:
-  [set size limit](../requirements/set-size-limit.md). The format no longer has to stay as it is
+- **Whole-set writes.** Cards are a JSON string inside their set, so every change rewrites the whole
+  document. The app refuses a save over `MAX_CARDS_BYTES = 900_000`
+  ([decision](../decisions/set-size-limit-900000-bytes.md)); `firestore.rules` does not enforce it. The format no longer has to stay as it is
   ([original app compatibility](../decisions/original-app-compatibility.md)).
 - **No offline saves.** The editor and study screens refuse to save while offline (`persist` in
   `src/views/Add.vue`, `saveProgress` in `src/views/View.vue`); nothing is queued. The approved plan
@@ -26,6 +26,7 @@ verified: human:panditankit1995@gmail.com
 
 ## History
 
+- 2026-11-05: the missing size cap was listed as debt; now the app refuses a save over 900,000 bytes, because faster authoring made big sets easy. See [the size decision](../decisions/set-size-limit-900000-bytes.md).
 - 2026-11-03: "rules allow label deletion" was listed as debt; now intended, so account deletion can remove labels. See [Labels are deleted only with the account](../decisions/labels-deleted-only-with-account.md).
 - 2026-11-03: the whole-set format was "kept on purpose" for the original app; now no longer required. Label
   deletion was an open question; now decided against, which leaves the rules out of step. Separate rules deploys

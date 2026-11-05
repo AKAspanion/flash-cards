@@ -19,9 +19,13 @@ verified: human:panditankit1995@gmail.com
   has saved or left (`setupPwaUpdates`, `registerType: 'prompt'` in `vite.config.ts`).
 - When the user signs out, from any tab, `unsavedChanges` is cleared and the user is sent to `/login`.
 
+## History
+
+- 2026-11-05: only the editor and the set review screen held unsaved edits; now `/due` does too, saving each rated set on leave, for [spaced repetition](../features/spaced-repetition.md).
+
 ## Where it is enforced
 
-- `onBeforeRouteLeave` in `src/views/Add.vue` and `src/views/View.vue`.
+- `onBeforeRouteLeave` in `src/views/Add.vue`, `src/views/View.vue` and `src/views/Due.vue` (which saves every set rated in the session).
 - `warnBeforeUnload` in `src/App.vue`.
 - `setupPwaUpdates` in `src/pwa.ts`.
 - `watchAuthChanges` in `src/router/index.ts`.
@@ -30,6 +34,7 @@ verified: human:panditankit1995@gmail.com
 
 - `src/views/Add.vue`
 - `src/views/View.vue`
+- `src/views/Due.vue`
 - `src/App.vue`
 - `src/pwa.ts`
 - `src/stores/session.ts`

@@ -94,6 +94,21 @@
             {{ label.label }}
           </v-chip>
         </div>
+        <div
+          v-if="showRating && !flipped"
+          class="flash-card__rating d-flex justify-center flex-wrap ga-2 mb-2"
+        >
+          <v-btn
+            v-for="r in RATINGS"
+            :key="r"
+            :color="cardColor"
+            theme="dark"
+            variant="flat"
+            @click="rate(r)"
+          >
+            {{ t(`srs.${r}`) }}
+          </v-btn>
+        </div>
         <div class="d-flex align-center mb-2">
           <v-btn
             v-if="browse"
@@ -148,6 +163,21 @@
           </div>
         </div>
         <div class="flash-card__labels" />
+        <div
+          v-if="showRating && flipped"
+          class="flash-card__rating d-flex justify-center flex-wrap ga-2 mb-2"
+        >
+          <v-btn
+            v-for="r in RATINGS"
+            :key="r"
+            :color="cardColor"
+            theme="dark"
+            variant="flat"
+            @click="rate(r)"
+          >
+            {{ t(`srs.${r}`) }}
+          </v-btn>
+        </div>
         <div class="d-flex align-center mb-2">
           <v-spacer />
           <v-btn
@@ -172,6 +202,9 @@ import { useI18n } from 'vue-i18n';
 import type { FlashCard, Label } from '@/types';
 import { shade } from '@/utils/color';
 import { useSessionStore } from '@/stores/session';
+import type { Rating } from '@/utils/srs';
+
+const RATINGS: Rating[] = ['again', 'hard', 'good', 'easy'];
 
 const props = withDefaults(
   defineProps<{
@@ -183,13 +216,16 @@ const props = withDefaults(
     disabled?: boolean;
     /** Starts the card on its back face; the front text still sits on the front face. */
     reverse?: boolean;
+    /** Shows the four rating buttons once the card has been flipped. */
+    rating?: boolean;
   }>(),
-  { color: '', labels: () => [], browse: false, disabled: false, reverse: false },
+  { color: '', labels: () => [], browse: false, disabled: false, reverse: false, rating: false },
 );
 const emit = defineEmits<{
   'update:modelValue': [card: FlashCard];
   delete: [card: FlashCard];
   check: [learned: boolean];
+  rate: [rating: Rating];
   /** Edit mode only: the text dialog asked for a new card right after this one. */
   'add-after': [card: FlashCard];
 }>();
@@ -199,6 +235,9 @@ const { smAndUp } = useDisplay();
 const session = useSessionStore();
 
 const flipped = ref(props.reverse);
+// Revealed once flipped at least once, from either starting face.
+const revealed = ref(false);
+const showRating = computed(() => props.rating && revealed.value);
 const editing = ref(false);
 const textarea = ref<{ focus: () => void } | null>(null);
 const cardColor = computed(() => props.color || '#E91E63');
@@ -264,19 +303,26 @@ watch(
   (reverse) => {
     editing.value = false;
     flipped.value = reverse;
+    revealed.value = false;
   },
 );
 
 function flip() {
-  // Review mode: peeking at the answer marks the card as not yet learned.
-  if (props.browse && session.online && props.modelValue.learned) {
-    update('learned', false);
-  }
   editing.value = false;
   flipped.value = !flipped.value;
+  revealed.value = true;
 }
 
-defineExpose({ flip, edit });
+/** Emits `rating` when the rating row is showing; false (and nothing emitted) before the card is revealed. */
+function rate(rating: Rating): boolean {
+  if (!showRating.value) {
+    return false;
+  }
+  emit('rate', rating);
+  return true;
+}
+
+defineExpose({ flip, edit, rate });
 </script>
 
 <style scoped>

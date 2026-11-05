@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { authRedirect, safeRedirect } from '@/router';
+import router, { authRedirect, safeRedirect } from '@/router';
 
 const route = (fullPath: string, requireAuth?: boolean, query: Record<string, unknown> = {}, isPublic?: boolean) => ({
   fullPath,
@@ -23,6 +23,22 @@ describe('authRedirect', () => {
   it('sends signed-in users away from login to their redirect target', () => {
     expect(authRedirect(route('/login', undefined, { redirect: '/bin' }), true)).toBe('/bin');
     expect(authRedirect(route('/login'), true)).toBe('/home');
+  });
+});
+
+describe('authRedirect for the due review', () => {
+  it('sends signed-out users to login with /due as the redirect', () => {
+    expect(authRedirect(route('/due', true), false)).toEqual({ path: '/login', query: { redirect: '/due' } });
+  });
+
+  it('lets signed-in users through', () => {
+    expect(authRedirect(route('/due', true), true)).toBe(true);
+  });
+
+  it('marks /due as a protected route', () => {
+    const due = router.getRoutes().find((r) => r.path === '/due');
+    expect(due?.name).toBe('due');
+    expect(due?.meta.requireAuth).toBe(true);
   });
 });
 

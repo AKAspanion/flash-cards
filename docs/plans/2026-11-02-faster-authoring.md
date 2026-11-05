@@ -1,5 +1,7 @@
 # Faster Authoring Implementation Plan
 
+**Status:** complete
+
 > **For agentic workers:** REQUIRED SUB-SKILL: the project's workflow policy names the executor (`run.executor`): ga:implement-with-subagents by default, or ga:implement. Follow the policy and this plan's Checkpoints. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Fill a set quickly and move cards in and out of the app: bulk import, CSV/JSON export, backup and restore, duplicate, reorder, and faster card entry.
@@ -129,21 +131,21 @@ New locale keys, en copy (add every one to `hi.json` too):
 - Given `t('toast.restored', { n: 1 }, 1)`, the English text is `Restored 1 set.`; with 3 it is `Restored 3 sets.`.
 - Every new key exists in both locale files (`tests/unit/locales.spec.ts` passes unchanged).
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/setSize.spec.ts`, `tests/unit/cardImport.spec.ts` and `tests/unit/library.spec.ts`, with the functions created first with their real signatures
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/setSize.spec.ts`, `tests/unit/cardImport.spec.ts` and `tests/unit/library.spec.ts`, with the functions created first with their real signatures
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm test`
 Expected: FAIL on the assertions, not on missing modules
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, add the locale keys to both files, until they pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, add the locale keys to both files, until they pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/utils/setSize.ts src/utils/cardImport.ts src/stores/library.ts src/locales/en.json src/locales/hi.json tests/unit/setSize.spec.ts tests/unit/cardImport.spec.ts tests/unit/library.spec.ts
@@ -202,21 +204,21 @@ export function downloadText(fileName: string, content: string, mimeType: string
 - Given `parseBackup` of `not json`, of `{}`, of a `SetExport`, of `format: 'flashcards-backup'` with `version: 2`, or of a set whose `cards` holds a number, it returns `null`.
 - Given `downloadText`, an anchor with `download` set to the file name is clicked once and the object URL is revoked afterwards.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/cardExport.spec.ts`, with the functions created first with their real signatures
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/cardExport.spec.ts`, with the functions created first with their real signatures
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm test`
 Expected: FAIL on the assertions
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/utils/cardExport.ts src/utils/download.ts tests/unit/cardExport.spec.ts
@@ -280,21 +282,21 @@ defineEmits<{ 'update:modelValue': [open: boolean]; reorder: [cards: FlashCard[]
 - Given "Reorder cards" opened and closed with no moves, the set is not marked as changed.
 - Given the editor with a dialog open, at 390 px wide, the axe scan finds no violations.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/e2e/authoring.spec.ts`, using `page.waitForEvent('download')` and `setInputFiles` for files
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/e2e/authoring.spec.ts`, using `page.waitForEvent('download')` and `setInputFiles` for files
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm run test:e2e`
 Expected: FAIL on the missing options and dialogs
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm run test:e2e`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/components/ImportCardsDialog.vue src/components/ReorderCardsDialog.vue src/views/Add.vue tests/e2e/authoring.spec.ts
@@ -338,21 +340,21 @@ defineExpose({ flip, edit: (side: 'front' | 'back') => void }); // edit flips to
 - Given the review screen (browse mode), neither button shows and Ctrl+Enter does nothing.
 - Given the dialog with the new buttons, the axe scan finds no violations.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/e2e/quick-entry.spec.ts`
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/e2e/quick-entry.spec.ts`
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm run test:e2e`
 Expected: FAIL on the missing buttons
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm run test:e2e`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/components/CardFlash.vue src/components/GroupCardFlash.vue tests/e2e/quick-entry.spec.ts
@@ -393,31 +395,31 @@ Restore matches each backup label to an existing label with the same text, creat
 - Given the browser offline (`context.setOffline(true)`), "Restore from backup" shows "You're offline. Connect to the internet to save." and creates nothing; "Back up all sets" still downloads the file.
 - Given the Settings page at 390 px wide, the axe scan finds no violations.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/e2e/backup.spec.ts`
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/e2e/backup.spec.ts`
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm run test:e2e`
 Expected: FAIL on the missing rows
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm run test:e2e`
 Expected: PASS
 
-- [ ] **Step 5: Run the end checks**
+- [x] **Step 5: Run the end checks**
 
 Run: `npm run type-check`
 Expected: no errors
 
-- [ ] **Step 6: Run lint**
+- [x] **Step 6: Run lint**
 
 Run: `npm run lint`
 Expected: no errors
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/views/Settings.vue tests/e2e/backup.spec.ts

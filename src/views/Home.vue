@@ -123,6 +123,21 @@
 
     <div class="home__sets">
       <div
+        v-if="library.status === 'ready' && dueTotal > 0"
+        class="home__due"
+      >
+        <div class="text-title-medium">
+          {{ t('due.banner', { n: dueTotal }, dueTotal) }}
+        </div>
+        <v-btn
+          color="primary"
+          rounded="xl"
+          @click="router.push('/due')"
+        >
+          {{ t('due.study-now') }}
+        </v-btn>
+      </div>
+      <div
         v-if="library.status === 'loading' || library.status === 'idle'"
         class="set-grid"
       >
@@ -214,6 +229,8 @@ import OptionPanel from '@/components/OptionPanel.vue';
 import ShimmerCardFlashSet from '@/components/ShimmerCardFlashSet.vue';
 import type { CardSet, Label } from '@/types';
 import { filterAndSortSets } from '@/utils/cardSets';
+import { localDate } from '@/utils/dates';
+import { dueCount } from '@/utils/srs';
 import { useLibraryStore } from '@/stores/library';
 import { usePrefsStore } from '@/stores/prefs';
 import { useSessionStore } from '@/stores/session';
@@ -244,6 +261,7 @@ const visibleSets = computed(() =>
     favOnTop: prefs.favOnTop,
   }),
 );
+const dueTotal = computed(() => dueCount(library.sets, localDate()));
 const shimmerCount = computed(() => ({ xs: 3, sm: 4, md: 4, lg: 6, xl: 9, xxl: 9 })[display.name.value] ?? 3);
 
 const menuItems = computed(() => [
@@ -275,6 +293,13 @@ async function moveToBin(set: CardSet) {
 <style scoped>
 .home__sets {
   padding-bottom: 96px;
+}
+.home__due {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 32px 0;
 }
 .set-grid {
   display: grid;

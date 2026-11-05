@@ -1,9 +1,13 @@
+import type { SrsState } from '@/utils/srs';
+
 export interface FlashCard {
   id: string;
   front: string;
   back: string;
   learned: boolean;
   date: string;
+  /** Spaced-repetition state; absent until the card is first rated. */
+  srs?: SrsState;
 }
 
 export interface CardSet {

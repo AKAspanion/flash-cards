@@ -27,5 +27,6 @@ sit together.
 - `docs/specs/2026-11-02-usability-features.md`
 - `docs/plans/2026-11-02-faster-authoring.md`
 - `src/views/Settings.vue`
+- `tests/e2e/backup.spec.ts`
 
 Supersedes [Users can export their data](account-data-export.md): Export is Back up all sets in Settings (spec 5.3), not on Profile; chosen 2026-11-05.
