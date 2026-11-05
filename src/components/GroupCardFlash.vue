@@ -20,6 +20,7 @@
         :ref="(el) => setCardRef(el, index)"
         :number="index + 1"
         :reverse="reverse"
+        @add-after="onAddAfter"
         @check="onCheck"
         @delete="onDelete"
         @update:model-value="onUpdate"
@@ -30,9 +31,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useDisplay } from 'vuetify';
 import type { FlashCard, Label } from '@/types';
+import { uid } from '@/utils/cardSets';
 import CardFlash from './CardFlash.vue';
 
 const props = withDefaults(
@@ -52,6 +54,8 @@ const emit = defineEmits<{
   focused: [index: number];
 }>();
 
+type CardHandle = { flip: () => void; edit: (side: 'front' | 'back') => void };
+
 const { xs } = useDisplay();
 const container = ref<HTMLElement | null>(null);
 const itemWidth = computed(() => (xs.value ? '82.5vw' : '70.5vw'));
@@ -59,10 +63,10 @@ let wheelLocked = false;
 let focused = 0;
 let pendingTarget: number | null = null;
 let pendingTimer: ReturnType<typeof setTimeout> | undefined;
-const cardRefs: Array<{ flip: () => void } | null> = [];
+const cardRefs: Array<CardHandle | null> = [];
 
 function setCardRef(el: unknown, index: number) {
-  cardRefs[index] = (el as { flip: () => void } | null) ?? null;
+  cardRefs[index] = (el as CardHandle | null) ?? null;
 }
 
 function itemSize(): number {
@@ -159,6 +163,23 @@ function onWheel(e: WheelEvent) {
   setTimeout(() => {
     wheelLocked = false;
   }, 400);
+}
+
+/** Inserts a blank card right after `card`, brings it into view and opens its front for typing. */
+function onAddAfter(card: FlashCard) {
+  const at = props.modelValue.findIndex((c) => c.id === card.id);
+  if (at < 0) {
+    return;
+  }
+  const blank: FlashCard = { id: uid(), front: '', back: '', learned: false, date: new Date().toISOString() };
+  const cards = [...props.modelValue];
+  cards.splice(at + 1, 0, blank);
+  emit('update:modelValue', cards);
+  // Wait for the parent to pass the longer list down and the new card to mount.
+  void nextTick(() => {
+    focusCard(at + 1);
+    cardRefs[at + 1]?.edit('front');
+  });
 }
 
 function onCheck(learned: boolean) {

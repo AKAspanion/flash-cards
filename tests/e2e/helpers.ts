@@ -34,7 +34,7 @@ export async function createSet(page: Page, title: string, front = 'hablar', bac
   await page.getByPlaceholder('Enter text for the back side').fill(back);
   await page.getByRole('button', { name: 'Done' }).click();
 
-  await page.getByRole('button', { name: 'Save' }).click();
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
   await expect(page).toHaveURL(/\/home$/);
   await expect(setCard(page, title)).toBeVisible();
 }

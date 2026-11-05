@@ -19,6 +19,9 @@
           :placeholder="flipped ? t('card.placeholder.back') : t('card.placeholder.front')"
           rounded="xl"
           variant="outlined"
+          @keydown.tab.exact="onTab"
+          @keydown.enter.ctrl="onSaveShortcut"
+          @keydown.enter.meta="onSaveShortcut"
           @update:model-value="update(flipped ? 'back' : 'front', $event)"
         >
           <template #append-inner>
@@ -34,6 +37,27 @@
             </v-btn>
           </template>
         </v-textarea>
+        <div
+          v-if="!browse"
+          class="d-flex justify-end mt-4"
+        >
+          <v-btn
+            v-if="!flipped"
+            :color="cardColor"
+            variant="tonal"
+            @click="nextSide"
+          >
+            {{ t('card.next-side') }}
+          </v-btn>
+          <v-btn
+            v-else
+            :color="cardColor"
+            variant="tonal"
+            @click="saveAndAddNext"
+          >
+            {{ t('card.save-next') }}
+          </v-btn>
+        </div>
       </v-card>
     </v-dialog>
     <div
@@ -142,7 +166,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify';
 import { useI18n } from 'vue-i18n';
 import type { FlashCard, Label } from '@/types';
@@ -166,6 +190,8 @@ const emit = defineEmits<{
   'update:modelValue': [card: FlashCard];
   delete: [card: FlashCard];
   check: [learned: boolean];
+  /** Edit mode only: the text dialog asked for a new card right after this one. */
+  'add-after': [card: FlashCard];
 }>();
 
 const { t } = useI18n();
@@ -188,6 +214,43 @@ function startEditing() {
   if (canEdit.value) {
     editing.value = true;
   }
+}
+
+function nextSide() {
+  flipped.value = true;
+  // The textarea stays mounted, so it keeps focus; this covers a focus lost to the button click.
+  void nextTick(() => textarea.value?.focus());
+}
+
+function onTab(event: KeyboardEvent) {
+  if (!flipped.value && !props.browse) {
+    event.preventDefault();
+    nextSide();
+  }
+}
+
+function saveAndAddNext() {
+  if (props.browse) {
+    return;
+  }
+  editing.value = false;
+  emit('add-after', props.modelValue);
+}
+
+function onSaveShortcut(event: KeyboardEvent) {
+  if (flipped.value && !props.browse) {
+    event.preventDefault();
+    saveAndAddNext();
+  }
+}
+
+/** Shows `side` and opens the text dialog on it, for the next card to be typed straight into. */
+function edit(side: 'front' | 'back') {
+  if (!canEdit.value) {
+    return;
+  }
+  flipped.value = side === 'back';
+  editing.value = true;
 }
 
 function toggleLearned() {
@@ -213,7 +276,7 @@ function flip() {
   flipped.value = !flipped.value;
 }
 
-defineExpose({ flip });
+defineExpose({ flip, edit });
 </script>
 
 <style scoped>

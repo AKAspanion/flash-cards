@@ -2,6 +2,8 @@ import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import type { CardSet, Label } from '@/types';
 import * as api from '@/services/firebase';
+import i18n from '@/plugins/i18n';
+import { fitsSizeLimit } from '@/utils/setSize';
 import { useSessionStore } from './session';
 
 type Status = 'idle' | 'loading' | 'ready' | 'error';
@@ -77,6 +79,10 @@ export const useLibraryStore = defineStore('library', () => {
   }
 
   async function createSet(set: CardSet): Promise<CardSet | null> {
+    if (!fitsSizeLimit(set.cards)) {
+      session.showSnack(i18n.global.t('toast.error.too-big'));
+      return null;
+    }
     try {
       const docId = await session.track(api.addCardSet(set));
       const saved = { ...set, docId };
@@ -90,6 +96,10 @@ export const useLibraryStore = defineStore('library', () => {
   }
 
   async function saveSet(set: CardSet): Promise<boolean> {
+    if (!fitsSizeLimit(set.cards)) {
+      session.showSnack(i18n.global.t('toast.error.too-big'));
+      return false;
+    }
     try {
       await session.track(api.updateCardSet(set));
       replaceSet(set);

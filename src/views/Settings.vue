@@ -137,27 +137,172 @@
             variant="outlined"
           />
         </div>
+        <div class="settings__row">
+          <v-icon>mdi-download</v-icon>
+          <div class="settings__text">
+            <div class="text-body-large">
+              {{ t('settings.backup.title') }}
+            </div>
+            <div class="text-body-small">
+              {{ t('settings.backup.desc') }}
+            </div>
+          </div>
+          <v-btn
+            :aria-label="t('settings.backup.title')"
+            color="primary"
+            icon
+            size="small"
+            variant="outlined"
+            @click="backUp"
+          >
+            <v-icon>mdi-download</v-icon>
+          </v-btn>
+        </div>
+        <div class="settings__row">
+          <v-icon>mdi-upload</v-icon>
+          <div class="settings__text">
+            <div class="text-body-large">
+              {{ t('settings.restore.title') }}
+            </div>
+            <div class="text-body-small">
+              {{ t('settings.restore.desc') }}
+            </div>
+          </div>
+          <v-btn
+            :aria-label="t('settings.restore.title')"
+            color="primary"
+            icon
+            :loading="restoring"
+            size="small"
+            variant="outlined"
+            @click="chooseBackup"
+          >
+            <v-icon>mdi-upload</v-icon>
+          </v-btn>
+          <input
+            ref="fileInput"
+            accept=".json,application/json"
+            aria-hidden="true"
+            class="settings__file"
+            tabindex="-1"
+            type="file"
+            @change="restore"
+          >
+        </div>
       </div>
     </v-card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import BarTop from '@/components/BarTop.vue';
 import { usePrefsStore } from '@/stores/prefs';
+import { useLibraryStore } from '@/stores/library';
+import { useSessionStore } from '@/stores/session';
+import { uid } from '@/utils/cardSets';
+import { backupFileName, buildBackup, parseBackup } from '@/utils/cardExport';
+import { downloadText } from '@/utils/download';
+import type { CardSet } from '@/types';
 
 const { t } = useI18n();
 const router = useRouter();
 const prefs = usePrefsStore();
+const library = useLibraryStore();
+const session = useSessionStore();
+
+const fileInput = ref<HTMLInputElement | null>(null);
+const restoring = ref(false);
 
 const orderItems = computed(() => [
   { label: t('settings.order-items.al'), value: 'Alphabetically' },
   { label: t('settings.order-items.nf'), value: 'New first' },
   { label: t('settings.order-items.of'), value: 'Old first' },
 ]);
+
+async function backUp() {
+  // The library may still be loading when Settings is opened directly.
+  await library.load();
+  if (library.status !== 'ready') {
+    return;
+  }
+  const now = new Date();
+  const backup = buildBackup(library.sets, library.labels, now);
+  downloadText(backupFileName(now), JSON.stringify(backup, null, 2), 'application/json');
+}
+
+function chooseBackup() {
+  if (!session.online) {
+    session.showSnack(t('toast.offline-save'));
+    return;
+  }
+  fileInput.value?.click();
+}
+
+/** Adds the backup's sets as new sets; labels are matched by their text and created when missing. */
+async function restore(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  input.value = '';
+  if (!file || restoring.value) {
+    return;
+  }
+  if (!session.online) {
+    session.showSnack(t('toast.offline-save'));
+    return;
+  }
+  const backup = parseBackup(await file.text().catch(() => ''));
+  if (!backup) {
+    session.showSnack(t('toast.error.not-backup'));
+    return;
+  }
+  restoring.value = true;
+  try {
+    await library.load();
+    if (library.status !== 'ready') {
+      return;
+    }
+    // Backup label id -> id of the label with the same text in this account.
+    const labelIds = new Map<string, string>();
+    const byText = new Map(library.labels.map((l) => [l.label, l.docId]));
+    for (const label of backup.labels) {
+      let docId = byText.get(label.label);
+      if (!docId) {
+        docId = (await library.createLabel(label.label))?.docId;
+        if (docId) {
+          byText.set(label.label, docId);
+        }
+      }
+      if (docId) {
+        labelIds.set(label.docId, docId);
+      }
+    }
+    let created = 0;
+    for (const source of backup.sets) {
+      const date = new Date(source.date);
+      const set: CardSet = {
+        id: uid(),
+        title: source.title,
+        color: source.color,
+        date: Number.isNaN(date.getTime()) ? new Date() : date,
+        trashed: false,
+        fav: source.fav,
+        labels: source.labels.flatMap((id) => labelIds.get(id) ?? []),
+        cards: source.cards,
+      };
+      if (await library.createSet(set)) {
+        created++;
+      }
+    }
+    if (created > 0 || backup.sets.length === 0) {
+      session.showSnack(t('toast.restored', { n: created }, created));
+    }
+  } finally {
+    restoring.value = false;
+  }
+}
 </script>
 
 <style scoped>
@@ -183,6 +328,9 @@ const orderItems = computed(() => [
 .settings__text {
   flex: 1 1 auto;
   padding-left: 16px;
+}
+.settings__file {
+  display: none;
 }
 .settings__select {
   margin-left: 40px;

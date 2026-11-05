@@ -166,7 +166,76 @@
           class="px-3"
         >-</span>
       </div>
+      <button
+        v-ripple
+        class="option-row option-row--action"
+        type="button"
+        @click.stop="openDialog('import')"
+      >
+        <span class="option-row__label">{{ t('add.import.title') }}</span>
+        <v-icon :color="draft.color">
+          mdi-file-import
+        </v-icon>
+      </button>
+      <button
+        v-ripple
+        class="option-row option-row--action"
+        type="button"
+        @click.stop="exportSet('csv')"
+      >
+        <span class="option-row__label">{{ t('add.export.csv') }}</span>
+        <v-icon :color="draft.color">
+          mdi-file-delimited
+        </v-icon>
+      </button>
+      <button
+        v-ripple
+        class="option-row option-row--action"
+        type="button"
+        @click.stop="exportSet('json')"
+      >
+        <span class="option-row__label">{{ t('add.export.json') }}</span>
+        <v-icon :color="draft.color">
+          mdi-code-json
+        </v-icon>
+      </button>
+      <button
+        v-ripple
+        class="option-row option-row--action"
+        type="button"
+        @click.stop="openDialog('reorder')"
+      >
+        <span class="option-row__label">{{ t('add.reorder.title') }}</span>
+        <v-icon :color="draft.color">
+          mdi-sort
+        </v-icon>
+      </button>
+      <button
+        v-if="draft.docId"
+        v-ripple
+        class="option-row option-row--action"
+        :disabled="saving"
+        type="button"
+        @click.stop="duplicateSet"
+      >
+        <span class="option-row__label">{{ t('add.duplicate.action') }}</span>
+        <v-icon :color="draft.color">
+          mdi-content-copy
+        </v-icon>
+      </button>
     </option-panel>
+
+    <import-cards-dialog
+      v-model="importOpen"
+      :color="draft.color"
+      @import="onImport"
+    />
+    <reorder-cards-dialog
+      v-model="reorderOpen"
+      :cards="draft.cards"
+      :color="draft.color"
+      @reorder="(cards) => (draft.cards = cards)"
+    />
   </div>
 </template>
 
@@ -179,9 +248,14 @@ import BtnAction from '@/components/BtnAction.vue';
 import ColorPalette from '@/components/ColorPalette.vue';
 import ContainerEmpty from '@/components/ContainerEmpty.vue';
 import GroupCardFlash from '@/components/GroupCardFlash.vue';
+import ImportCardsDialog from '@/components/ImportCardsDialog.vue';
 import OptionPanel from '@/components/OptionPanel.vue';
+import ReorderCardsDialog from '@/components/ReorderCardsDialog.vue';
 import type { CardSet, FlashCard } from '@/types';
+import { exportFileName, setToCsv, setToJson } from '@/utils/cardExport';
 import { uid } from '@/utils/cardSets';
+import { duplicateCards } from '@/utils/duplicateCards';
+import { downloadText } from '@/utils/download';
 import { useLibraryStore } from '@/stores/library';
 import { useSessionStore } from '@/stores/session';
 
@@ -199,6 +273,8 @@ const loaded = ref(!isEdit);
 const titleEdit = ref(false);
 const focusedIndex = ref(0);
 const saving = ref(false);
+const importOpen = ref(false);
+const reorderOpen = ref(false);
 const optionsPanel = ref<InstanceType<typeof OptionPanel> | null>(null);
 const cardGroup = ref<InstanceType<typeof GroupCardFlash> | null>(null);
 
@@ -259,6 +335,63 @@ function addCard() {
   const index = focusedIndex.value;
   draft.value.cards.splice(index, 0, card);
   void nextTick(() => cardGroup.value?.scrollToCard(index));
+}
+
+function openDialog(which: 'import' | 'reorder') {
+  optionsPanel.value?.toggle(false);
+  (which === 'import' ? importOpen : reorderOpen).value = true;
+}
+
+function onImport(imported: { front: string; back: string }[]) {
+  const date = new Date().toISOString();
+  const cards = imported.map(({ front, back }): FlashCard => ({ id: uid(), front, back, learned: false, date }));
+  draft.value.cards.push(...cards);
+}
+
+function exportSet(format: 'csv' | 'json') {
+  optionsPanel.value?.toggle(false);
+  const name = exportFileName(draft.value.title, format);
+  if (format === 'csv') {
+    downloadText(name, setToCsv(draft.value), 'text/csv;charset=utf-8');
+  } else {
+    downloadText(name, setToJson(draft.value), 'application/json');
+  }
+}
+
+async function duplicateSet() {
+  optionsPanel.value?.toggle(false);
+  if (saving.value || !draft.value.docId) {
+    return;
+  }
+  if (needsSave.value && !(await commit())) {
+    return;
+  }
+  const source = draft.value;
+  const date = new Date();
+  const copy: CardSet = {
+    id: uid(),
+    title: t('add.duplicate.title', { title: source.title || t('add.set.notitle') }),
+    color: source.color,
+    date,
+    trashed: false,
+    fav: false,
+    labels: [...source.labels],
+    cards: duplicateCards(source.cards),
+  };
+  if (!session.online) {
+    session.showSnack(t('toast.offline-save'));
+    return;
+  }
+  saving.value = true;
+  let created: CardSet | null;
+  try {
+    created = await library.createSet(copy);
+  } finally {
+    saving.value = false;
+  }
+  if (created) {
+    await router.push(`/${created.id}/edit`);
+  }
 }
 
 let undoCardDelete: (() => void) | null = null;
