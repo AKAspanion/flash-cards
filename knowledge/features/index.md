@@ -10,6 +10,6 @@
 - [Profile and labels](profile-and-labels.md) - The profile screen — display name and photo URL, account dates, sign out — which is also where labels are created and renamed.
 - [Settings and about](settings-and-about.md) - Device-local settings (language, dark mode, set order, favourites on top) and the about screen with the app version and share links.
 - [Sign in and sign up](sign-in.md) - Email/password sign-in and sign-up, or Google sign-in by redirect, then a return to the page the user first asked for.
-- [Study a set](study-set.md) - Review a set card by card, flip to see the answer, mark cards learned; progress is saved when the user leaves.
+- [Study a set](study-set.md) - Review a set card by card with study options and keyboard shortcuts, flip to see the answer, mark cards learned, reset progress and see a session summary; progress is saved when the user leaves.
 
 <!-- GA-GENERATED:END -->

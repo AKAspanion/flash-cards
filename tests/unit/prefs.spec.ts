@@ -32,4 +32,20 @@ describe('prefs store', () => {
     expect(localStorage.getItem('dark')).toBe('true');
     expect(localStorage.getItem('card-set-order')).toBe('New first');
   });
+
+  it('defaults the study toggles to off', () => {
+    const prefs = usePrefsStore();
+    expect([prefs.studyShuffle, prefs.studyUnlearnedOnly, prefs.studyReverse]).toEqual([false, false, false]);
+  });
+
+  it('reads and persists the study toggles', async () => {
+    localStorage.setItem('study-shuffle', 'true');
+    const prefs = usePrefsStore();
+    expect(prefs.studyShuffle).toBe(true);
+    prefs.studyReverse = true;
+    prefs.studyUnlearnedOnly = true;
+    await nextTick();
+    expect(localStorage.getItem('study-reverse')).toBe('true');
+    expect(localStorage.getItem('study-unlearned-only')).toBe('true');
+  });
 });

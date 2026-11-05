@@ -22,7 +22,7 @@ verified: human:panditankit1995@gmail.com
 ## Folder layout
 
 - `src/views/` screens, `src/components/` reusable pieces, `src/stores/` Pinia state, `src/services/` the
-  Firebase boundary, `src/utils/` pure functions, `src/plugins/` Vuetify and i18n setup, `src/types.ts` the
+  Firebase boundary, `src/utils/` pure functions, `src/composables/` Vue composables that wrap browser events or reactive logic (`useStudyShortcuts.ts`), `src/plugins/` Vuetify and i18n setup, `src/types.ts` the
   shared types. Import with the `@/` alias (`vite.config.ts`).
 - Only `src/services/firebase.ts` calls Firebase; views and components go through the stores.
 - Cloud Functions live in `functions/src/`. Logic is kept free of SDK imports so the root unit tests can run it
@@ -67,6 +67,7 @@ command.
 
 ## History
 
+- 2026-11-05: no composables folder; now `src/composables/` holds Vue composables, because `useStudyShortcuts` is neither a store nor a pure function.
 - 2026-11-04: commands ran with npm (`package-lock.json`); now pnpm (`pnpm-lock.yaml`), as the developer switched. See [pnpm](../decisions/pnpm-package-manager.md).
 - 2026-11-03: branch names had no convention (mostly `claude/…`); now `<type>/<topic>`, as the developer set, so the history no longer reflects the rule.
 

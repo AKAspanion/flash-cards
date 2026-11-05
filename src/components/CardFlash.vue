@@ -142,7 +142,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify';
 import { useI18n } from 'vue-i18n';
 import type { FlashCard, Label } from '@/types';
@@ -157,8 +157,10 @@ const props = withDefaults(
     browse?: boolean;
     number: number;
     disabled?: boolean;
+    /** Starts the card on its back face; the front text still sits on the front face. */
+    reverse?: boolean;
   }>(),
-  { color: '', labels: () => [], browse: false, disabled: false },
+  { color: '', labels: () => [], browse: false, disabled: false, reverse: false },
 );
 const emit = defineEmits<{
   'update:modelValue': [card: FlashCard];
@@ -170,7 +172,7 @@ const { t } = useI18n();
 const { smAndUp } = useDisplay();
 const session = useSessionStore();
 
-const flipped = ref(false);
+const flipped = ref(props.reverse);
 const editing = ref(false);
 const textarea = ref<{ focus: () => void } | null>(null);
 const cardColor = computed(() => props.color || '#E91E63');
@@ -194,6 +196,14 @@ function toggleLearned() {
   emit('check', learned);
 }
 
+watch(
+  () => props.reverse,
+  (reverse) => {
+    editing.value = false;
+    flipped.value = reverse;
+  },
+);
+
 function flip() {
   // Review mode: peeking at the answer marks the card as not yet learned.
   if (props.browse && session.online && props.modelValue.learned) {
@@ -202,6 +212,8 @@ function flip() {
   editing.value = false;
   flipped.value = !flipped.value;
 }
+
+defineExpose({ flip });
 </script>
 
 <style scoped>

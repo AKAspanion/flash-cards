@@ -32,6 +32,7 @@ see [original app compatibility](../decisions/original-app-compatibility.md).
 
 ## History
 
+- 2026-11-05: `CardSet` gained an optional `studiedAt`. See [flash-card-sets](flash-card-sets.md).
 - 2026-11-04: account deletion made the owned-collection list explicit; the model itself is unchanged.
 - 2026-11-03: whether a label could be deleted, leaving its id on sets, was open; now labels cannot be deleted. See [Labels cannot be deleted](../decisions/labels-cannot-be-deleted.md).
 

@@ -32,7 +32,7 @@ None: the policy's `run.checkpoints` is `none`. Task 2 is tagged `security`; add
 
 **Files:**
 - Modify: `package.json`
-- Modify: `package-lock.json`
+- Modify: `pnpm-lock.yaml`
 - Modify: `src/types.ts` (`CardSet`)
 - Modify: `src/services/cardSetMapper.ts`
 - Modify: `src/locales/en.json`
@@ -55,7 +55,7 @@ interface CardSet { speech?: SpeechLanguages }
 // cardSetToDoc writes `speech` only when set.speech is defined, and never writes an undefined value inside it.
 ```
 
-Dependencies: `markdown-it` `^14` and `dompurify` `^3` in `dependencies`; `@types/markdown-it` `^14` in `devDependencies`; `package-lock.json` from `npm install`.
+Dependencies: `markdown-it` `^14` and `dompurify` `^3` in `dependencies`; `@types/markdown-it` `^14` in `devDependencies`; `pnpm-lock.yaml` from `pnpm add`.
 
 Rules: `firestore.rules` needs no change. `validSet()` checks only `cards` and `labels`, so a set with `speech` is already accepted. The rules test pins that.
 
@@ -93,8 +93,8 @@ New locale keys, en copy (add every one to `hi.json` too):
 
 - [ ] **Step 1: Add the dependencies**
 
-Run: `npm install markdown-it@^14 dompurify@^3 && npm install -D @types/markdown-it@^14`
-Expected: `package.json` and `package-lock.json` change; `npm audit --omit=dev --audit-level=moderate` reports no new advisories
+Run: `pnpm add markdown-it@^14 dompurify@^3 && pnpm add -D @types/markdown-it@^14`
+Expected: `package.json` and `pnpm-lock.yaml` change; `pnpm audit --prod --audit-level moderate` reports no new advisories
 
 - [ ] **Step 2: Write the failing tests** for each Acceptance case, in `tests/unit/cardSetMapper.spec.ts` and `tests/unit/firestore.rules.spec.ts`
 
@@ -118,7 +118,7 @@ Expected: PASS, including the new `speech` cases
 - [ ] **Step 7: Commit**
 
 ```bash
-git add package.json package-lock.json src/types.ts src/services/cardSetMapper.ts src/locales/en.json src/locales/hi.json tests/unit/cardSetMapper.spec.ts tests/unit/firestore.rules.spec.ts
+git add package.json pnpm-lock.yaml src/types.ts src/services/cardSetMapper.ts src/locales/en.json src/locales/hi.json tests/unit/cardSetMapper.spec.ts tests/unit/firestore.rules.spec.ts
 git commit -m "feat(cards): add Markdown dependencies and the read-aloud language field"
 ```
 

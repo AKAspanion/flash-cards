@@ -35,6 +35,8 @@ function parseCards(raw: unknown): FlashCard[] {
   return list
     .filter((card): card is Record<string, unknown> => !!card && typeof card === 'object')
     .map((card, index) => ({
+      // Keep every stored key, including ones a newer version wrote.
+      ...card,
       id: typeof card.id === 'string' ? card.id : `card-${index}`,
       front: typeof card.front === 'string' ? card.front : '',
       back: typeof card.back === 'string' ? card.back : '',
@@ -43,7 +45,14 @@ function parseCards(raw: unknown): FlashCard[] {
     }));
 }
 
+function toOptionalDate(value: unknown): Date | undefined {
+  const isTimestamp = value instanceof Timestamp;
+  const hasSeconds = !!value && typeof value === 'object' && typeof (value as { seconds?: unknown }).seconds === 'number';
+  return isTimestamp || hasSeconds ? toDate(value) : undefined;
+}
+
 export function cardSetFromDoc(docId: string, data: DocumentData): CardSet {
+  const studiedAt = toOptionalDate(data.studiedAt);
   return {
     docId,
     id: typeof data.id === 'string' && data.id ? data.id : docId,
@@ -54,6 +63,7 @@ export function cardSetFromDoc(docId: string, data: DocumentData): CardSet {
     fav: data.fav === true,
     labels: Array.isArray(data.labels) ? data.labels.filter((l: unknown) => typeof l === 'string') : [],
     cards: parseCards(data.cards),
+    ...(studiedAt ? { studiedAt } : {}),
   };
 }
 
@@ -68,6 +78,8 @@ export function cardSetToDoc(set: CardSet, uid: string): DocumentData {
     fav: set.fav,
     labels: set.labels,
     cards: JSON.stringify(set.cards),
+    // Firestore rejects undefined values, so the key is written only when set.
+    ...(set.studiedAt ? { studiedAt: Timestamp.fromDate(set.studiedAt) } : {}),
   };
 }
 

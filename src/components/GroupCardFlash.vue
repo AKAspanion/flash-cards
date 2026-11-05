@@ -17,7 +17,9 @@
         :disabled="disabled"
         :labels="labels"
         :model-value="card"
+        :ref="(el) => setCardRef(el, index)"
         :number="index + 1"
+        :reverse="reverse"
         @check="onCheck"
         @delete="onDelete"
         @update:model-value="onUpdate"
@@ -40,8 +42,9 @@ const props = withDefaults(
     labels?: Label[];
     browse?: boolean;
     disabled?: boolean;
+    reverse?: boolean;
   }>(),
-  { color: '', labels: () => [], browse: false, disabled: false },
+  { color: '', labels: () => [], browse: false, disabled: false, reverse: false },
 );
 const emit = defineEmits<{
   'update:modelValue': [cards: FlashCard[]];
@@ -54,6 +57,13 @@ const container = ref<HTMLElement | null>(null);
 const itemWidth = computed(() => (xs.value ? '82.5vw' : '70.5vw'));
 let wheelLocked = false;
 let focused = 0;
+let pendingTarget: number | null = null;
+let pendingTimer: ReturnType<typeof setTimeout> | undefined;
+const cardRefs: Array<{ flip: () => void } | null> = [];
+
+function setCardRef(el: unknown, index: number) {
+  cardRefs[index] = (el as { flip: () => void } | null) ?? null;
+}
 
 function itemSize(): number {
   const item = container.value?.querySelector<HTMLElement>('.card-slider__item');
@@ -76,9 +86,59 @@ function scrollToCard(index: number) {
   el.scrollTo({ left: el.scrollLeft + rect.left - box.left - (box.width - rect.width) / 2, behavior: 'smooth' });
 }
 
+/**
+ * Moves focus to `index` at once, so a second call before the scroll lands acts on the new card,
+ * then scrolls there. Scroll events are ignored until the scroll reaches `index` (or a timeout).
+ */
+function focusCard(index: number) {
+  const last = props.modelValue.length - 1;
+  if (last < 0) {
+    return;
+  }
+  const target = Math.min(Math.max(Math.trunc(index) || 0, 0), last);
+  pendingTarget = target;
+  if (pendingTimer) {
+    clearTimeout(pendingTimer);
+  }
+  pendingTimer = setTimeout(() => {
+    pendingTarget = null;
+  }, 1000);
+  if (target !== focused) {
+    focused = target;
+    emit('focused', target);
+  }
+  scrollToCard(target);
+}
+
+function next() {
+  if (focused < props.modelValue.length - 1) {
+    focusCard(focused + 1);
+  }
+}
+
+function prev() {
+  if (focused > 0) {
+    focusCard(focused - 1);
+  }
+}
+
+function goTo(index: number) {
+  focusCard(index);
+}
+
+function flipFocused() {
+  cardRefs[focused]?.flip();
+}
+
 function updateFocused() {
   const size = itemSize();
   const index = size && container.value ? Math.round(container.value.scrollLeft / size) : 0;
+  if (pendingTarget !== null) {
+    if (index !== pendingTarget) {
+      return;
+    }
+    pendingTarget = null;
+  }
   if (index !== focused) {
     focused = index;
     emit('focused', index);
@@ -127,10 +187,11 @@ onMounted(() => {
   container.value?.addEventListener('wheel', onWheel, { passive: false });
 });
 onBeforeUnmount(() => {
+  clearTimeout(pendingTimer);
   container.value?.removeEventListener('wheel', onWheel);
 });
 
-defineExpose({ scrollToCard });
+defineExpose({ scrollToCard, next, prev, goTo, flipFocused });
 </script>
 
 <style scoped>

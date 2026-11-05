@@ -9,6 +9,9 @@ const KEYS = {
   dark: 'dark',
   favOnTop: 'fav-on-top',
   setOrder: 'card-set-order',
+  studyShuffle: 'study-shuffle',
+  studyUnlearnedOnly: 'study-unlearned-only',
+  studyReverse: 'study-reverse',
 } as const;
 
 export type Lang = 'en' | 'hi';
@@ -37,11 +40,17 @@ export const usePrefsStore = defineStore('prefs', () => {
   const favOnTop = ref(read(KEYS.favOnTop) === 'true');
   const storedOrder = read(KEYS.setOrder);
   const setOrder = ref<SetOrder>(isSetOrder(storedOrder) ? storedOrder : 'Alphabetically');
+  const studyShuffle = ref(read(KEYS.studyShuffle) === 'true');
+  const studyUnlearnedOnly = ref(read(KEYS.studyUnlearnedOnly) === 'true');
+  const studyReverse = ref(read(KEYS.studyReverse) === 'true');
 
   persist(lang, KEYS.lang, String);
   persist(dark, KEYS.dark, String);
   persist(favOnTop, KEYS.favOnTop, String);
   persist(setOrder, KEYS.setOrder, String);
+  persist(studyShuffle, KEYS.studyShuffle, String);
+  persist(studyUnlearnedOnly, KEYS.studyUnlearnedOnly, String);
+  persist(studyReverse, KEYS.studyReverse, String);
 
-  return { lang, dark, favOnTop, setOrder };
+  return { lang, dark, favOnTop, setOrder, studyShuffle, studyUnlearnedOnly, studyReverse };
 });

@@ -184,6 +184,11 @@ git commit -m "feat(offline): study, edit and create sets without a connection"
 
 ### Task 3: Sign-out clears the device cache
 
+> Amended 2026-11-05 (spec 10.5, 10.6): Delete account is online-only too. Offline, the delete-account dialog shows
+> rule 2.10's message and deletes nothing. After a successful deletion, it clears the cache the way sign-out does
+> (`terminate`, `clearIndexedDbPersistence`, then a full page load). Add `src/components/DialogDeleteAccount.vue` and
+> `deleteAccount` in `src/services/firebase.ts` to this task's files, with an acceptance case for each.
+
 **Files:**
 - Modify: `src/services/firebase.ts`
 - Modify: `src/views/Profile.vue`
