@@ -33,7 +33,11 @@ verified: human:panditankit1995@gmail.com
 - Missing config: `FirebaseConfigError` is shown in the snack bar by the router guard.
 - Slow network: `session.track` shows a warning after `SLOW_NETWORK_MS`.
 - Failed loads or writes: the library store shows a translated error and leaves the in-memory list unchanged.
-- Offline: saves from the editor and study screens are refused with a snack; nothing is queued.
+- Offline: Firestore uses a persistent IndexedDB cache (memory where unavailable), so saves count as done once cached
+  and sync later; delete forever, sign-in, profile changes, Delete account, sharing and restore refuse offline
+  ([offline study](../features/offline-study.md)). Sign-out waits at most `SIGN_OUT_DEADLINE_MS` for unsynced writes.
+- Two collections are written only after a rules deploy: `user-stats` and `shared-sets`
+  ([manual deploys](../decisions/manual-rules-and-functions-deploy.md)).
 - Google sign-in fails on a domain not listed under Authorized domains in Firebase Auth, or whose `/__/auth/handler`
   isn't a redirect URI on the OAuth web client (README, "Domains"; [decision](../decisions/google-sign-in-redirect.md)).
 - Account deletion batches Firestore deletes of 500 per commit, then deletes the Auth user
@@ -41,6 +45,7 @@ verified: human:panditankit1995@gmail.com
 
 ## History
 
+- 2026-11-05: offline saves were refused and nothing was queued; now a persistent cache keeps them and they sync later, because of the offline-study plan. See [offline study](../features/offline-study.md).
 - 2026-11-05: the emulators were always reached at `127.0.0.1`; now at the page's own loopback hostname, because Google sign-in on the Auth emulator failed silently from `localhost`.
 - 2026-11-04: Google sign-in failed on unlisted domains; now it also needs the redirect URI, because sign-in is a redirect.
 
@@ -48,6 +53,7 @@ verified: human:panditankit1995@gmail.com
 
 - `src/services/firebase.ts`
 - `src/services/emulatorHost.ts`
+- `src/services/localCache.ts`
 - `dev-ports.ts`
 - `src/stores/session.ts`
 - `src/stores/library.ts`

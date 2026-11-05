@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { setCard, signUp } from './helpers';
+import { makeSetTooBigToSave } from './size-limit-helpers';
 import { DEV_PORTS } from '../../dev-ports';
 
 const AUTH = `http://127.0.0.1:${DEV_PORTS.auth}`;
@@ -308,8 +309,10 @@ test('the study options and the summary have no accessibility violations', async
   await expectNoA11yViolations(page);
 });
 
-test('a failed save on leave offers to discard and then leaves', async ({ page, context }) => {
+test('a failed save on leave offers to discard and then leaves', async ({ page }) => {
   await seedSet(page, email, 'Spanish');
+  // Offline saves land on the device, so the failure is the size limit instead.
+  await makeSetTooBigToSave(page, 'Spanish');
   await openSet(page, 'Spanish');
   await page.keyboard.press('k');
   await expect(count(page)).toHaveText('1/3');
@@ -319,7 +322,6 @@ test('a failed save on leave offers to discard and then leaves', async ({ page, 
     dialogs.push(d.message());
     void d.accept();
   });
-  await context.setOffline(true);
   await page.getByRole('button', { name: 'Back' }).first().click();
   await expect(page).toHaveURL(/\/home$/);
   expect(dialogs).toEqual(['Your progress could not be saved. Leave anyway and lose it?']);

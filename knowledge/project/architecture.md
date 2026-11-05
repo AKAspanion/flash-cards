@@ -34,13 +34,16 @@ a Cloud Billing budget publishes to. The web app has no jobs or queues.
 2. Before every navigation, `router.beforeEach` in `src/router/index.ts` waits for Firebase to restore the
    session (`getAuthUser`), stores it in the session store, starts loading the library, and redirects with
    `authRedirect`. A watcher (`watchAuthChanges`) handles sign-in or sign-out that happens outside navigation,
-   such as in another tab, by resetting and reloading the library.
+   such as in another tab, by resetting and reloading the library; a tab that sees the user signed out elsewhere loads
+   `/login` as a new page, so its Firestore works again.
 3. `useLibraryStore` (`src/stores/library.ts`) loads all of the user's sets and labels in one go
    (`fetchCardSets`, `fetchLabels`) and keeps them in memory. Views read from it; filtering and sorting happen
    in the browser (`filterAndSortSets` in `src/utils/cardSets.ts`).
 4. Writes go through the store's actions (`createSet`, `saveSet`, `deleteSet`, `createLabel`,
-   `renameLabel`), which call the service, then update the in-memory list only after Firestore accepted the
-   write. On failure they show an error snack and resolve to `null` or `false`.
+   `renameLabel`, `shareSet`, `unshareSet`), which call the service, then update the in-memory list once the write
+   counts as done: Firestore accepted it, or, offline, it is in the device cache. Firestore runs on a persistent
+   IndexedDB cache ([offline study](../features/offline-study.md)). On failure they show an error snack and resolve to
+   `null` or `false`.
 5. `src/services/cardSetMapper.ts` converts between the app's `CardSet` and the stored document. See
    [data model](../data/model.md).
 6. `useSessionStore` (`src/stores/session.ts`) holds the user, the busy counter (`track`), online state, the
@@ -53,6 +56,19 @@ a Cloud Billing budget publishes to. The web app has no jobs or queues.
    covered ([size decision](../decisions/set-size-limit-900000-bytes.md)); `downloadText()` in `src/utils/download.ts`
    saves a file for exports, backups and any later feature that downloads.
 
+9. `useStatsStore` (`src/stores/stats.ts`) holds the daily goal and review counts, loaded once per user and reset on
+   sign-out or a user switch ([progress and habits](../features/progress-habits.md)). Card text is turned into HTML
+   only by `renderCardText` in `src/utils/markdown.ts`, which depends on `markdown-it` and `dompurify`
+   ([decision](../decisions/card-text-rendered-only-through-sanitizer.md)). `/s/:shareId` is a public route that reads
+   one shared copy without signing in ([sharing](../features/sharing.md)).
+
+Firestore rules allow only the owner's own documents, with one exception: anyone may `get` a shared copy
+([roles](../security/roles.md)).
+
+## History
+
+- 2026-11-05: writes were awaited from the server and the rules had no public path; now writes count as done once in a persistent device cache, a stats store and a markdown renderer exist, and a shared copy is public by id, because of the progress-habits, rich-cards, offline-study and sharing plans.
+
 ## Sources
 
 - `src/main.ts`
@@ -64,6 +80,9 @@ a Cloud Billing budget publishes to. The web app has no jobs or queues.
 - `src/stores/library.ts`
 - `src/stores/session.ts`
 - `src/stores/prefs.ts`
+- `src/stores/stats.ts`
+- `src/utils/markdown.ts`
+- `src/views/Shared.vue`
 - `src/utils/cardSets.ts`
 - `src/utils/studyQueue.ts`
 - `src/utils/setSize.ts`

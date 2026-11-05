@@ -2,6 +2,38 @@ import { readFileSync } from 'node:fs';
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { createSet, setCard, signUp } from './helpers';
+import { signedInUid } from './stats-helpers';
+import { DEV_PORTS } from '../../dev-ports';
+
+const DOCS = `http://127.0.0.1:${DEV_PORTS.firestore}/v1/projects/demo-flash-cards/databases/(default)/documents`;
+// The emulator owner token bypasses the security rules.
+const OWNER = { Authorization: 'Bearer owner' };
+
+/**
+ * Writes a set straight into the emulator whose cards are just over the app's 900,000-byte limit,
+ * so the app shows it but refuses any new set made from it.
+ */
+async function seedOversizedSet(page: Page, title: string) {
+  const uid = await signedInUid(page);
+  const cards = [{ id: 'card-1', front: 'word '.repeat(181_000), back: 'back', learned: false, date: '2026-01-01T00:00:00.000Z' }];
+  const response = await page.request.post(`${DOCS}/flash-card-sets`, {
+    headers: OWNER,
+    data: {
+      fields: {
+        id: { stringValue: `seed-${Date.now()}` },
+        uid: { stringValue: uid },
+        title: { stringValue: title },
+        color: { stringValue: '#E91E63' },
+        date: { timestampValue: new Date().toISOString() },
+        trashed: { booleanValue: false },
+        fav: { booleanValue: false },
+        labels: { arrayValue: {} },
+        cards: { stringValue: JSON.stringify(cards) },
+      },
+    },
+  });
+  expect(response.ok()).toBe(true);
+}
 
 test.beforeEach(async ({ page }) => {
   await signUp(page);
@@ -238,15 +270,16 @@ test.describe('duplicate', () => {
   });
 
   test('a failed copy leaves the editor on the original set', async ({ page }) => {
-    await createSet(page, 'Spanish verbs');
-    await editSet(page, 'Spanish verbs');
+    // Offline, a copy now saves on the device (offline study), so the copy is made to fail on size instead.
+    await seedOversizedSet(page, 'Huge set');
+    await page.goto('/home');
+    await editSet(page, 'Huge set');
     const url = page.url();
-    await page.context().setOffline(true);
     await openOptions(page);
     await page.getByRole('button', { name: 'Duplicate set' }).click();
-    await expect(page.getByText("You're offline. Connect to the internet to save.")).toBeVisible();
+    await expect(page.getByText('This set is too big to save. Split it into smaller sets.')).toBeVisible();
     expect(page.url()).toBe(url);
-    await page.context().setOffline(false);
+    await expect(page.getByRole('button', { name: 'Huge set', exact: true })).toBeVisible();
   });
 });
 

@@ -2,6 +2,8 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: the project's workflow policy names the executor (`run.executor`): ga:implement-with-subagents by default, or ga:implement. Follow the policy and this plan's Checkpoints. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+**Status:** complete (built 2026-11-05 on feat/usability-plans-5-9)
+
 **Goal:** Give people a reason to come back daily: count cards reviewed per day, show a streak and a daily goal
 on Home, and add a Stats page with the last 30 days.
 
@@ -29,6 +31,7 @@ spec's roadmap orders them.
 - 2.4: "Every screen keeps working at 390 px wide and passes the existing axe scan in `tests/e2e/a11y.spec.ts`."
 - 2.9: "Every string with a count uses vue-i18n plural forms, singular | plural."
 - 2.7: Unit tests are Vitest in `tests/unit/<name>.spec.ts`; e2e tests are Playwright in `tests/e2e/<flow>.spec.ts`, run with `npm run test:e2e`; rules tests go in `tests/unit/firestore.rules.spec.ts`.
+- Amended 2026-11-05: e2e tests reach the emulators through `DEV_PORTS` (`dev-ports.ts`), never a literal port. The spaced-repetition plan is merged: `View.vue` rates cards (buttons and 1–4) and re-queues Again cards, `/due` (`src/views/Due.vue`) exists, and both screens save on leave and set `session.unsavedChanges`. Home already shows the due banner and an AdSense banner; the streak and today lines go with the due banner, leaving the ad alone.
 - 2.8: "A `firestore.rules` change only takes effect once someone runs `deploy.yml` by hand with **deploy_rules** ticked." Task 5's last step says so.
 - Days are the device's local date from `localDate()` (existing, from the study-modes plan). E2E tests that depend on the date fix the browser clock with Playwright's `page.clock`.
 
@@ -127,31 +130,31 @@ export function saveDailyGoal(goal: number): Promise<void>;           // merges 
 - Given a `days` object whose own keys include `__proto__` and `constructor`, then the result's `days` has neither key and `Object.getPrototypeOf(result.days)` is still `Object.prototype`.
 - The existing `tests/unit/locales.spec.ts` passes with the new keys in both files.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/firestore.rules.spec.ts` and `tests/unit/statsMapper.spec.ts`
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/firestore.rules.spec.ts` and `tests/unit/statsMapper.spec.ts`
 
-- [ ] **Step 2: Run the unit tests to verify they fail**
+- [x] **Step 2: Run the unit tests to verify they fail**
 
 Run: `npm test`
 Expected: the mapper cases FAIL on behaviour. Create `src/services/statsMapper.ts` exporting `statsFromDoc` first.
 
-- [ ] **Step 3: Run the rules tests to verify they fail**
+- [x] **Step 3: Run the rules tests to verify they fail**
 
 Run: `npm run test:rules`
 Expected: the new `user-stats` allow cases FAIL (the collection is closed today).
 
-- [ ] **Step 4: Write the minimal implementation** to the Interfaces (rules, types, mapper, the three API functions, both locale files), until they pass
+- [x] **Step 4: Write the minimal implementation** to the Interfaces (rules, types, mapper, the three API functions, both locale files), until they pass
 
-- [ ] **Step 5: Run the unit tests to verify they pass**
+- [x] **Step 5: Run the unit tests to verify they pass**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 6: Run the rules tests to verify they pass**
+- [x] **Step 6: Run the rules tests to verify they pass**
 
 Run: `npm run test:rules`
 Expected: PASS
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add firestore.rules src/types.ts src/services/statsMapper.ts src/services/firebase.ts src/locales/en.json src/locales/hi.json tests/unit/firestore.rules.spec.ts tests/unit/statsMapper.spec.ts
@@ -195,21 +198,21 @@ export function totalReviewed(days: Record<string, number>): number;
 - Given days `{ '2026-11-02': 5, '2026-10-04': 2, '2026-10-03': 9 }` and today `'2026-11-02'`, when `lastDays(days, today, 30)` runs, then it returns 30 entries from `'2026-10-04'` (count 2) to `'2026-11-02'` (count 5), with `'2026-10-03'` left out and other days at 0.
 - Given the same days, then `totalReviewed` is `16`.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/streaks.spec.ts`
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/streaks.spec.ts`
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm test`
 Expected: FAIL on the assertions. Create the module with its four signatures first.
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/utils/streaks.ts tests/unit/streaks.spec.ts
@@ -276,21 +279,21 @@ export const useStatsStore: () => StatsStore;
 - Given the same router setup, when the callback is called with a different user, then the stats store's `reset` runs before anything loads for the new user.
 - Given `setGoal(100)` succeeds, then `saveDailyGoal` was called with `100` and `goal` is `100`; `setGoal(30)` returns `false` without calling `saveDailyGoal`; a failing `setGoal(10)` keeps `goal` at `100`.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/stats.spec.ts` and `tests/unit/router.spec.ts`, mocking `@/services/firebase` as `tests/unit/library.spec.ts` does
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/stats.spec.ts` and `tests/unit/router.spec.ts`, mocking `@/services/firebase` as `tests/unit/library.spec.ts` does
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm test`
 Expected: FAIL on the assertions. Create the store with its returned names first.
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/stores/stats.ts src/router/index.ts tests/unit/stats.spec.ts tests/unit/router.spec.ts
@@ -318,7 +321,7 @@ export function seedUserStats(page: Page, data: Record<string, unknown>): Promis
 ```
 
 - The helpers find the account's uid from the Auth emulator's `accounts:lookup` for the test's email, then call
-  `http://127.0.0.1:8085/v1/projects/demo-flash-cards/databases/(default)/documents/user-stats/<uid>` with
+  `http://127.0.0.1:${DEV_PORTS.firestore}/v1/projects/demo-flash-cards/databases/(default)/documents/user-stats/<uid>` (ports from `dev-ports.ts`; the Auth lookup uses `DEV_PORTS.auth`) with
   `Authorization: Bearer owner`.
 - `View.vue` and `Due.vue` each keep a set of card ids reviewed on this visit to the screen: a card joins it when
   it is marked learned, marked not learned (tick/close, K, J) or rated (buttons or 1–4). Flipping alone does not
@@ -340,26 +343,26 @@ export function seedUserStats(page: Page, data: Record<string, unknown>): Promis
 - Given `seedUserStats(page, { uid: <uid>, days: {}, admin: true })` (an extra field, so the rules refuse every later write), when the person marks a card and goes Home, then the snack says "Couldn't update your stats. Your progress is saved." and, after a reload, the set card shows the new learned count.
 - Given the set save fails on leave (`context.setOffline(true)`) and the person discards, then after going back online `readUserStats` still shows the earlier count.
 
-- [ ] **Step 1: Write the e2e helpers and the failing tests** for each Acceptance case, in `tests/e2e/stats-helpers.ts` and `tests/e2e/review-counts.spec.ts`, using the account and set helpers in `tests/e2e/helpers.ts` and `page.clock`
+- [x] **Step 1: Write the e2e helpers and the failing tests** for each Acceptance case, in `tests/e2e/stats-helpers.ts` and `tests/e2e/review-counts.spec.ts`, using the account and set helpers in `tests/e2e/helpers.ts` and `page.clock`
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm run test:e2e`
 Expected: the new tests FAIL (nothing writes `user-stats`); existing suites pass.
 
-- [ ] **Step 3: Write the minimal implementation** in `View.vue` and `Due.vue` to the Interfaces, until they pass
+- [x] **Step 3: Write the minimal implementation** in `View.vue` and `Due.vue` to the Interfaces, until they pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm run test:e2e`
 Expected: PASS
 
-- [ ] **Step 5: Run the type check**
+- [x] **Step 5: Run the type check**
 
 Run: `npm run type-check`
 Expected: no errors
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/views/View.vue src/views/Due.vue tests/e2e/stats-helpers.ts tests/e2e/review-counts.spec.ts
@@ -431,48 +434,48 @@ git commit -m "feat(stats): count reviews on the review screens"
 - Given seeded stats with an extra field `admin: true` (the rules then refuse writes), when "Daily goal" is set to 100, then the select shows 20 again and the existing save error snack is shown.
 - Given Home with the streak shown, `/stats`, and Settings, when axe scans each at desktop and mobile widths, then there are no violations.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/router.spec.ts`, `tests/unit/Stats.spec.ts` and `tests/e2e/stats.spec.ts`
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/router.spec.ts`, `tests/unit/Stats.spec.ts` and `tests/e2e/stats.spec.ts`
 
-- [ ] **Step 2: Run the unit tests to verify they fail**
+- [x] **Step 2: Run the unit tests to verify they fail**
 
 Run: `npm test`
 Expected: the new router and Stats cases FAIL (`/stats` falls through to the catch-all; `Stats.vue` doesn't exist —
 create it as an empty component first so the failure is on behaviour).
 
-- [ ] **Step 3: Run the e2e tests to verify they fail**
+- [x] **Step 3: Run the e2e tests to verify they fail**
 
 Run: `npm run test:e2e`
 Expected: the new tests FAIL (no goal, streak, Stats page or goal setting).
 
-- [ ] **Step 4: Add the route and build `Stats.vue`** to the Interfaces
+- [x] **Step 4: Add the route and build `Stats.vue`** to the Interfaces
 
-- [ ] **Step 5: Add the streak, goal and Stats menu item to Home**
+- [x] **Step 5: Add the streak, goal and Stats menu item to Home**
 
-- [ ] **Step 6: Add the Daily goal row to Settings**, until the tests pass
+- [x] **Step 6: Add the Daily goal row to Settings**, until the tests pass
 
-- [ ] **Step 7: Run the unit tests to verify they pass**
+- [x] **Step 7: Run the unit tests to verify they pass**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 8: Run the e2e tests to verify they pass**
+- [x] **Step 8: Run the e2e tests to verify they pass**
 
 Run: `npm run test:e2e`
 Expected: PASS
 
-- [ ] **Step 9: Run the linter**
+- [x] **Step 9: Run the linter**
 
 Run: `npm run lint`
 Expected: no errors
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 
 ```bash
 git add src/views/Stats.vue src/router/index.ts src/views/Home.vue src/views/Settings.vue tests/unit/router.spec.ts tests/unit/Stats.spec.ts tests/e2e/stats.spec.ts
 git commit -m "feat(stats): show streak and goal on Home, add the Stats page and the daily goal setting"
 ```
 
-- [ ] **Step 11: Note the rules deploy in the PR description**
+- [x] **Step 11: Note the rules deploy in the PR description**
 
 The `user-stats` rules from Task 1 only take effect once someone runs `deploy.yml` by hand with **deploy_rules**
 ticked (spec 2.8). Until then, the live site refuses every stats write, and the snack from spec 8.7 shows after

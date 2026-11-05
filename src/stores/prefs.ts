@@ -2,6 +2,7 @@ import { ref, watch, type Ref } from 'vue';
 import { defineStore } from 'pinia';
 import type { SetOrder } from '@/types';
 import { isSetOrder } from '@/utils/cardSets';
+import { DEFAULT_REMINDER_TIME, isReminderTime } from '@/utils/ics';
 
 // Storage keys are the ones the original app used, so saved settings carry over.
 const KEYS = {
@@ -12,6 +13,7 @@ const KEYS = {
   studyShuffle: 'study-shuffle',
   studyUnlearnedOnly: 'study-unlearned-only',
   studyReverse: 'study-reverse',
+  reminderTime: 'reminder-time',
 } as const;
 
 export type Lang = 'en' | 'hi';
@@ -43,6 +45,8 @@ export const usePrefsStore = defineStore('prefs', () => {
   const studyShuffle = ref(read(KEYS.studyShuffle) === 'true');
   const studyUnlearnedOnly = ref(read(KEYS.studyUnlearnedOnly) === 'true');
   const studyReverse = ref(read(KEYS.studyReverse) === 'true');
+  const storedReminder = read(KEYS.reminderTime);
+  const reminderTime = ref(isReminderTime(storedReminder) ? storedReminder : DEFAULT_REMINDER_TIME);
 
   persist(lang, KEYS.lang, String);
   persist(dark, KEYS.dark, String);
@@ -51,6 +55,7 @@ export const usePrefsStore = defineStore('prefs', () => {
   persist(studyShuffle, KEYS.studyShuffle, String);
   persist(studyUnlearnedOnly, KEYS.studyUnlearnedOnly, String);
   persist(studyReverse, KEYS.studyReverse, String);
+  persist(reminderTime, KEYS.reminderTime, String);
 
-  return { lang, dark, favOnTop, setOrder, studyShuffle, studyUnlearnedOnly, studyReverse };
+  return { lang, dark, favOnTop, setOrder, studyShuffle, studyUnlearnedOnly, studyReverse, reminderTime };
 });

@@ -2,6 +2,8 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: the project's workflow policy names the executor (`run.executor`): ga:implement-with-subagents by default, or ga:implement. Follow the policy and this plan's Checkpoints. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+**Status:** complete (built 2026-11-05 on feat/usability-plans-5-9)
+
 **Goal:** Reviewing, editing, creating, favouriting and moving sets to the bin work with no connection and sync when it comes back.
 
 **Architecture:** Firestore gets its persistent IndexedDB cache (memory when IndexedDB is missing). Firestore applies a write to that cache when the call is made, but its promise only settles when the server answers. So offline, the library store counts the call itself as the save, updates its own state, and handles a later refusal in a `catch`. Online, saves still wait for the server, as they do today. New sets and labels get client-made document ids, so an offline creation has its id at once. Sign-out clears the cache, so the next person on the device can't read the last person's sets. Known limit (spec §10.7): on a connection that is up but not working, `navigator.onLine` is still true, so saves wait for the server as they do today and the existing slow-network snack shows after 8 seconds.
@@ -56,12 +58,14 @@ export function addCardSet(set: CardSet): PendingWrite;     // client-made id (d
 export function addLabel(label: string): PendingWrite;      // same
 // updateCardSet, deleteCardSet, renameLabel keep their Promise<void> signatures. Each one makes its
 // Firestore call before its first `await`, so the write is in the local cache once the call returns.
+// Amended 2026-11-05: so do addReviews and saveDailyGoal (progress-habits plan); stats.ts gets the same
+// `if (!session.online)` non-blocking path for recordReviews (and setGoal), with the same catch.
 
 // src/stores/session.ts — added
 function notifyOfflineSave(): void; // shows toast.offline-saved once per offline period
 ```
 
-Firestore is created with `initializeFirestore(app, { localCache })`: `persistentLocalCache({ tabManager: persistentMultipleTabManager() })` when `chooseLocalCache(globalThis)` says `persistent`, otherwise `memoryLocalCache()`. It is not created with `getFirestore`. The emulator connection stays as it is.
+Firestore is created with `initializeFirestore(app, { localCache })` (replacing `getFirestore(app)` in `src/services/firebase.ts`; the `DEV_PORTS` emulator connection lines stay): `persistentLocalCache({ tabManager: persistentMultipleTabManager() })` when `chooseLocalCache(globalThis)` says `persistent`, otherwise `memoryLocalCache()`. It is not created with `getFirestore`. The emulator connection stays as it is.
 
 Library store write rule: when `session.online` is true, a write is awaited through `session.track` exactly as today. When it is false, the store makes the api call, does not await it, updates `sets`/`labels` at once, calls `session.notifyOfflineSave()`, and resolves as if the write succeeded. It also attaches a `catch` to the call's promise (or to `committed`) that calls `session.showError(err, 'toast.error.save')` and then `load(true)`, so the screen goes back to what the server holds. `deleteSet` is online-only: offline, it shows `toast.offline-delete` and resolves `false` without calling the api. `recordReviews` in the stats store follows the same rule as a save.
 
@@ -75,7 +79,7 @@ New locale keys (all copy for this plan, so Tasks 2 and 3 don't touch the locale
 - §10.2: "Creating and renaming labels work offline too."
 - §10.3: "Offline, a save counts as done once it is in the local cache; the app does not wait for the server. The first offline save after going offline shows: "Saved on this device. It will sync when you're back online.""
 - §10.4: "A write the server later refuses shows the existing save error snack."
-- §10.5: "Deleting forever from the bin, sign-in, profile changes, sharing (plan 8) and restore from backup stay online-only. Offline, delete forever says "You're offline. Connect to the internet to delete this set."; the others use rule 2.10's message."
+- §10.5: "Deleting forever from the bin, sign-in, profile changes, deleting the account, sharing (plan 8) and restore from backup stay online-only. Offline, delete forever says "You're offline. Connect to the internet to delete this set."; the others use rule 2.10's message."
 - §10.7: "Known limit: on a connection that is up but not working, the app thinks it is online, and saves wait for the server as they do today. The existing slow-network snack still shows after 8 seconds."
 
 **Tags:** `failure-paths`, `security` (stores the signed-in user's sets on the device in IndexedDB)
@@ -94,26 +98,26 @@ New locale keys (all copy for this plan, so Tasks 2 and 3 don't touch the locale
 - Given offline, when `recordReviews(5)` is called and the stats write never settles, then it resolves `true` and `todayCount` has gone up by 5.
 - Given the locales test, `toast.offline-saved`, `toast.offline-delete` and `toast.offline-signout` exist in both `en.json` and `hi.json`.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/localCache.spec.ts`, `tests/unit/session.spec.ts`, `tests/unit/library.spec.ts` and `tests/unit/stats.spec.ts`. In `library.spec.ts`, update the existing `addCardSet` mocks to the new `PendingWrite` return shape.
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/localCache.spec.ts`, `tests/unit/session.spec.ts`, `tests/unit/library.spec.ts` and `tests/unit/stats.spec.ts`. In `library.spec.ts`, update the existing `addCardSet` mocks to the new `PendingWrite` return shape.
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm test`
 Expected: FAIL on the assertions. A "not defined" or "module not found" failure proves nothing: create `chooseLocalCache` and `notifyOfflineSave` with their real signatures first, so the tests fail on behaviour
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, until they pass. Add the three locale keys to both locale files.
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, until they pass. Add the three locale keys to both locale files.
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 5: Run the type check**
+- [x] **Step 5: Run the type check**
 
 Run: `npm run type-check`
 Expected: PASS (every caller of `addCardSet` and `addLabel` uses the new `PendingWrite` shape)
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/services/localCache.ts src/services/firebase.ts src/stores/session.ts src/stores/library.ts src/stores/stats.ts src/locales/en.json src/locales/hi.json tests/unit/localCache.spec.ts tests/unit/session.spec.ts tests/unit/library.spec.ts tests/unit/stats.spec.ts
@@ -128,19 +132,18 @@ git commit -m "feat(offline): persistent Firestore cache and non-blocking offlin
 - Modify: `src/views/Add.vue`
 - Modify: `src/views/View.vue`
 - Modify: `src/views/Due.vue` (existing, from the spaced-repetition plan)
-- Modify: `src/views/Settings.vue`
 - Test: `tests/e2e/offline.spec.ts`
 
 **Interfaces:**
 - Consumes: the library store's offline write rule and `toast.offline-saved` (Task 1); existing `useSessionStore().online`; existing e2e helpers `signUp`, `createSet`, `setCard` (`tests/e2e/helpers.ts`).
 - Produces: nothing new for other tasks.
 
-Remove every `session.online` check in `src/` that disables or blocks reviewing, editing, creating, favouriting or moving a set to the bin: the learn/unlearn and delete-card buttons and the peek rule in `CardFlash.vue` (if the spaced-repetition plan left one), the edit chip and swipe in `CardFlashSet.vue`, the offline refusal in `Add.vue`'s `persist`, and the `!session.online` early return in `View.vue`'s `saveProgress` and in the `/due` view's save. `App.vue`'s offline banner stays. "Restore from backup" in `Settings.vue` (existing, from the faster-authoring plan) refuses offline with `toast.offline-save` (rule 2.10); add that check if that plan left it out. Deleting forever is already refused by the store (Task 1), so `Bin.vue` doesn't change.
+Remove every `session.online` check in `src/` that disables or blocks reviewing, editing, creating, favouriting or moving a set to the bin: the learn/unlearn and delete-card buttons in `CardFlash.vue` (there is no peek rule any more), the edit chip and `swipeDisabled` in `CardFlashSet.vue`, the offline refusals in `Add.vue`'s `persist` and `duplicateSet`, and in `View.vue` the Reset button's `:disabled`, the `!session.online` returns in `mark`, `onRate` and `saveProgress`, and in `Due.vue`'s `saveTouched` (amended 2026-11-05 from the current code; grep `session.online` in src/ for the full list). `App.vue`'s offline banner stays. "Restore from backup" in `Settings.vue` (existing, from the faster-authoring plan) already refuses offline with `toast.offline-save` (rule 2.10) and stays as it is. Deleting forever is already refused by the store (Task 1), so `Bin.vue` doesn't change.
 
 **Spec:**
 - §10.2: "Reviewing, editing, creating, favouriting and moving sets to the bin work offline and sync when the connection is back." Creating and renaming labels work offline too. The controls that are disabled offline today are enabled.
 - §10.3: "The first offline save after going offline shows: "Saved on this device. It will sync when you're back online.""
-- §10.5: "Deleting forever from the bin, sign-in, profile changes, sharing (plan 8) and restore from backup stay online-only. Offline, delete forever says "You're offline. Connect to the internet to delete this set."; the others use rule 2.10's message."
+- §10.5: "Deleting forever from the bin, sign-in, profile changes, deleting the account, sharing (plan 8) and restore from backup stay online-only. Offline, delete forever says "You're offline. Connect to the internet to delete this set."; the others use rule 2.10's message."
 
 **Tags:** `screen`, `failure-paths`, `security` (removes guards on writes; online-only actions must stay refused)
 
@@ -156,29 +159,29 @@ Each case loads the app online, opens the pages it needs once online (so their l
 - Given offline, when the person picks a backup file in Settings → "Restore from backup", then the snack says "You're offline. Connect to the internet to save." and no set is added.
 - Given offline, when the person marks two cards learned in one offline period, then the "Saved on this device…" snack appears once, not twice.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/e2e/offline.spec.ts`
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/e2e/offline.spec.ts`
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm run test:e2e`
 Expected: FAIL on the assertions (disabled controls, the old "You're offline. Connect to the internet to save." refusal on save)
 
-- [ ] **Step 3: Write the minimal implementation**: remove the gates listed above, until the tests pass
+- [x] **Step 3: Write the minimal implementation**: remove the gates listed above, until the tests pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm run test:e2e`
 Expected: PASS, the existing `a11y.spec.ts` included
 
-- [ ] **Step 5: Run the unit tests**
+- [x] **Step 5: Run the unit tests**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
-git add src/components/CardFlash.vue src/components/CardFlashSet.vue src/views/Add.vue src/views/View.vue src/views/Due.vue src/views/Settings.vue tests/e2e/offline.spec.ts
+git add src/components/CardFlash.vue src/components/CardFlashSet.vue src/views/Add.vue src/views/View.vue src/views/Due.vue tests/e2e/offline.spec.ts
 git commit -m "feat(offline): study, edit and create sets without a connection"
 ```
 
@@ -188,10 +191,16 @@ git commit -m "feat(offline): study, edit and create sets without a connection"
 > rule 2.10's message and deletes nothing. After a successful deletion, it clears the cache the way sign-out does
 > (`terminate`, `clearIndexedDbPersistence`, then a full page load). Add `src/components/DialogDeleteAccount.vue` and
 > `deleteAccount` in `src/services/firebase.ts` to this task's files, with an acceptance case for each.
+> The flow today: `DialogDeleteAccount.vue` → `useAccountStore().deleteAccount` (`src/stores/account.ts`) →
+> `firebase.deleteAccount`; the dialog relies on the auth listener in `src/router/index.ts` (`router.replace('/login')`)
+> to leave. Add `src/stores/account.ts` to the files; the cache clear and the full page load of `/login` replace
+> that path. Offline, the store or the dialog shows `toast.offline-save` and deletes nothing.
 
 **Files:**
 - Modify: `src/services/firebase.ts`
 - Modify: `src/views/Profile.vue`
+- Modify: `src/components/DialogDeleteAccount.vue`
+- Modify: `src/stores/account.ts`
 - Test: `tests/unit/signOutAndClear.spec.ts`
 - Test: `tests/e2e/offline-signout.spec.ts`
 
@@ -220,28 +229,28 @@ Order: `waitForPendingWrites(db)`, then `terminate(db)`, then `clearIndexedDbPer
 - Given a signed-in person online with one set, when they press "Sign Out", then the browser lands on `/login`, and `indexedDB.databases()` in the page lists no database whose name starts with `firestore/`.
 - Given a signed-in person offline, when they press "Sign Out", then the snack says "You're offline. Connect to the internet to sign out, so your changes aren't lost.", the URL stays `/profile`, and after going online and reloading they are still signed in.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/signOutAndClear.spec.ts` and `tests/e2e/offline-signout.spec.ts`
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/signOutAndClear.spec.ts` and `tests/e2e/offline-signout.spec.ts`
 
-- [ ] **Step 2: Run the unit tests to verify they fail**
+- [x] **Step 2: Run the unit tests to verify they fail**
 
 Run: `npm test`
 Expected: FAIL on the assertions. Add `signOutAndClear` with its real signature first, so the tests fail on behaviour
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
 
-- [ ] **Step 4: Run the unit tests to verify they pass**
+- [x] **Step 4: Run the unit tests to verify they pass**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 5: Run the e2e tests to verify they pass**
+- [x] **Step 5: Run the e2e tests to verify they pass**
 
 Run: `npm run test:e2e`
 Expected: PASS
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
-git add src/services/firebase.ts src/views/Profile.vue tests/unit/signOutAndClear.spec.ts tests/e2e/offline-signout.spec.ts
+git add src/services/firebase.ts src/views/Profile.vue src/components/DialogDeleteAccount.vue src/stores/account.ts tests/unit/signOutAndClear.spec.ts tests/e2e/offline-signout.spec.ts
 git commit -m "feat(offline): clear the device cache on sign-out"
 ```

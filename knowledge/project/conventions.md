@@ -34,6 +34,11 @@ verified: human:panditankit1995@gmail.com
   `null` or `false`; callers navigate only on success (`src/stores/library.ts`).
 - Slow calls are wrapped in `session.track(...)`, which drives the loading bar and warns after
   `SLOW_NETWORK_MS` (`src/stores/session.ts`).
+- Offline, a store write resolves once it is in the device cache, before the server answers; a later refusal shows
+  the save error and reloads ([offline study](../features/offline-study.md)). An online-only action refuses offline
+  with `toast.offline-save` instead.
+- Failure tests don't go offline to force a failed save (an offline save now succeeds): use a set over the size limit,
+  which `saveSet` refuses before any write.
 - Firebase Auth errors are mapped to i18n keys by `authErrorMessage` (`src/services/authErrors.ts`).
 
 ## Tests
@@ -67,6 +72,7 @@ command.
 
 ## History
 
+- 2026-11-05: store writes were awaited from the server and failed offline; now offline they resolve once cached, because of the offline-study plan.
 - 2026-11-05: no composables folder; now `src/composables/` holds Vue composables, because `useStudyShortcuts` is neither a store nor a pure function.
 - 2026-11-04: commands ran with npm (`package-lock.json`); now pnpm (`pnpm-lock.yaml`), as the developer switched. See [pnpm](../decisions/pnpm-package-manager.md).
 - 2026-11-03: branch names had no convention (mostly `claude/…`); now `<type>/<topic>`, as the developer set, so the history no longer reflects the rule.

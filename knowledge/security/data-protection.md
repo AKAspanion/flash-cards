@@ -11,8 +11,12 @@ verified: human:panditankit1995@gmail.com
 ## Sensitive data
 
 - In Firebase Auth: the user's email, display name, photo URL and account dates, shown on the profile screen.
-- In Firestore: the user's own sets, cards and labels.
-- In the browser: settings in localStorage ([settings](../features/settings-and-about.md)), nothing personal.
+- In Firestore: the user's own sets, cards, labels and review counts per day. A shared set's public copy holds only
+  its owner's uid, title, colour, cards and time ([shared-sets](../data/shared-sets.md)).
+- In the browser: settings and the reminder time in localStorage ([settings](../features/settings-and-about.md)),
+  nothing personal. Firestore also keeps the user's sets, labels and stats in a persistent IndexedDB cache; sign-out and
+  Delete account clear it, so the next person on the device sees none of it
+  ([offline study](../features/offline-study.md)).
 - The Firebase web config (`VUE_APP_*`) is public by design (README); the deploy service account key is the
   GitHub secret `FIREBASE_SERVICE_ACCOUNT`.
 
@@ -22,7 +26,11 @@ verified: human:panditankit1995@gmail.com
   and [deleted data is gone at once](../decisions/deletion-is-permanent.md). The privacy policy is public at `/privacy`
   ([pages](../features/privacy-and-deletion-pages.md)).
 
-- Owner-only access in `firestore.rules` ([roles](roles.md)).
+- Owner-only access in `firestore.rules`, except a shared copy's `get` ([roles](roles.md)).
+- Card text from a stranger's shared set is untrusted: it becomes HTML only through `renderCardText`
+  ([decision](../decisions/card-text-rendered-only-through-sanitizer.md)), and Add to my library rebuilds each card
+  instead of copying it ([sharing](../features/sharing.md)).
+- The app icon badge is cleared on sign-out ([daily reminder](../features/daily-reminder.md)).
 - Firebase Hosting sends a Content-Security-Policy, `X-Frame-Options`, `X-Content-Type-Options`,
   `Referrer-Policy`, `Permissions-Policy` and `Cross-Origin-Opener-Policy` on every path (`firebase.json`). The CSP
   allows Google's ad and consent domains in `script-src`, `frame-src` and `connect-src`, and `public/ads.txt` names the
@@ -39,6 +47,7 @@ verified: human:panditankit1995@gmail.com
 
 ## History
 
+- 2026-11-05: user data lived only on the server and in memory; now a persistent device cache holds it, cleared on sign-out and account deletion, and a set may be public through a link, because of the offline-study and sharing plans.
 - 2026-11-04: CI audited shipped dependencies with `npm audit`; now `pnpm audit --prod`, because the web app and `functions/` moved to pnpm. See [pnpm](../decisions/pnpm-package-manager.md).
 - 2026-11-04: no third-party ad code in the page; now Google's ad script runs in the app's origin on Home and Info and the CSP allows Google's ad domains, because of the AdSense banner. See [the decision](../decisions/adsense-banner-ads.md).
 - 2026-11-04: users could not remove their data; now they can delete their account and everything in it.
@@ -47,6 +56,8 @@ verified: human:panditankit1995@gmail.com
 
 - `firestore.rules`
 - `firebase.json`
+- `src/utils/markdown.ts`
+- `src/services/firebase.ts`
 - `public/ads.txt`
 - `.gitignore`
 - `.env.emulator`

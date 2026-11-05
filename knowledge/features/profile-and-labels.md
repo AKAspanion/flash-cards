@@ -23,8 +23,10 @@ name and photo URL, create a label, select a label to rename it, sign out, and [
   field left empty.
 - Labels are created with `library.createLabel` and renamed with `library.renameLabel`; labels are never deleted
   ([labels cannot be deleted](../decisions/labels-cannot-be-deleted.md)).
-- Signing out goes to `/login`; the router's auth watcher clears the loaded library
-  ([auth](../security/auth.md)).
+- Profile changes are online-only and refuse offline with the offline-save snack; creating and renaming labels work
+  offline ([offline study](offline-study.md)).
+- Signing out clears the device cache and loads `/login` as a new page, or stays signed in with a message when unsynced
+  changes don't reach the server in time ([auth](../security/auth.md)).
 
 ## History
 

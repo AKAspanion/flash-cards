@@ -23,6 +23,9 @@ Keep it that way: `firestore.rules` and the functions are deployed only by hand.
 
 - A change that needs new rules has to have them deployed by hand before, or together with, the hosting deploy that
   relies on them. Otherwise the live app can call Firestore in a way the live rules reject.
+- The `user-stats` and `shared-sets` rules (progress habits and sharing) take effect only after `deploy.yml` is run
+  with `deploy_rules` ticked. Until then the live rules refuse stats writes and sharing, so tick it with, or before,
+  the deploy of the hosting that ships them ([data](../data/user-stats.md), [data](../data/shared-sets.md)).
 - CI still builds and tests both on every pull request ([CI](../quality/ci.md)).
 
 ## Sources

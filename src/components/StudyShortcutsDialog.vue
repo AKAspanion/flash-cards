@@ -50,6 +50,7 @@ const rows = computed(() => [
   { keys: 'K', label: t('study.shortcuts.learn') },
   { keys: 'J', label: t('study.shortcuts.unlearn') },
   { keys: '1–4', label: t('study.shortcuts.rate') },
+  { keys: 'R', label: t('study.shortcuts.read-aloud') },
   { keys: '?', label: t('study.shortcuts.help') },
 ]);
 </script>

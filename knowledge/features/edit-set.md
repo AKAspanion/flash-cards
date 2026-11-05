@@ -42,11 +42,18 @@ Undo). An options panel can move the set to the bin.
   `onBeforeRouteLeave`, not only on the save button. See [unsaved changes](../domain/unsaved-changes.md).
 - A brand-new set with no cards is not saved (`needsSave`, `canSave`); an edited set always is. The developer
   confirmed this rule on 2026-11-03.
-- A save is refused while offline, with a snack, and concurrent saves are ignored so a set is never created twice
-  (`persist`).
+- A save made offline counts as done once it is in the device cache and syncs later
+  ([offline study](offline-study.md)); concurrent saves are ignored so a set is never created twice (`persist`).
+  Restore and sharing stay online-only.
+- The options panel also has Share set and Stop sharing ([sharing](sharing.md)); a save of a shared set also updates its
+  public copy. The panel stops below the top bar and its content scrolls, so the extra row doesn't cover the Options
+  button on a short screen (`OptionPanel.vue`, also used by Home and View). It sets each side's read-aloud language
+  ([rich cards](rich-cards.md)), and a card's text dialog accepts Markdown and Insert image.
 
 ## History
 
+- 2026-11-05: a save was refused while offline; now it counts as done once in the device cache, because of the offline-study plan. See [offline study](offline-study.md).
+- 2026-11-05: the options panel had no sharing or language rows; now it has Share set, Stop sharing and read-aloud languages, and card text is Markdown. See [sharing](sharing.md) and [rich cards](rich-cards.md).
 - 2026-11-05: the editor only added, edited and deleted cards; now it also imports, exports, reorders and duplicates, and enters cards faster, to fill a set quickly. See [the size decision](../decisions/set-size-limit-900000-bytes.md).
 
 ## Sources
@@ -63,6 +70,8 @@ Undo). An options panel can move the set to the bin.
 - `src/utils/download.ts`
 - `src/utils/setSize.ts`
 - `src/components/OptionPanel.vue`
+- `src/components/DialogShare.vue`
+- `src/utils/markdown.ts`
 - `src/utils/cardSets.ts`
 - `src/stores/library.ts`
 - `tests/e2e/sets.spec.ts`

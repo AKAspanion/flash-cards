@@ -33,15 +33,17 @@ studied and offers Review missed, which restarts on the cards not marked learned
 
 - Flipping a card no longer changes whether it is learned; the rating buttons replace the old peek rule.
 - A rating sets `learned` (Again false, the others true) and moves to the next card; an Again card is queued once
-  more at the end of the visit. Rating is ignored while offline or saving.
+  more at the end of the visit. Rating works offline: the set saves to the device cache when the user leaves ([offline study](offline-study.md)).
 - Marking a card learned scrolls to the next card (`onCheck` in `GroupCardFlash.vue`).
-- Learned state is saved with the whole set when the user leaves the screen, if anything changed and the app is
-  online; if saving fails, the user is asked whether to discard. A session with no changes is not saved. A save
+- Learned state is saved with the whole set when the user leaves the screen, if anything changed; if saving fails, the user is asked whether to discard. A session with no changes is not saved. A save
   that happens also writes `studiedAt` on the set ([data](../data/flash-card-sets.md)). See
-  [unsaved changes](../domain/unsaved-changes.md).
+  [unsaved changes](../domain/unsaved-changes.md). After the save, the visit's review count is written
+  ([progress and habits](progress-habits.md), [why after](../decisions/review-counts-after-set-save.md)).
+- Card text is Markdown, and a read aloud button or the R key speaks the visible side ([rich cards](rich-cards.md)).
 
 ## History
 
+- 2026-11-05: rating was ignored while offline and a save needed the app online; now both work offline, and leaving also writes the review count and cards render Markdown, because of the offline-study, progress-habits and rich-cards plans.
 - 2026-11-05: flipping a learned card marked it not learned (the peek rule); now flipping changes nothing and four rating buttons schedule the card, because of the spaced-repetition plan (spec 6.4). See [spaced repetition](spaced-repetition.md).
 - 2026-11-05: review was a plain browse with flip and mark; now it has study options, shortcuts, reset progress and a session summary, and saves `studiedAt`, because of the study-modes plan (`docs/plans/2026-11-02-study-modes.md`).
 
@@ -53,6 +55,9 @@ studied and offers Review missed, which restarts on the cards not marked learned
 - `src/stores/library.ts`
 - `src/utils/studyQueue.ts`
 - `src/utils/srs.ts`
+- `src/utils/markdown.ts`
+- `src/utils/speech.ts`
+- `src/stores/stats.ts`
 - `src/composables/useStudyShortcuts.ts`
 - `src/components/StudyShortcutsDialog.vue`
 - `src/components/StudySummaryDialog.vue`

@@ -31,6 +31,24 @@ describe('locales', () => {
     expect(enKeys.filter((k) => !hiKeys.includes(k))).toEqual([]);
   });
 
+  it('both languages carry the offline study messages', () => {
+    for (const key of ['toast.offline-saved', 'toast.offline-delete', 'toast.offline-signout']) {
+      expect(enKeys).toContain(key);
+      expect(hiKeys).toContain(key);
+    }
+  });
+
+  it('both languages carry the sharing messages', () => {
+    const keys = [
+      'share.action', 'share.desc', 'share.copy', 'share.copied', 'share.stop', 'share.stopped',
+      'share.add', 'share.added', 'share.missing.title', 'share.missing.subtitle', 'share.count',
+    ];
+    for (const key of keys) {
+      expect(enKeys).toContain(key);
+      expect(hiKeys).toContain(key);
+    }
+  });
+
   it('every t("...") key used in the source exists', () => {
     const used = new Set<string>();
     for (const file of sourceFiles(join(__dirname, '../../src'))) {

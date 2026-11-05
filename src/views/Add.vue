@@ -223,6 +223,55 @@
           mdi-content-copy
         </v-icon>
       </button>
+      <button
+        v-if="draft.docId"
+        v-ripple
+        class="option-row option-row--action"
+        :disabled="saving"
+        type="button"
+        @click.stop="shareSet"
+      >
+        <span class="option-row__label">{{ t('share.action') }}</span>
+        <v-icon :color="draft.color">
+          mdi-share-variant
+        </v-icon>
+      </button>
+      <div
+        v-if="speechOn"
+        class="add__speech"
+      >
+        <span class="option-row__label">{{ t('add.speech.title') }}</span>
+        <div class="add__speech-selects">
+          <v-select
+            :aria-label="t('add.speech.front')"
+            density="compact"
+            hide-details
+            item-title="title"
+            item-value="value"
+            :items="speechItems"
+            :label="t('add.speech.front')"
+            :list-props="frontListProps"
+            :model-value="draft.speech?.front ?? ''"
+            rounded="xl"
+            variant="outlined"
+            @update:model-value="(value: string) => setSpeech('front', value)"
+          />
+          <v-select
+            :aria-label="t('add.speech.back')"
+            density="compact"
+            hide-details
+            item-title="title"
+            item-value="value"
+            :items="speechItems"
+            :label="t('add.speech.back')"
+            :list-props="backListProps"
+            :model-value="draft.speech?.back ?? ''"
+            rounded="xl"
+            variant="outlined"
+            @update:model-value="(value: string) => setSpeech('back', value)"
+          />
+        </div>
+      </div>
     </option-panel>
 
     <import-cards-dialog
@@ -236,6 +285,12 @@
       :color="draft.color"
       @reorder="(cards) => (draft.cards = cards)"
     />
+    <dialog-share
+      v-if="draft.shareId"
+      v-model="shareOpen"
+      :share-id="draft.shareId"
+      @stop="stopSharing"
+    />
   </div>
 </template>
 
@@ -247,6 +302,7 @@ import BarTop from '@/components/BarTop.vue';
 import BtnAction from '@/components/BtnAction.vue';
 import ColorPalette from '@/components/ColorPalette.vue';
 import ContainerEmpty from '@/components/ContainerEmpty.vue';
+import DialogShare from '@/components/DialogShare.vue';
 import GroupCardFlash from '@/components/GroupCardFlash.vue';
 import ImportCardsDialog from '@/components/ImportCardsDialog.vue';
 import OptionPanel from '@/components/OptionPanel.vue';
@@ -255,6 +311,8 @@ import type { CardSet, FlashCard } from '@/types';
 import { exportFileName, setToCsv, setToJson } from '@/utils/cardExport';
 import { uid } from '@/utils/cardSets';
 import { duplicateCards } from '@/utils/duplicateCards';
+import { languageName, speechAvailable, voiceLanguages } from '@/utils/speech';
+import { usePrefsStore } from '@/stores/prefs';
 import { downloadText } from '@/utils/download';
 import { useLibraryStore } from '@/stores/library';
 import { useSessionStore } from '@/stores/session';
@@ -264,6 +322,35 @@ const route = useRoute();
 const router = useRouter();
 const library = useLibraryStore();
 const session = useSessionStore();
+const prefs = usePrefsStore();
+
+const speechOn = speechAvailable();
+const voiceTags = ref<string[]>([]);
+if (speechOn) {
+  void voiceLanguages().then((tags) => (voiceTags.value = tags));
+}
+// A saved language whose voice this browser lacks still shows, so the choice isn't hidden.
+const speechItems = computed(() => {
+  const saved = [draft.value.speech?.front, draft.value.speech?.back].filter((tag): tag is string => !!tag);
+  const tags = [...new Set([...voiceTags.value, ...saved])].sort();
+  return [
+    { title: t('add.speech.default'), value: '' },
+    ...tags.map((tag) => ({ title: languageName(tag, prefs.lang), value: tag })),
+  ];
+});
+const frontListProps = computed(() => ({ 'aria-label': t('add.speech.front') }) as Record<string, string>);
+const backListProps = computed(() => ({ 'aria-label': t('add.speech.back') }) as Record<string, string>);
+
+/** "Browser default" removes the side; the empty `speech` object stays, since saves merge. */
+function setSpeech(side: 'front' | 'back', tag: string | null) {
+  const speech = { ...draft.value.speech };
+  if (tag) {
+    speech[side] = tag;
+  } else {
+    delete speech[side];
+  }
+  draft.value.speech = speech;
+}
 
 const isEdit = route.name === 'edit';
 const draft = ref<CardSet>(newSet());
@@ -275,6 +362,7 @@ const focusedIndex = ref(0);
 const saving = ref(false);
 const importOpen = ref(false);
 const reorderOpen = ref(false);
+const shareOpen = ref(false);
 const optionsPanel = ref<InstanceType<typeof OptionPanel> | null>(null);
 const cardGroup = ref<InstanceType<typeof GroupCardFlash> | null>(null);
 
@@ -300,7 +388,13 @@ function newSet(): CardSet {
 }
 
 function cloneSet(set: CardSet): CardSet {
-  return { ...set, date: new Date(set.date), labels: [...set.labels], cards: set.cards.map((c) => ({ ...c })) };
+  return {
+    ...set,
+    date: new Date(set.date),
+    labels: [...set.labels],
+    cards: set.cards.map((c) => ({ ...c })),
+    ...(set.speech ? { speech: { ...set.speech } } : {}),
+  };
 }
 
 // Editing: wait for the library, then copy the set into the draft.
@@ -377,11 +471,8 @@ async function duplicateSet() {
     fav: false,
     labels: [...source.labels],
     cards: duplicateCards(source.cards),
+    ...(source.speech ? { speech: { ...source.speech } } : {}),
   };
-  if (!session.online) {
-    session.showSnack(t('toast.offline-save'));
-    return;
-  }
   saving.value = true;
   let created: CardSet | null;
   try {
@@ -391,6 +482,69 @@ async function duplicateSet() {
   }
   if (created) {
     await router.push(`/${created.id}/edit`);
+  }
+}
+
+function withShareId<T extends { shareId?: string }>(set: T, shareId: string | undefined): T {
+  const next = { ...set };
+  if (shareId) {
+    next.shareId = shareId;
+  } else {
+    delete next.shareId;
+  }
+  return next;
+}
+
+/**
+ * Records the set's share state in the draft and its snapshot alike: it is already saved, so it
+ * mustn't count as an unsaved change, and later saves must carry it to keep the public copy in sync.
+ */
+function applyShareId(shareId: string | undefined) {
+  draft.value = withShareId(draft.value, shareId);
+  snapshot.value = JSON.stringify(withShareId(JSON.parse(snapshot.value) as CardSet, shareId));
+}
+
+/** Shares the saved set (online only), saving pending edits first so the public copy matches it. */
+async function shareSet() {
+  optionsPanel.value?.toggle(false);
+  if (saving.value || !draft.value.docId) {
+    return;
+  }
+  if (!session.online) {
+    session.showSnack(t('toast.offline-save'));
+    return;
+  }
+  if (needsSave.value && !(await commit())) {
+    return;
+  }
+  saving.value = true;
+  let shared: CardSet | null;
+  try {
+    shared = await library.shareSet(draft.value);
+  } finally {
+    saving.value = false;
+  }
+  if (shared?.shareId) {
+    applyShareId(shared.shareId);
+    shareOpen.value = true;
+  }
+}
+
+async function stopSharing() {
+  shareOpen.value = false;
+  if (saving.value) {
+    return;
+  }
+  saving.value = true;
+  let stopped: boolean;
+  try {
+    stopped = await library.unshareSet(draft.value);
+  } finally {
+    saving.value = false;
+  }
+  if (stopped) {
+    applyShareId(undefined);
+    session.showSnack(t('share.stopped'));
   }
 }
 
@@ -408,10 +562,6 @@ function onCardDelete({ val, index }: { val: FlashCard; index: number }) {
 /** Writes `set` once; concurrent calls are ignored so a set is never created twice. */
 async function persist(set: CardSet): Promise<boolean> {
   if (saving.value || !loaded.value || (isEdit && !set.docId)) {
-    return false;
-  }
-  if (!session.online) {
-    session.showSnack(t('toast.offline-save'));
     return false;
   }
   saving.value = true;
@@ -492,6 +642,21 @@ onBeforeUnmount(() => {
 }
 .add__title-field {
   max-width: 320px;
+}
+.add__speech {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 0;
+}
+.add__speech-selects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.add__speech-selects > * {
+  flex: 1 1 140px;
+  min-width: 0;
 }
 .add__labels {
   justify-content: flex-end;

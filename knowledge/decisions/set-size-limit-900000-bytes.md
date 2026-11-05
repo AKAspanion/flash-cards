@@ -24,7 +24,9 @@ asked for; the usability spec's 2.6 chose the number.
   restore) is covered. A refused save shows the `toast.error.too-big` snack and resolves to `null` or `false`.
 - Importing is capped separately in `src/utils/cardImport.ts`: `MAX_IMPORT_CARDS = 1000` cards and
   `MAX_IMPORT_FILE_BYTES` of 2 MB, so a file is refused before it is parsed into something that cannot save.
-- The limit is enforced in the app only, not in `firestore.rules`, so nothing needs a manual deploy.
+- The limit is enforced in the app only for a set, not in `firestore.rules`, so nothing needs a manual deploy for it.
+  A shared set's public copy has its own cap in the rules (`cards` at most 900,000 characters), and the app checks it
+  before writing (`fitsSharedLimit`; [sharing](../features/sharing.md)).
 
 ## Consequences
 

@@ -56,4 +56,20 @@ describe('prefs store', () => {
     expect(localStorage.getItem('study-reverse')).toBe('true');
     expect(localStorage.getItem('study-unlearned-only')).toBe('true');
   });
+
+  it('defaults the reminder time to 19:00 and falls back from a bad value', () => {
+    expect(usePrefsStore().reminderTime).toBe('19:00');
+    localStorage.setItem('reminder-time', 'garbage');
+    setActivePinia(createPinia());
+    expect(usePrefsStore().reminderTime).toBe('19:00');
+  });
+
+  it('reads and persists the reminder time', async () => {
+    localStorage.setItem('reminder-time', '07:30');
+    const prefs = usePrefsStore();
+    expect(prefs.reminderTime).toBe('07:30');
+    prefs.reminderTime = '06:45';
+    await nextTick();
+    expect(localStorage.getItem('reminder-time')).toBe('06:45');
+  });
 });

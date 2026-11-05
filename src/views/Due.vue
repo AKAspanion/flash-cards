@@ -31,6 +31,7 @@
         :model-value="currentCard"
         :number="position + 1"
         rating
+        :speech="currentSet.speech"
         @rate="rate"
       />
     </div>
@@ -65,6 +66,7 @@ import { localDate } from '@/utils/dates';
 import { dueQueue, schedule, type DueEntry, type Rating } from '@/utils/srs';
 import { useLibraryStore } from '@/stores/library';
 import { useSessionStore } from '@/stores/session';
+import { useStatsStore } from '@/stores/stats';
 
 const KEY_RATINGS: Record<string, Rating> = { '1': 'again', '2': 'hard', '3': 'good', '4': 'easy' };
 
@@ -72,6 +74,7 @@ const { t } = useI18n();
 const router = useRouter();
 const library = useLibraryStore();
 const session = useSessionStore();
+const stats = useStatsStore();
 
 /** Working copy of each set the session touches, keyed by set id. */
 const sets = ref(new Map<string, CardSet>());
@@ -82,12 +85,14 @@ const entries = ref<DueEntry[]>([]);
 /** The order cards are shown in: the entries, then each "again" card once more. */
 const queue = ref<DueEntry[]>([]);
 const requeued = new Set<string>();
+/** Cards rated on this visit; counted once each when the visit saves. */
+const reviewed = new Set<string>();
 const position = ref(0);
 const started = ref(false);
 const saving = ref(false);
 const summaryOpen = ref(false);
 const summary = ref<{ known: number; total: number; missed: DueEntry[] }>({ known: 0, total: 0, missed: [] });
-const cardRef = ref<{ flip: () => void; rate: (rating: Rating) => boolean } | null>(null);
+const cardRef = ref<{ flip: () => void; rate: (rating: Rating) => boolean; readAloud: () => void } | null>(null);
 
 const entryKey = (e: DueEntry) => `${e.setId}\u0000${e.cardId}`;
 const current = computed(() => queue.value[position.value]);
@@ -138,6 +143,7 @@ function rate(rating: Rating) {
     c.id === entry.cardId ? { ...c, srs: schedule(c.srs, rating, today), learned: rating !== 'again' } : c,
   );
   touched.value = new Set(touched.value).add(entry.setId);
+  reviewed.add(entryKey(entry));
   if (rating === 'again' && !requeued.has(entryKey(entry))) {
     requeued.add(entryKey(entry));
     queue.value = [...queue.value, entry];
@@ -167,6 +173,11 @@ useStudyShortcuts(() => {
       if (!summaryOpen.value) cardRef.value?.flip();
     },
   };
+  for (const key of ['r', 'R']) {
+    map[key] = () => {
+      if (!summaryOpen.value) cardRef.value?.readAloud();
+    };
+  }
   for (const [key, rating] of Object.entries(KEY_RATINGS)) {
     map[key] = () => {
       if (!summaryOpen.value) cardRef.value?.rate(rating);
@@ -181,9 +192,6 @@ function goBack() {
 }
 
 async function saveTouched(): Promise<boolean> {
-  if (!session.online) {
-    return false;
-  }
   saving.value = true;
   try {
     for (const id of [...touched.value]) {
@@ -209,6 +217,10 @@ onBeforeRouteLeave(async () => {
     return false;
   }
   if (await saveTouched()) {
+    // The stats store shows its own error and never blocks leaving.
+    const count = reviewed.size;
+    reviewed.clear();
+    void stats.recordReviews(count);
     return true;
   }
   return window.confirm(t('view.discard-confirm'));

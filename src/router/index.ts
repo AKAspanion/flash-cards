@@ -2,6 +2,8 @@ import { createRouter, createWebHistory, type RouteLocationRaw } from 'vue-route
 import { getAuthUser, onUserChanged } from '@/services/firebase';
 import { useSessionStore } from '@/stores/session';
 import { useLibraryStore } from '@/stores/library';
+import { useStatsStore } from '@/stores/stats';
+import { loadFresh } from '@/utils/freshLoad';
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -21,9 +23,11 @@ const routes = [
   { path: '/profile', name: 'profile', component: () => import('@/views/Profile.vue'), meta: { requireAuth: true } },
   { path: '/info', name: 'info', component: () => import('@/views/Info.vue'), meta: { requireAuth: true } },
   { path: '/settings', name: 'settings', component: () => import('@/views/Settings.vue'), meta: { requireAuth: true } },
+  { path: '/stats', name: 'stats', component: () => import('@/views/Stats.vue'), meta: { requireAuth: true } },
   { path: '/privacy', name: 'privacy', component: () => import('@/views/Privacy.vue'), meta: { public: true } },
   { path: '/delete-account', name: 'delete-account', component: () => import('@/views/Deletion.vue'), meta: { public: true } },
   { path: '/login', name: 'login', component: () => import('@/views/Login.vue') },
+  { path: '/s/:shareId', name: 'shared', component: () => import('@/views/Shared.vue'), meta: { public: true } },
   { path: '/:pathMatch(.*)*', redirect: '/home' },
 ];
 
@@ -71,9 +75,15 @@ function watchAuthChanges() {
     session.setUser(user);
     const library = useLibraryStore();
     library.reset();
+    useStatsStore().reset();
     if (!user) {
       session.unsavedChanges = false;
-      void router.replace('/login');
+      // A sign-out or account deletion in another tab deletes the shared cache, which stops this
+      // tab's Firestore for good: a new page starts a working one. A tab signing out itself loads
+      // that page on its own once its cache is cleared, so the reload mustn't cut that short.
+      if (!session.signingOut) {
+        loadFresh('/login');
+      }
       return;
     }
     void library.load();
@@ -103,6 +113,7 @@ router.beforeEach(async (to) => {
     void library.load();
   } else {
     library.reset();
+    useStatsStore().reset();
   }
   return authRedirect(to, !!session.user);
 });

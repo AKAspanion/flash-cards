@@ -97,6 +97,25 @@ describe('buildBackup and parseBackup', () => {
     const backup = buildBackup(sets, labels, now);
     expect(parseBackup(JSON.stringify(backup))).toEqual(backup);
   });
+  it('keeps each set’s read-aloud languages, and restores a backup that has none', () => {
+    const spoken = [makeSet('S', [card('a', 'b')], { speech: { front: 'es-ES', back: 'en' } }), makeSet('N')];
+    const backup = buildBackup(spoken, [], now);
+    expect(backup.sets[0].speech).toEqual({ front: 'es-ES', back: 'en' });
+    expect(backup.sets[1]).not.toHaveProperty('speech');
+
+    const parsed = parseBackup(JSON.stringify(backup));
+    expect(parsed?.sets[0].speech).toEqual({ front: 'es-ES', back: 'en' });
+    expect(parsed?.sets[1]).not.toHaveProperty('speech');
+  });
+
+  it('drops read-aloud languages that are not language tags', () => {
+    const backup = buildBackup([makeSet('S')], [], now);
+    const tampered = { ...backup, sets: [{ ...backup.sets[0], speech: { front: '<script>', back: 'hi-IN' } }] };
+    expect(parseBackup(JSON.stringify(tampered))?.sets[0].speech).toEqual({ back: 'hi-IN' });
+    const junk = { ...backup, sets: [{ ...backup.sets[0], speech: 'en' }] };
+    expect(parseBackup(JSON.stringify(junk))?.sets[0]).not.toHaveProperty('speech');
+  });
+
   it('rejects anything that is not a backup', () => {
     const backup = buildBackup(sets, labels, now);
     expect(parseBackup('not json')).toBeNull();

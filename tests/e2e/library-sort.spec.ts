@@ -45,9 +45,14 @@ async function seedSet(page: Page, email: string, title: string, learned: boolea
   expect(response.ok()).toBe(true);
 }
 
+/** Settings has more than one select (order, daily goal), so the order one is found by its label. */
+function orderSelect(page: Page) {
+  return page.locator('.settings__select').filter({ has: page.getByLabel('Card-sets order') });
+}
+
 async function pickOrder(page: Page, name: string) {
   await page.goto('/settings');
-  await page.locator('.settings__select .v-field').click();
+  await orderSelect(page).locator('.v-field').click();
   await page.getByRole('option', { name }).click();
 }
 
@@ -74,7 +79,7 @@ test('Least learned first lists the less learned set first and survives a reload
 
   await page.goto('/settings');
   await page.reload();
-  await expect(page.locator('.settings__select')).toContainText('Least learned first');
+  await expect(orderSelect(page)).toContainText('Least learned first');
 });
 
 test('Recently studied lists the set that was reviewed first', async ({ page }) => {
@@ -98,7 +103,7 @@ test('Recently studied lists the set that was reviewed first', async ({ page }) 
 test('the Settings page with the select open is accessible at 390 px wide', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/settings');
-  await page.locator('.settings__select .v-field').click();
+  await orderSelect(page).locator('.v-field').click();
   await expect(page.getByRole('option', { name: 'Recently studied' })).toBeVisible();
 
   const results = await new AxeBuilder({ page })

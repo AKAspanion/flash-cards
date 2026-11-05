@@ -29,7 +29,7 @@ the due cards of every set in one queue. Each set card on Home shows its own due
   counts that queue; the per-set "due" and "new" counts (`setDueCounts`) cover the whole set, so they can add up to
   more than the banner.
 - An Again card comes back once more at the end of the session; rating it Again a second time does not re-queue it.
-- Rating needs the device to be online. Each set touched is saved with `studiedAt` when the user leaves, through the
+- Rating works offline ([offline study](offline-study.md)). Each set touched is saved with `studiedAt` when the user leaves, through the
   leave guard; `/due` marks the session unsaved through `session.unsavedChanges`
   ([unsaved changes](../domain/unsaved-changes.md)). If saving fails the user is asked whether to discard.
 - With nothing due, `/due` says "Nothing due". When the queue runs out the session summary shows, offering Review
@@ -41,6 +41,10 @@ the due cards of every set in one queue. Each set card on Home shows its own due
 - `/due`: `src/views/Due.vue`, using `CardFlash` with its rating row and `StudySummaryDialog`.
 - `/:id/view`: rating on the per-set review screen, `src/views/View.vue`.
 - `/home`: the due banner and per-set counts, `src/views/Home.vue` and `src/components/CardFlashSet.vue`.
+
+## History
+
+- 2026-11-05: rating needed the device online; now it works offline, because of the offline-study plan.
 
 ## Sources
 

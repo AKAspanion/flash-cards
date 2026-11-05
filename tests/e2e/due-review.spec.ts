@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { setCard, signUp } from './helpers';
+import { makeSetTooBigToSave } from './size-limit-helpers';
 import { DEV_PORTS } from '../../dev-ports';
 
 const AUTH = `http://127.0.0.1:${DEV_PORTS.auth}`;
@@ -197,11 +198,12 @@ test('with only a set in the bin there is no banner and /due shows "Nothing due"
   await expect(page.getByText("You're all caught up. Come back tomorrow.")).toBeVisible();
 });
 
-test('a failed save on leave asks to discard, and dismissing it stays on /due', async ({ page, context }) => {
+test('a failed save on leave asks to discard, and dismissing it stays on /due', async ({ page }) => {
   await seedSet(page, email, 'Solo', newCards(2, 'solo'));
+  // Offline saves land on the device, so the failure is the size limit instead.
+  await makeSetTooBigToSave(page, 'Solo');
   await page.goto('/due');
   await rateWith(page, '3');
-  await context.setOffline(true);
   let message = '';
   page.once('dialog', (d) => {
     message = d.message();
@@ -210,7 +212,6 @@ test('a failed save on leave asks to discard, and dismissing it stays on /due', 
   await page.getByRole('button', { name: 'Back' }).first().click();
   await expect.poll(() => message).toBe('Your progress could not be saved. Leave anyway and lose it?');
   await expect(page).toHaveURL(/\/due$/);
-  await context.setOffline(false);
 });
 
 for (const [name, size] of [

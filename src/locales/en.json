@@ -73,6 +73,12 @@
       "title": "Reorder cards",
       "up": "Move up",
       "down": "Move down"
+    },
+    "speech": {
+      "title": "Read-aloud language",
+      "front": "Front",
+      "back": "Back",
+      "default": "Browser default"
     }
   },
   "profile": {
@@ -138,7 +144,8 @@
       "learn": "Mark as learned",
       "unlearn": "Mark as not learned",
       "help": "Show keyboard shortcuts",
-      "rate": "Rate the card (Again, Hard, Good, Easy)"
+      "rate": "Rate the card (Again, Hard, Good, Easy)",
+      "read-aloud": "Read aloud"
     },
     "summary": {
       "title": "Session complete",
@@ -147,7 +154,25 @@
       "home": "Back to home"
     }
   },
+  "stats": {
+    "title": "Stats",
+    "streak": "{n}-day streak",
+    "today": "{done}/{goal} today",
+    "reviewed": "Cards reviewed",
+    "current-streak": "Current streak",
+    "longest-streak": "Longest streak",
+    "mastered": "Sets mastered",
+    "day-bar": "{n} card on {date} | {n} cards on {date}"
+  },
   "settings": {
+    "goal": {
+      "title": "Daily goal"
+    },
+    "reminder": {
+      "title": "Daily reminder",
+      "desc": "Add a daily study reminder to your calendar.",
+      "add": "Add to calendar"
+    },
     "language": {
       "title": "Language",
       "desc": "Change language"
@@ -230,6 +255,7 @@
     },
     "error": {
       "sign-up": "Could not create account. Please try again.",
+      "stats": "Couldn't update your stats. Your progress is saved.",
       "generic": "Something went wrong. Please try again.",
       "load": "Error getting your flashcards. Please try later!",
       "save": "Could not save. Please try again.",
@@ -244,6 +270,9 @@
     "set-not-found": "That flashcard set was not found.",
     "slow-network": "Experiencing network difficulty, please hold on!",
     "offline-save": "You're offline. Connect to the internet to save.",
+    "offline-saved": "Saved on this device. It will sync when you're back online.",
+    "offline-delete": "You're offline. Connect to the internet to delete this set.",
+    "offline-signout": "You're offline. Connect to the internet to sign out, so your changes aren't lost.",
     "restored": "Restored 1 set. | Restored {n} sets."
   },
   "login": {
@@ -290,7 +319,14 @@
     "learn": "Mark as learned",
     "unlearn": "Mark as not learned",
     "next-side": "Next: back side",
-    "save-next": "Save and add next"
+    "save-next": "Save and add next",
+    "read-aloud": "Read aloud",
+    "image": {
+      "insert": "Insert image",
+      "url": "Image address",
+      "confirm": "Insert",
+      "https": "Use an image address that starts with https://"
+    }
   },
   "bin": {
     "confirm": {
@@ -385,5 +421,24 @@
     "study-now": "Study now",
     "set-count": "{n} due",
     "set-new": "{m} new"
+  },
+  "reminder": {
+    "summary": "Study flashcards"
+  },
+  "share": {
+    "action": "Share set",
+    "desc": "Anyone with the link can view this set and copy it into their own library. Your progress is not shared.",
+    "copy": "Copy link",
+    "copied": "Link copied",
+    "stop": "Stop sharing",
+    "stopped": "Stopped sharing. The old link no longer works.",
+    "sync-failed": "Couldn't update the shared link. Your set is saved.",
+    "add": "Add to my library",
+    "added": "Added to your library",
+    "missing": {
+      "title": "This link doesn't work",
+      "subtitle": "The owner may have stopped sharing it."
+    },
+    "count": "{n} card | {n} cards"
   }
 }

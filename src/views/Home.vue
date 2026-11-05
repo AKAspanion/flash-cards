@@ -123,6 +123,13 @@
 
     <div class="home__sets">
       <div
+        v-if="stats.status === 'ready'"
+        class="home__progress text-title-medium"
+      >
+        <span v-if="stats.streak > 0">{{ t('stats.streak', { n: stats.streak }) }}</span>
+        <span>{{ t('stats.today', { done: stats.todayCount, goal: stats.goal }) }}</span>
+      </div>
+      <div
         v-if="library.status === 'ready' && dueTotal > 0"
         class="home__due"
       >
@@ -218,7 +225,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useDisplay } from 'vuetify';
@@ -235,6 +242,7 @@ import { dueCount } from '@/utils/srs';
 import { useLibraryStore } from '@/stores/library';
 import { usePrefsStore } from '@/stores/prefs';
 import { useSessionStore } from '@/stores/session';
+import { useStatsStore } from '@/stores/stats';
 
 const { t } = useI18n();
 const router = useRouter();
@@ -242,6 +250,9 @@ const display = useDisplay();
 const session = useSessionStore();
 const library = useLibraryStore();
 const prefs = usePrefsStore();
+const stats = useStatsStore();
+
+onMounted(() => void stats.load());
 
 const search = ref('');
 const filterLabel = ref<Label | null>(null);
@@ -268,6 +279,7 @@ const shimmerCount = computed(() => ({ xs: 3, sm: 4, md: 4, lg: 6, xl: 9, xxl: 9
 const menuItems = computed(() => [
   { title: t('common.bin'), icon: 'mdi-trash-can', path: '/bin' },
   { title: t('common.labels'), icon: 'mdi-label-variant', path: '/profile' },
+  { title: t('stats.title'), icon: 'mdi-chart-bar', path: '/stats' },
   { title: t('common.about'), icon: 'mdi-information', path: '/info' },
   { title: t('common.settings'), icon: 'mdi-cog', path: '/settings' },
 ]);
@@ -294,6 +306,12 @@ async function moveToBin(set: CardSet) {
 <style scoped>
 .home__sets {
   padding-bottom: 96px;
+}
+.home__progress {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  padding: 12px 32px 0;
 }
 .home__due {
   display: flex;

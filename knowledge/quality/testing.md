@@ -24,6 +24,15 @@ verified: human:panditankit1995@gmail.com
 - Writing library e2e tests: Home's search toggle and field share the "Search" label, so use the textbox role; open the Vuetify order select by clicking `.settings__select .v-field`; set titles look uppercase only through CSS, so assert on the real text.
 - E2E accounts exist only in the Auth emulator for one run; `tests/e2e/helpers.ts` holds their shared password and
   makes unique emails. That password and `.env.emulator` are test values, not secrets.
+- The emulators must be started from the branch being tested, because they load that checkout's `firestore.rules`:
+  emulators left running from `master` have no `user-stats` or `shared-sets` block, so stats and sharing tests fail
+  against them. Ports come from `DEV_PORTS` in `dev-ports.ts`.
+- Offline saves no longer fail, so a test that needs a failed save uses a set over the size limit (which `saveSet`
+  refuses before any write), not going offline.
+- New unit specs: `stats`, `streaks`, `statsMapper`, `StatsView`, `markdown`, `speech`, `ics`, `appBadge`, `localCache`,
+  `freshLoad`, `signOutAndClear`, `account`, `sharedSets`; the rules spec also covers `user-stats` and `shared-sets`.
+  New e2e specs: `stats`, `review-counts`, `rich-cards`, `read-aloud-language`, `reminders`, `offline`,
+  `offline-signout`, `share`, `shared-link` (`tests/e2e/stats-helpers.ts` seeds stats).
 - Nothing tests against the live Firebase project; that is left to the developer.
 
 ## How to run it
@@ -33,6 +42,7 @@ verified: human:panditankit1995@gmail.com
 
 ## History
 
+- 2026-11-05: no tests covered stats, Markdown, read aloud, reminders, the offline cache, sign-out or sharing; now the specs listed above do, because of the progress-habits, rich-cards, reminders, offline-study and sharing plans.
 - 2026-11-05: library search and sort had no tests; now `relativeTime.spec.ts`, `library-search.spec.ts` and `library-sort.spec.ts` cover them.
 - 2026-11-05: no tests covered scheduling or rating; now `srs.spec.ts`, `CardFlash.spec.ts`, `srs-review.spec.ts` and `due-review.spec.ts` do, for spaced repetition.
 - 2026-11-05: component tests were absent; now `@vue/test-utils` is a dev dependency for mounting card components, for study modes.
@@ -54,6 +64,18 @@ verified: human:panditankit1995@gmail.com
 - `tests/unit/relativeTime.spec.ts`
 - `tests/e2e/library-search.spec.ts`
 - `tests/e2e/library-sort.spec.ts`
+- `tests/unit/stats.spec.ts`
+- `tests/unit/markdown.spec.ts`
+- `tests/unit/sharedSets.spec.ts`
+- `tests/unit/signOutAndClear.spec.ts`
+- `tests/e2e/stats.spec.ts`
+- `tests/e2e/stats-helpers.ts`
+- `tests/e2e/review-counts.spec.ts`
+- `tests/e2e/rich-cards.spec.ts`
+- `tests/e2e/reminders.spec.ts`
+- `tests/e2e/offline.spec.ts`
+- `tests/e2e/share.spec.ts`
+- `tests/e2e/shared-link.spec.ts`
 - `tests/unit/setSize.spec.ts`
 - `tests/unit/cardImport.spec.ts`
 - `tests/unit/cardExport.spec.ts`

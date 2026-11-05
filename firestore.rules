@@ -1,6 +1,7 @@
 rules_version = '2';
 
-// Every document carries the owner's uid; users can only see and change their own.
+// Every document carries the owner's uid; users can only see and change their own. The one
+// exception is shared-sets: anyone may read a public copy by its id.
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() {
@@ -13,10 +14,12 @@ service cloud.firestore {
       return signedIn() && request.resource.data.uid == request.auth.uid;
     }
 
-    // Older app versions JSON.parse `cards`, so it must stay a string.
+    // Older app versions JSON.parse `cards`, so it must stay a string. `shareId` is optional: it
+    // names the set's public copy in shared-sets while the set is shared.
     function validSet() {
       return request.resource.data.cards is string
-        && request.resource.data.labels is list;
+        && request.resource.data.labels is list
+        && request.resource.data.get('shareId', '') is string;
     }
 
     match /flash-card-sets/{setId} {
@@ -30,6 +33,53 @@ service cloud.firestore {
       allow read, delete: if ownsStored();
       allow create: if ownsIncoming() && request.resource.data.label is string;
       allow update: if ownsStored() && ownsIncoming() && request.resource.data.label is string;
+    }
+
+    // One document per user, its id is their uid. `goal` is optional: a document that only holds
+    // `days` reads as the default goal.
+    function validStats() {
+      return request.resource.data.keys().hasOnly(['uid', 'goal', 'days'])
+        && request.resource.data.get('days', {}) is map
+        && request.resource.data.get('goal', 20) in [10, 20, 50, 100];
+    }
+
+    match /user-stats/{uid} {
+      allow get, delete: if signedIn() && request.auth.uid == uid;
+      // A query limited to the user's own uid, so Delete account can find the document.
+      allow list: if ownsStored();
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && ownsIncoming() && validStats();
+    }
+
+    // A public copy of one set, opened at /s/{shareId}. Its owner field is `ownerUid`, not `uid`.
+    function ownsShare(data) {
+      return signedIn() && data.ownerUid == request.auth.uid;
+    }
+
+    // Only these five fields, so no name, email, photo or labels reach the public copy. Each one
+    // is also required: a missing field fails its own check below (ownerUid in ownsShare).
+    function validShare() {
+      let data = request.resource.data;
+      return data.keys().hasOnly(['ownerUid', 'title', 'color', 'cards', 'updatedAt'])
+        && data.title is string && data.title.size() <= 200
+        && data.color is string
+        && data.cards is string && data.cards.size() <= 900000
+        && data.updatedAt == request.time;
+    }
+
+    match /shared-sets/{shareId} {
+      allow get: if true;
+      // A query limited to the owner's uid, so Delete account can find their copies.
+      allow list: if ownsShare(resource.data);
+      allow create: if ownsShare(request.resource.data) && validShare();
+      allow update: if ownsShare(resource.data) && validShare()
+        && request.resource.data.ownerUid == resource.data.ownerUid;
+      allow delete: if ownsShare(resource.data);
+      // A copy that is already gone: deleting it deletes nothing, so a batch that deletes a set or
+      // stops sharing still goes through; an update reaches the app as not-found (its exists check
+      // fails), so the set's shareId is cleared (spec 11.4). A write with no exists check on a
+      // missing document is a create, so neither of these can make a copy.
+      allow update, delete: if signedIn() && resource == null;
     }
   }
 }
