@@ -35,6 +35,7 @@ import type { CardSet, Label } from '@/types';
 import { authDomainFor } from './authDomain';
 import { OWNED_COLLECTIONS } from './ownedCollections';
 import { cardSetFromDoc, cardSetToDoc, labelFromDoc } from './cardSetMapper';
+import { DEV_PORTS } from '../../dev-ports';
 
 const SETS = 'flash-card-sets';
 const LABELS = 'labels';
@@ -77,8 +78,8 @@ function getServices() {
   const auth = getAuth(app);
   const db = getFirestore(app);
   if (useEmulators) {
-    connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
-    connectFirestoreEmulator(db, '127.0.0.1', 8085);
+    connectAuthEmulator(auth, `http://127.0.0.1:${DEV_PORTS.auth}`, { disableWarnings: true });
+    connectFirestoreEmulator(db, '127.0.0.1', DEV_PORTS.firestore);
   }
   services = { app, auth, db };
   return services;

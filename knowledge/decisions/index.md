@@ -18,6 +18,7 @@
 - [Google sign-in uses a same-origin redirect](google-sign-in-redirect.md) - Google sign-in uses signInWithRedirect with the auth domain set to the host serving the app, so it needs neither popups nor cross-site storage and works inside the Android TWA.
 - [Labels cannot be deleted](labels-cannot-be-deleted.md) - Users create and rename labels but never delete them, so a set never points at a label that no longer exists.
 - [Labels are deleted only with the account](labels-deleted-only-with-account.md) - The app never deletes a single label, but firestore.rules keeps the owner's delete on labels so that deleting an account can remove its labels from the browser.
+- [Local ports live in the 2100 block](local-ports-2100-block.md) - Every port the project opens on the developer's machine — dev server, emulators, previews — is fixed in one contiguous block starting at 2100, so it can run beside the developer's other projects.
 - [Rules and functions are deployed by hand](manual-rules-and-functions-deploy.md) - A push to master deploys hosting only; firestore.rules and the Cloud Functions are deployed deliberately by hand.
 - [No analytics for now](no-analytics-yet.md) - The app collects no analytics; VUE_APP_MEASUREMENT_ID is passed to the Firebase config, but Analytics is never started.
 - [The 2020 TWA's asset links are dropped](old-twa-asset-links-dropped.md) - The site no longer vouches for the older Android app com.flashcards.twa; assetlinks.json names only in.spanion.flashcards.twa, so any copy of the old app still installed shows a browser bar.

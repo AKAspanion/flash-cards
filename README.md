@@ -21,9 +21,11 @@ With the Firebase CLI logged in you can print the config with
 
 ## Scripts
 
+Every local port is set in `dev-ports.ts`, in a block starting at `2100`.
+
 | Command | What it does |
 | --- | --- |
-| `npm run serve` | Dev server on http://localhost:8080 against the Firebase project in `.env.local` |
+| `npm run serve` | Dev server on http://localhost:2100 against the Firebase project in `.env.local` |
 | `npm run emulators` | Local Auth + Firestore emulators |
 | `npm run dev:emulator` | Dev server against the emulators; no real accounts or data are touched |
 | `npm run build` | Type-check and build to `dist/` |
@@ -87,9 +89,9 @@ helper pages on every connected domain, and the dev server proxies `/__` to the 
 Each address the app is served from needs, in Google Cloud console > APIs & Services > Credentials > the
 *Web client (auto created by Google Service)*:
 - Authorized JavaScript origins: `https://flashcards.spanion.in`, `https://spanion-flash-cards.web.app`,
-  `http://localhost:8080`
+  `http://localhost:2100`
 - Authorized redirect URIs: `https://flashcards.spanion.in/__/auth/handler`,
-  `https://spanion-flash-cards.web.app/__/auth/handler`, `http://localhost:8080/__/auth/handler`
+  `https://spanion-flash-cards.web.app/__/auth/handler`, `http://localhost:2100/__/auth/handler`
 
 ### Budget kill switch
 
