@@ -47,7 +47,30 @@
     "card-delete": "Card deleted",
     "move-to-bin": "Move to bin",
     "mark-as-fav": "Mark favourite",
-    "discard-confirm": "Your changes could not be saved. Leave anyway and lose them?"
+    "discard-confirm": "Your changes could not be saved. Leave anyway and lose them?",
+    "import": {
+      "title": "Import cards",
+      "paste": "Paste cards, one per line",
+      "file": "Choose a file",
+      "confirm": "Add cards",
+      "ready": "1 card ready to add | {n} cards ready to add",
+      "skipped": "{k} line skipped (no back side): line {list} | {k} lines skipped (no back side): lines {list}",
+      "too-many": "You can import up to 1,000 cards at a time.",
+      "too-big": "That file is too big. The limit is 2 MB."
+    },
+    "export": {
+      "csv": "Export as CSV",
+      "json": "Export as JSON"
+    },
+    "duplicate": {
+      "action": "Duplicate set",
+      "title": "{title} (copy)"
+    },
+    "reorder": {
+      "title": "Reorder cards",
+      "up": "Move up",
+      "down": "Move down"
+    }
   },
   "profile": {
     "member": "Member Since",
@@ -139,6 +162,14 @@
       "al": "Alphabetically",
       "nf": "New first",
       "of": "Old first"
+    },
+    "backup": {
+      "title": "Back up all sets",
+      "desc": "Download every set and label as one file."
+    },
+    "restore": {
+      "title": "Restore from backup",
+      "desc": "Add the sets from a backup file. Nothing you have is overwritten."
     }
   },
   "info": {
@@ -195,12 +226,15 @@
       "delete": "Could not delete. Please try again.",
       "name": {
         "edit": "Could not update your profile."
-      }
+      },
+      "not-backup": "That file isn't a flashcards backup.",
+      "too-big": "This set is too big to save. Split it into smaller sets."
     },
     "moved-to-bin": "Moved to bin",
     "set-not-found": "That flashcard set was not found.",
     "slow-network": "Experiencing network difficulty, please hold on!",
-    "offline-save": "You're offline. Connect to the internet to save."
+    "offline-save": "You're offline. Connect to the internet to save.",
+    "restored": "Restored 1 set. | Restored {n} sets."
   },
   "login": {
     "email": "Email",
@@ -244,7 +278,9 @@
     },
     "flip": "Flip card",
     "learn": "Mark as learned",
-    "unlearn": "Mark as not learned"
+    "unlearn": "Mark as not learned",
+    "next-side": "Next: back side",
+    "save-next": "Save and add next"
   },
   "bin": {
     "confirm": {

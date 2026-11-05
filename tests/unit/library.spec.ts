@@ -104,4 +104,28 @@ describe('library store', () => {
     expect(library.sets[0].title).toBe('a');
     expect(useSessionStore().snack.text).toBe('offline');
   });
+
+  const TOO_BIG = 'This set is too big to save. Split it into smaller sets.';
+  const bigCards = [{ id: 'c', front: 'x'.repeat(900_001), back: 'b', learned: false, date: 'd' }];
+
+  it('refuses to save a set over the size limit without calling the api', async () => {
+    api.fetchCardSets.mockResolvedValue([{ ...set('a'), docId: 'd1' }]);
+    api.fetchLabels.mockResolvedValue([]);
+    const library = useLibraryStore();
+    signIn('alice');
+    await library.load();
+
+    const ok = await library.saveSet({ ...library.sets[0], cards: bigCards });
+    expect(ok).toBe(false);
+    expect(api.updateCardSet).not.toHaveBeenCalled();
+    expect(useSessionStore().snack.text).toBe(TOO_BIG);
+  });
+
+  it('refuses to create a set over the size limit', async () => {
+    const library = useLibraryStore();
+    signIn('alice');
+    expect(await library.createSet({ ...set('big'), cards: bigCards })).toBeNull();
+    expect(api.addCardSet).not.toHaveBeenCalled();
+    expect(useSessionStore().snack.text).toBe(TOO_BIG);
+  });
 });

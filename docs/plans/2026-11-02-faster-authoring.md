@@ -21,7 +21,7 @@
 - §2.9: "Every string with a count uses vue-i18n plural forms, singular | plural." Locale values below are written `singular | plural`, and the code passes the count (`t(key, { n }, n)`).
 - §2.10: an online-only action, offline, shows the existing `toast.offline-save` message "You're offline. Connect to the internet to save."
 - No new dependency: CSV parsing, CSV writing and file download are written in `src/utils/`.
-- This plan can run beside the study-modes plan, which also changes `CardFlash.vue` and `GroupCardFlash.vue`. Whichever merges second keeps both sets of changes.
+- The study-modes plan is merged (#39): `CardFlash.vue` already takes `reverse` and exposes `flip()`, and `GroupCardFlash.vue` exposes `scrollToCard`, `next`, `prev`, `goTo` and `flipFocused`. Task 4 adds to these and keeps every one (spec 13: later plans add to these components rather than replacing them). Amended 2026-11-05.
 
 ## Checkpoints
 
@@ -247,7 +247,7 @@ defineProps<{ modelValue: boolean; cards: FlashCard[]; color: string }>();
 defineEmits<{ 'update:modelValue': [open: boolean]; reorder: [cards: FlashCard[]] }>();
 ```
 
-`Add.vue` options panel, in this order after the existing rows: Import cards, Export as CSV, Export as JSON, Reorder cards, Duplicate set (only when the set has a `docId`). "Add cards" is disabled while the preview has 0 cards or more than 1,000. Imported cards become `FlashCard`s with a new `uid()`, `learned: false` and the current date, added after the existing cards. Duplicate first commits pending edits, then calls `createSet` with a new `id`, no `docId`, the date now, `fav: false`, `trashed: false`, no `shareId`, the same colour and labels, and every card copied with a new id, `learned: false` and no `srs`; on success it navigates to `/{copy.id}/edit`.
+`Add.vue` options panel, in this order after the existing rows: Import cards, Export as CSV, Export as JSON, Reorder cards, Duplicate set (only when the set has a `docId`). "Add cards" is disabled while the preview has 0 cards or more than 1,000. Imported cards become `FlashCard`s with a new `uid()`, `learned: false` and the current date, added after the existing cards. Duplicate first commits pending edits, then calls `createSet` with a new `id`, no `docId`, the date now, `fav: false`, `trashed: false`, no `shareId`, no `studiedAt`, the same colour and labels, and every card copied with a new id, `learned: false` and no `srs`; on success it navigates to `/{copy.id}/edit`.
 
 **Spec:**
 - §5.1: "The editor's options get "Import cards", which opens a dialog with a text box ("Paste cards, one per line"), a file picker ("Choose a file"; `.csv`, `.tsv`, `.txt`, max 2 MB) and an "Add cards" button."
@@ -317,7 +317,7 @@ git commit -m "feat(authoring): import, export, duplicate and reorder in the edi
 ```ts
 // CardFlash.vue — additions
 defineEmits<{ 'add-after': [card: FlashCard] }>();      // only in edit mode (browse false)
-defineExpose({ edit: (side: 'front' | 'back') => void }); // flips to that side and opens the text dialog
+defineExpose({ flip, edit: (side: 'front' | 'back') => void }); // edit flips to that side and opens the text dialog; flip is plan 1's
 
 // GroupCardFlash.vue — on 'add-after' it inserts a blank card
 // { id: uid(), front: '', back: '', learned: false, date: now ISO } right after that card,
