@@ -113,6 +113,10 @@
     "study": {
       "title": "All cards learned",
       "subtitle": "Turn off “Unlearned only” or reset progress to study again."
+    },
+    "due": {
+      "title": "Nothing due",
+      "subtitle": "You're all caught up. Come back tomorrow."
     }
   },
   "study": {
@@ -130,7 +134,8 @@
       "prev": "Previous card",
       "learn": "Mark as learned",
       "unlearn": "Mark as not learned",
-      "help": "Show keyboard shortcuts"
+      "help": "Show keyboard shortcuts",
+      "rate": "Rate the card (Again, Hard, Good, Easy)"
     },
     "summary": {
       "title": "Session complete",
@@ -363,5 +368,17 @@
       "title": "Can't sign in?",
       "body": "Email {email} from the address on your account, asking to delete it. We delete it within 30 days and reply to confirm."
     }
+  },
+  "srs": {
+    "again": "Again",
+    "hard": "Hard",
+    "good": "Good",
+    "easy": "Easy"
+  },
+  "due": {
+    "banner": "{n} card due | {n} cards due",
+    "study-now": "Study now",
+    "set-count": "{n} due",
+    "set-new": "{m} new"
   }
 }

@@ -17,7 +17,7 @@ verified: human:panditankit1995@gmail.com
 - Stores are `use<Name>Store`, written in setup style with `defineStore('<name>', () => …)`
   (`src/stores/library.ts`).
 - Every user-facing string is an i18n key, present in both `src/locales/en.json` and `src/locales/hi.json`;
-  `tests/unit/locales.spec.ts` checks they match.
+  `tests/unit/locales.spec.ts` checks they match. Strings with a count use vue-i18n plural forms (`singular | plural`, called `t(key, { n }, n)`).
 
 ## Folder layout
 

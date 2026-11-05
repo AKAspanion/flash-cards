@@ -48,6 +48,10 @@ a Cloud Billing budget publishes to. The web app has no jobs or queues.
    localStorage.
 7. `src/utils/studyQueue.ts` builds the study queue and the session summary as pure functions, and
    `src/composables/useStudyShortcuts.ts` binds the review screen's keyboard shortcuts.
+8. Import parsing, export and backup files, and the size check are pure functions in `src/utils/`
+   (`cardImport.ts`, `cardExport.ts`, `setSize.ts`). The store refuses a save over the limit, so every save path is
+   covered ([size decision](../decisions/set-size-limit-900000-bytes.md)); `downloadText()` in `src/utils/download.ts`
+   saves a file for exports, backups and any later feature that downloads.
 
 ## Sources
 
@@ -62,6 +66,10 @@ a Cloud Billing budget publishes to. The web app has no jobs or queues.
 - `src/stores/prefs.ts`
 - `src/utils/cardSets.ts`
 - `src/utils/studyQueue.ts`
+- `src/utils/setSize.ts`
+- `src/utils/cardImport.ts`
+- `src/utils/cardExport.ts`
+- `src/utils/download.ts`
 - `src/composables/useStudyShortcuts.ts`
 - `firebase.json`
 - `firestore.rules`

@@ -105,6 +105,17 @@
           </div>
         </div>
         <v-spacer />
+        <div
+          v-if="counts.due || counts.new"
+          class="text-label-medium text-right mr-3"
+        >
+          <div v-if="counts.due">
+            {{ t('due.set-count', { n: counts.due }) }}
+          </div>
+          <div v-if="counts.new">
+            {{ t('due.set-new', { m: counts.new }) }}
+          </div>
+        </div>
         <v-chip
           :disabled="disabled"
           size="small"
@@ -138,6 +149,8 @@ import { useI18n } from 'vue-i18n';
 import type { CardSet, Label } from '@/types';
 import { learnedCount } from '@/utils/cardSets';
 import { shade } from '@/utils/color';
+import { localDate } from '@/utils/dates';
+import { setDueCounts } from '@/utils/srs';
 import { useLibraryStore } from '@/stores/library';
 import { useSessionStore } from '@/stores/session';
 
@@ -168,6 +181,7 @@ const learned = computed(() => learnedCount(props.card));
 const percentage = computed(() =>
   props.card.cards.length ? Math.floor((learned.value / props.card.cards.length) * 100) : 0,
 );
+const counts = computed(() => setDueCounts(props.card, localDate()));
 const swipeDisabled = computed(() => props.bin || props.disabled || !session.online);
 
 // ---- swipe right to favourite, left to move to bin ----

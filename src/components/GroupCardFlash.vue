@@ -7,7 +7,7 @@
     <section class="card-slider__spacer" />
     <section
       v-for="(card, index) in modelValue"
-      :key="card.id"
+      :key="itemKeys[index]"
       class="card-slider__item"
       :style="{ width: itemWidth }"
     >
@@ -19,10 +19,12 @@
         :model-value="card"
         :ref="(el) => setCardRef(el, index)"
         :number="index + 1"
+        :rating="rating"
         :reverse="reverse"
         @add-after="onAddAfter"
         @check="onCheck"
         @delete="onDelete"
+        @rate="(rating) => emit('rate', { card, rating })"
         @update:model-value="onUpdate"
       />
     </section>
@@ -35,6 +37,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useDisplay } from 'vuetify';
 import type { FlashCard, Label } from '@/types';
 import { uid } from '@/utils/cardSets';
+import type { Rating } from '@/utils/srs';
 import CardFlash from './CardFlash.vue';
 
 const props = withDefaults(
@@ -45,16 +48,22 @@ const props = withDefaults(
     browse?: boolean;
     disabled?: boolean;
     reverse?: boolean;
+    rating?: boolean;
   }>(),
-  { color: '', labels: () => [], browse: false, disabled: false, reverse: false },
+  { color: '', labels: () => [], browse: false, disabled: false, reverse: false, rating: false },
 );
 const emit = defineEmits<{
   'update:modelValue': [cards: FlashCard[]];
   delete: [payload: { val: FlashCard; index: number }];
   focused: [index: number];
+  rate: [payload: { card: FlashCard; rating: Rating }];
 }>();
 
-type CardHandle = { flip: () => void; edit: (side: 'front' | 'back') => void };
+type CardHandle = {
+  flip: () => void;
+  edit: (side: 'front' | 'back') => void;
+  rate: (rating: Rating) => boolean;
+};
 
 const { xs } = useDisplay();
 const container = ref<HTMLElement | null>(null);
@@ -64,6 +73,15 @@ let focused = 0;
 let pendingTarget: number | null = null;
 let pendingTimer: ReturnType<typeof setTimeout> | undefined;
 const cardRefs: Array<CardHandle | null> = [];
+// A card can be queued twice (rated "again"), so a repeat gets its own key.
+const itemKeys = computed(() => {
+  const seen = new Map<string, number>();
+  return props.modelValue.map((card) => {
+    const n = seen.get(card.id) ?? 0;
+    seen.set(card.id, n + 1);
+    return n ? `${card.id}#${n}` : card.id;
+  });
+});
 
 function setCardRef(el: unknown, index: number) {
   cardRefs[index] = (el as CardHandle | null) ?? null;
@@ -132,6 +150,10 @@ function goTo(index: number) {
 
 function flipFocused() {
   cardRefs[focused]?.flip();
+}
+
+function rateFocused(rating: Rating): boolean {
+  return cardRefs[focused]?.rate(rating) ?? false;
 }
 
 function updateFocused() {
@@ -212,7 +234,7 @@ onBeforeUnmount(() => {
   container.value?.removeEventListener('wheel', onWheel);
 });
 
-defineExpose({ scrollToCard, next, prev, goTo, flipFocused });
+defineExpose({ scrollToCard, next, prev, goTo, flipFocused, rateFocused });
 </script>
 
 <style scoped>

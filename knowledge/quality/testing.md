@@ -12,11 +12,11 @@ verified: human:panditankit1995@gmail.com
 
 - **Unit** (`tests/unit/*.spec.ts`, Vitest with jsdom, configured in the `test` block of `vite.config.ts`): the
   card mapper, set filtering and sorting, colour shading, auth error mapping, the router's redirect logic, the
-  library and prefs stores, the study queue, the keyboard shortcut composable and the card components (mounted with `@vue/test-utils`), that the two locale files match, and the kill switch's logic.
+  library and prefs stores, the study queue, the keyboard shortcut composable and the card components (mounted with `@vue/test-utils`), card import, export and backup files, duplicating cards, the set size check, that the two locale files match, and the kill switch's logic.
 - **Security rules** (`tests/unit/firestore.rules.spec.ts`): owner-only access and the stored shape, run on the
   Firestore emulator with `@firebase/rules-unit-testing`.
 - **End-to-end** (`tests/e2e/*.spec.ts`, Playwright): sign-in redirects and sign-up validation, creating,
-  studying (study modes in `tests/e2e/study-modes.spec.ts`), editing and binning sets, search and label filters, settings persistence, and axe accessibility scans
+  studying (study modes in `tests/e2e/study-modes.spec.ts`), editing and binning sets, search and label filters, settings persistence, authoring, quick entry and backup (`tests/e2e/authoring.spec.ts`, `quick-entry.spec.ts`, `backup.spec.ts`), and axe accessibility scans
   ([accessibility](../design-system/accessibility.md)). They run on a production build in `emulator` mode against
   the Auth and Firestore emulators, in a desktop and a mobile project, with the service worker blocked and reduced
   motion on (`playwright.config.ts`).
@@ -40,6 +40,13 @@ verified: human:panditankit1995@gmail.com
 - `playwright.config.ts`
 - `package.json`
 - `tests/e2e/study-modes.spec.ts`
+- `tests/e2e/authoring.spec.ts`
+- `tests/e2e/quick-entry.spec.ts`
+- `tests/e2e/backup.spec.ts`
+- `tests/unit/setSize.spec.ts`
+- `tests/unit/cardImport.spec.ts`
+- `tests/unit/cardExport.spec.ts`
+- `tests/unit/duplicateCards.spec.ts`
 - `tests/unit/firestore.rules.spec.ts`
 - `tests/e2e/helpers.ts`
 - `tests/e2e/a11y.spec.ts`
@@ -49,4 +56,5 @@ verified: human:panditankit1995@gmail.com
 
 ## History
 
+- 2026-11-05: the shared helper in `tests/e2e/helpers.ts` located Save by name; now it is exact, because "Save and add next" stays in the DOM while the text dialog closes.
 - 2026-11-05: the e2e preview ran on the tool's default port; now `DEV_PORTS.e2ePreview` (`2108`), because every local port moved into one block. See [ports](../decisions/local-ports-2100-block.md).

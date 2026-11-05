@@ -16,6 +16,7 @@ const routes = [
   { path: '/add', name: 'add', component: () => import('@/views/Add.vue'), meta: { requireAuth: true } },
   { path: '/:id/edit', name: 'edit', component: () => import('@/views/Add.vue'), meta: { requireAuth: true } },
   { path: '/:id/view', name: 'view', component: () => import('@/views/View.vue'), meta: { requireAuth: true } },
+  { path: '/due', name: 'due', component: () => import('@/views/Due.vue'), meta: { requireAuth: true } },
   { path: '/bin', name: 'bin', component: () => import('@/views/Bin.vue'), meta: { requireAuth: true } },
   { path: '/profile', name: 'profile', component: () => import('@/views/Profile.vue'), meta: { requireAuth: true } },
   { path: '/info', name: 'info', component: () => import('@/views/Info.vue'), meta: { requireAuth: true } },

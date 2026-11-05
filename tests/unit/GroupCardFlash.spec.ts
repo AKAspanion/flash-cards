@@ -41,6 +41,7 @@ function exposed() {
     prev(): void;
     goTo(index: number): void;
     flipFocused(): void;
+    rateFocused(rating: 'again' | 'hard' | 'good' | 'easy'): boolean;
   };
 }
 
@@ -106,14 +107,27 @@ describe('GroupCardFlash flipping', () => {
     expect(inners()).toEqual([true, true, true]);
   });
 
-  it('marks a learned card not learned when peeking online in browse mode', () => {
+  it('does not change a learned card when it is flipped online in browse mode', () => {
     mountSlider({ browse: true, modelValue: makeCards(true) });
     useSessionStore().online = true;
     exposed().flipFocused();
-    const events = wrapper!.emitted('update:modelValue');
-    expect(events).toHaveLength(1);
-    const cards = events![0][0] as FlashCard[];
-    expect(cards[0].learned).toBe(false);
+    expect(wrapper!.emitted('update:modelValue')).toBeUndefined();
+  });
+});
+
+describe('GroupCardFlash rating', () => {
+  it('rateFocused() before any flip returns false and emits nothing', () => {
+    mountSlider({ browse: true, rating: true });
+    expect(exposed().rateFocused('hard')).toBe(false);
+    expect(wrapper!.emitted('rate')).toBeUndefined();
+  });
+
+  it('flipFocused() then rateFocused("hard") emits rate with the first card', async () => {
+    mountSlider({ browse: true, rating: true });
+    exposed().flipFocused();
+    await wrapper!.vm.$nextTick();
+    expect(exposed().rateFocused('hard')).toBe(true);
+    expect(wrapper!.emitted('rate')).toEqual([[{ card: makeCards()[0], rating: 'hard' }]]);
   });
 });
 

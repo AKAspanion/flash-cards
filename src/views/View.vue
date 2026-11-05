@@ -35,8 +35,10 @@
       :disabled="saving"
       :labels="setLabels"
       :model-value="queuedCards"
+      rating
       :reverse="prefs.studyReverse"
       @focused="(index) => (focusedIndex = index)"
+      @rate="onRate"
       @update:model-value="onQueueUpdate"
     />
     <container-empty
@@ -139,7 +141,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import BarTop from '@/components/BarTop.vue';
@@ -150,6 +152,8 @@ import StudyShortcutsDialog from '@/components/StudyShortcutsDialog.vue';
 import StudySummaryDialog from '@/components/StudySummaryDialog.vue';
 import { useStudyShortcuts } from '@/composables/useStudyShortcuts';
 import type { CardSet, FlashCard } from '@/types';
+import { localDate } from '@/utils/dates';
+import { schedule, type Rating } from '@/utils/srs';
 import { buildQueue, summarize } from '@/utils/studyQueue';
 import { useLibraryStore } from '@/stores/library';
 import { usePrefsStore } from '@/stores/prefs';
@@ -173,7 +177,14 @@ const resetOpen = ref(false);
 const shortcutsOpen = ref(false);
 const summaryOpen = ref(false);
 const summary = ref<{ known: number; total: number; missed: string[] }>({ known: 0, total: 0, missed: [] });
-const slider = ref<{ next: () => void; prev: () => void; flipFocused: () => void } | null>(null);
+const slider = ref<{
+  next: () => void;
+  prev: () => void;
+  flipFocused: () => void;
+  rateFocused: (rating: Rating) => boolean;
+} | null>(null);
+// Cards already re-queued by an "again" this visit; each comes back once.
+const requeued = new Set<string>();
 
 const learned = computed(() => cards.value.filter((c) => c.learned).length);
 const queuedCards = computed(() => {
@@ -220,7 +231,7 @@ watch(
 );
 
 function openSummary() {
-  summary.value = summarize(cards.value, queue.value);
+  summary.value = summarize(cards.value, [...new Set(queue.value)]);
   summaryOpen.value = true;
 }
 
@@ -250,9 +261,31 @@ function mark(learnedValue: boolean) {
   }
 }
 
+async function onRate({ card, rating }: { card: FlashCard; rating: Rating }) {
+  if (saving.value || !session.online) {
+    return;
+  }
+  const srs = schedule(card.srs, rating, localDate());
+  cards.value = cards.value.map((c) => (c.id === card.id ? { ...c, srs, learned: rating !== 'again' } : c));
+  if (rating === 'again' && !requeued.has(card.id)) {
+    requeued.add(card.id);
+    queue.value = [...queue.value, card.id];
+    await nextTick();
+  }
+  if (atLastCard.value) {
+    openSummary();
+  } else {
+    slider.value?.next();
+  }
+}
+
 function resetProgress() {
   resetOpen.value = false;
-  cards.value = cards.value.map((c) => ({ ...c, learned: false }));
+  cards.value = cards.value.map((c) => {
+    const cleared = { ...c, learned: false };
+    delete cleared.srs;
+    return cleared;
+  });
   startQueue();
 }
 
@@ -269,6 +302,10 @@ useStudyShortcuts(() => ({
   K: () => mark(true),
   j: () => mark(false),
   J: () => mark(false),
+  '1': () => slider.value?.rateFocused('again'),
+  '2': () => slider.value?.rateFocused('hard'),
+  '3': () => slider.value?.rateFocused('good'),
+  '4': () => slider.value?.rateFocused('easy'),
   '?': () => (shortcutsOpen.value = true),
 }));
 

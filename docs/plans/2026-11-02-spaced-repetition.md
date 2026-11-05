@@ -30,6 +30,8 @@ GitHub Actions CI (`.github/workflows/ci.yml`).
 - 2.7: Unit tests are Vitest in `tests/unit/<name>.spec.ts`; e2e tests are Playwright in `tests/e2e/<flow>.spec.ts`, run with `npm run test:e2e`.
 - `learned` stays correct on every card, because the live app reads only `learned` (spec 3.2, 6.3).
 - Dates are the device's local date from `localDate()` (existing, from the study-modes plan). E2E tests that depend on the date fix the browser clock with Playwright's `page.clock`.
+- E2E tests that read or seed the emulators directly use the ports in `DEV_PORTS` (`dev-ports.ts`), as `tests/e2e/study-modes.spec.ts` does; never a literal port. Amended 2026-11-05 after the 2100 port block (#40).
+- The faster-authoring plan is merged (#41): `CardFlash.vue` also emits `add-after` and exposes `edit(side)`, and `GroupCardFlash.vue` exposes `scrollToCard`. Task 2 keeps all of them. Amended 2026-11-05.
 
 ## Checkpoints
 
@@ -155,7 +157,7 @@ git commit -m "feat(srs): add SM-2 scheduler and due queue"
 **Files:**
 - Modify: `src/components/CardFlash.vue`
 - Modify: `src/components/GroupCardFlash.vue`
-- Test: `tests/unit/CardFlash.spec.ts`
+- Test: `tests/unit/CardFlash.spec.ts` (new file)
 - Test: `tests/unit/GroupCardFlash.spec.ts`
 
 **Interfaces:**
@@ -167,12 +169,12 @@ git commit -m "feat(srs): add SM-2 scheduler and due queue"
 // CardFlash.vue
 props: { rating?: boolean }           // default false; true = show the rating row once revealed
 emits: { rate: [rating: Rating] }
-defineExpose({ flip(): void; rate(rating: Rating): boolean }) // rate() is false (and emits nothing) until revealed
+defineExpose({ flip(): void; edit(side): void; rate(rating: Rating): boolean }) // rate() is false (and emits nothing) until revealed; edit is the faster-authoring plan's
 
 // GroupCardFlash.vue
 props: { rating?: boolean }           // passed to every CardFlash
 emits: { rate: [payload: { card: FlashCard; rating: Rating }] }
-defineExpose({ next(); prev(); goTo(index: number); flipFocused(); rateFocused(rating: Rating): boolean })
+defineExpose({ scrollToCard(index: number); next(); prev(); goTo(index: number); flipFocused(); rateFocused(rating: Rating): boolean })
 ```
 
 - A card is revealed once it has been flipped at least once (from either starting face). With `rating` on and
@@ -306,7 +308,7 @@ git commit -m "feat(srs): rate cards on the review screen"
 - Consumes: `dueQueue`, `dueCount`, `setDueCounts`, `schedule`, `DueEntry` and the `due.*`, `empty.due.*` keys (Task 1);
   `CardFlash` `rating` prop, `rate` event, `flip()` and `rate()` (Task 2); `localDate` and `useStudyShortcuts`
   (existing, from the study-modes plan); `StudySummaryDialog` (existing, from the study-modes plan); existing
-  `library.saveSet`, `ContainerEmpty`, `BarTop`, the user-store `unsavedChanges` flag
+  `library.saveSet`, `ContainerEmpty`, `BarTop`, the `unsavedChanges` flag in `useSessionStore()` (`src/stores/session.ts`)
 - Produces:
 
 | Route | Name | Component | Meta |
