@@ -1,5 +1,7 @@
 # Library Search and Sort Implementation Plan
 
+**Status:** complete
+
 > **For agentic workers:** REQUIRED SUB-SKILL: the project's workflow policy names the executor (`run.executor`): ga:implement-with-subagents by default, or ga:implement. Follow the policy and this plan's Checkpoints. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Find sets by what is on their cards, sort them by progress or by when they were last studied, and show on each set when it was last studied.
@@ -18,6 +20,8 @@
 - §2.7: unit tests in `tests/unit/<name>.spec.ts` (Vitest); end-to-end tests in `tests/e2e/<flow>.spec.ts` (Playwright, emulators, `npm run test:e2e`).
 - §2.9: "Every string with a count uses vue-i18n plural forms, singular | plural." Locale values below are written `singular | plural`, and the code passes the count (`t(key, { n }, n)`).
 - Stored order values already in people's browsers (`Alphabetically`, `New first`, `Old first`) keep working unchanged.
+- E2E tests that read or seed the emulators directly use the ports in `DEV_PORTS` (`dev-ports.ts`); never a literal port. Amended 2026-11-05.
+- The spaced-repetition plan is merged (#42): `CardFlashSet.vue` already shows "{n} due" and "{m} new" in its lower half, and `dueQueue` in `src/utils/srs.ts` sorts by `title.localeCompare` on its own, so changing `filterAndSortSets` doesn't move it. Amended 2026-11-05.
 
 ## Checkpoints
 
@@ -91,21 +95,21 @@ New locale keys, en copy (add every one to `hi.json` too):
 - Given `t('home.set.matches', { n: 1 }, 1)`, the English text is `Matches in 1 card`; with 4 it is `Matches in 4 cards`.
 - Every new key exists in both locale files (`tests/unit/locales.spec.ts` passes unchanged).
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/cardSets.spec.ts`, `tests/unit/relativeTime.spec.ts` and `tests/unit/prefs.spec.ts`, with the new functions created first with their real signatures
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/cardSets.spec.ts`, `tests/unit/relativeTime.spec.ts` and `tests/unit/prefs.spec.ts`, with the new functions created first with their real signatures
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm test`
 Expected: FAIL on the assertions, not on missing modules
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, add the locale keys to both files, until they pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, add the locale keys to both files, until they pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/types.ts src/utils/cardSets.ts src/utils/relativeTime.ts src/locales/en.json src/locales/hi.json tests/unit/cardSets.spec.ts tests/unit/relativeTime.spec.ts tests/unit/prefs.spec.ts
@@ -134,21 +138,21 @@ git commit -m "feat(library): search card text and sort by progress or last stud
 - Given sets `Alpha` and `Beta` and only `Alpha` reviewed (marked learned on the review screen, then back to Home), when "Recently studied" is picked, Home lists `Alpha` before `Beta`.
 - Given the Settings page with the select open at 390 px wide, the axe scan finds no violations.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/e2e/library-sort.spec.ts`
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/e2e/library-sort.spec.ts`
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm run test:e2e`
 Expected: FAIL on the missing select items
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm run test:e2e`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/views/Settings.vue tests/e2e/library-sort.spec.ts
@@ -173,7 +177,7 @@ git commit -m "feat(library): offer the progress and recently-studied orders in 
 defineProps<{ card: CardSet; bin?: boolean; disabled?: boolean; search?: string }>();
 ```
 
-The card shows "Matches in {n} cards" only when `search` is not empty, the title does not match, and `cardMatchCount` is above 0. It shows "Studied {time}" from `relativeTime(studiedAt, now, prefs.lang)`, or "Not studied yet" when `studiedAt` is missing, except in the Bin. Both lines sit in the card's lower half and fit at 390 px wide without growing the card past its 182 px height.
+The card shows "Matches in {n} cards" only when `search` is not empty, the title does not match, and `cardMatchCount` is above 0. It shows "Studied {time}" from `relativeTime(studiedAt, now, prefs.lang)`, or "Not studied yet" when `studiedAt` is missing, except in the Bin. Both lines sit in the card's lower half beside the existing due/new counts (spaced-repetition plan) and, with them, fit at 390 px wide without growing the card past its 182 px height.
 
 **Spec:**
 - §7.1: "Search matches a set when the text appears in its title or in any card's front or back, ignoring case."
@@ -194,31 +198,31 @@ The card shows "Matches in {n} cards" only when `search` is not empty, the title
 - Given the Bin, a set card shows neither line.
 - Given Home with a search active at 390 px wide, the axe scan finds no violations.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/e2e/library-search.spec.ts`
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/e2e/library-search.spec.ts`
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm run test:e2e`
 Expected: FAIL on the missing lines
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm run test:e2e`
 Expected: PASS
 
-- [ ] **Step 5: Run the type check**
+- [x] **Step 5: Run the type check**
 
 Run: `npm run type-check`
 Expected: no errors
 
-- [ ] **Step 6: Run lint**
+- [x] **Step 6: Run lint**
 
 Run: `npm run lint`
 Expected: no errors
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/components/CardFlashSet.vue src/views/Home.vue tests/e2e/library-search.spec.ts

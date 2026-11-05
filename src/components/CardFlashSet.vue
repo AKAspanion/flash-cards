@@ -69,7 +69,10 @@
         </div>
       </v-card>
     </div>
-    <div class="d-flex align-center pa-6">
+    <div
+      class="d-flex align-center px-6"
+      :class="bin ? 'py-6' : 'py-2'"
+    >
       <template v-if="bin">
         <v-btn
           :aria-label="t('common.delete')"
@@ -94,7 +97,7 @@
         </v-btn>
       </template>
       <template v-else>
-        <div>
+        <div class="set-card__info">
           <div class="text-label-medium text-uppercase">
             {{ t('common.memorized') }}
           </div>
@@ -102,6 +105,15 @@
             <span>{{ learned }} / {{ card.cards.length }}</span>
             <span class="mx-2">-</span>
             <span>{{ percentage }}%</span>
+          </div>
+          <div
+            v-if="matchCount"
+            class="set-card__line text-truncate"
+          >
+            {{ t('home.set.matches', { n: matchCount }, matchCount) }}
+          </div>
+          <div class="set-card__line text-truncate">
+            {{ studiedText }}
           </div>
         </div>
         <v-spacer />
@@ -147,19 +159,22 @@ import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import type { CardSet, Label } from '@/types';
-import { learnedCount } from '@/utils/cardSets';
+import { cardMatchCount, learnedCount, titleMatches } from '@/utils/cardSets';
+import { relativeTime } from '@/utils/relativeTime';
 import { shade } from '@/utils/color';
 import { localDate } from '@/utils/dates';
 import { setDueCounts } from '@/utils/srs';
+import { usePrefsStore } from '@/stores/prefs';
 import { useLibraryStore } from '@/stores/library';
 import { useSessionStore } from '@/stores/session';
 
 const SWIPE_MAX = 100;
 const SWIPE_TRIGGER = 62;
 
-const props = withDefaults(defineProps<{ card: CardSet; bin?: boolean; disabled?: boolean }>(), {
+const props = withDefaults(defineProps<{ card: CardSet; bin?: boolean; disabled?: boolean; search?: string }>(), {
   bin: false,
   disabled: false,
+  search: '',
 });
 const emit = defineEmits<{
   fav: [card: CardSet];
@@ -170,6 +185,7 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
+const prefs = usePrefsStore();
 const router = useRouter();
 const session = useSessionStore();
 const library = useLibraryStore();
@@ -182,6 +198,15 @@ const percentage = computed(() =>
   props.card.cards.length ? Math.floor((learned.value / props.card.cards.length) * 100) : 0,
 );
 const counts = computed(() => setDueCounts(props.card, localDate()));
+// Only a set that matched through its cards alone says how many; a title match needs no explanation.
+const matchCount = computed(() =>
+  props.search.trim() && !titleMatches(props.card, props.search) ? cardMatchCount(props.card, props.search) : 0,
+);
+const studiedText = computed(() =>
+  props.card.studiedAt
+    ? t('home.set.studied', { time: relativeTime(props.card.studiedAt, new Date(), prefs.lang) })
+    : t('home.set.not-studied'),
+);
 const swipeDisabled = computed(() => props.bin || props.disabled || !session.online);
 
 // ---- swipe right to favourite, left to move to bin ----
@@ -248,6 +273,14 @@ function resetSwipe() {
 .set-card__swipe {
   position: relative;
   z-index: 2;
+}
+.set-card__info {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.set-card__line {
+  font-size: 0.75rem;
+  line-height: 1rem;
 }
 .set-card__labels {
   white-space: nowrap;

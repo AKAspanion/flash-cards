@@ -12,15 +12,16 @@ verified: human:panditankit1995@gmail.com
 
 - **Unit** (`tests/unit/*.spec.ts`, Vitest with jsdom, configured in the `test` block of `vite.config.ts`): the
   card mapper, set filtering and sorting, colour shading, auth error mapping, the router's redirect logic, the
-  library and prefs stores, the study queue, the keyboard shortcut composable and the card components (mounted with `@vue/test-utils`), card import, export and backup files, duplicating cards, the set size check, the SM-2 scheduler and due queue (`tests/unit/srs.spec.ts`), the card rating row (`tests/unit/CardFlash.spec.ts`), that the two locale files match, and the kill switch's logic.
+  library and prefs stores, the study queue, the keyboard shortcut composable and the card components (mounted with `@vue/test-utils`), card import, export and backup files, duplicating cards, the set size check, relative-time text (`tests/unit/relativeTime.spec.ts`), the SM-2 scheduler and due queue (`tests/unit/srs.spec.ts`), the card rating row (`tests/unit/CardFlash.spec.ts`), that the two locale files match, and the kill switch's logic.
 - **Security rules** (`tests/unit/firestore.rules.spec.ts`): owner-only access and the stored shape, run on the
   Firestore emulator with `@firebase/rules-unit-testing`.
 - **End-to-end** (`tests/e2e/*.spec.ts`, Playwright): sign-in redirects and sign-up validation, creating,
-  studying (study modes in `tests/e2e/study-modes.spec.ts`), editing and binning sets, search and label filters, settings persistence, authoring, quick entry and backup (`tests/e2e/authoring.spec.ts`, `quick-entry.spec.ts`, `backup.spec.ts`), rating and the due review (`tests/e2e/srs-review.spec.ts`, `due-review.spec.ts`), and axe accessibility scans
+  studying (study modes in `tests/e2e/study-modes.spec.ts`), editing and binning sets, search and label filters, settings persistence, authoring, quick entry and backup (`tests/e2e/authoring.spec.ts`, `quick-entry.spec.ts`, `backup.spec.ts`), library search and sort (`tests/e2e/library-search.spec.ts`, `library-sort.spec.ts`), rating and the due review (`tests/e2e/srs-review.spec.ts`, `due-review.spec.ts`), and axe accessibility scans
   ([accessibility](../design-system/accessibility.md)). They run on a production build in `emulator` mode against
   the Auth and Firestore emulators, in a desktop and a mobile project, with the service worker blocked and reduced
   motion on (`playwright.config.ts`).
 - Writing review e2e tests: wait for the card to show before pressing Space, wait for the flip animation to finish before clicking a rating (a click mid-flip lets Playwright's scroll-into-view move the slider), and leave `/due` on the last card through the summary's Back to home, since Done opens the summary.
+- Writing library e2e tests: Home's search toggle and field share the "Search" label, so use the textbox role; open the Vuetify order select by clicking `.settings__select .v-field`; set titles look uppercase only through CSS, so assert on the real text.
 - E2E accounts exist only in the Auth emulator for one run; `tests/e2e/helpers.ts` holds their shared password and
   makes unique emails. That password and `.env.emulator` are test values, not secrets.
 - Nothing tests against the live Firebase project; that is left to the developer.
@@ -32,6 +33,7 @@ verified: human:panditankit1995@gmail.com
 
 ## History
 
+- 2026-11-05: library search and sort had no tests; now `relativeTime.spec.ts`, `library-search.spec.ts` and `library-sort.spec.ts` cover them.
 - 2026-11-05: no tests covered scheduling or rating; now `srs.spec.ts`, `CardFlash.spec.ts`, `srs-review.spec.ts` and `due-review.spec.ts` do, for spaced repetition.
 - 2026-11-05: component tests were absent; now `@vue/test-utils` is a dev dependency for mounting card components, for study modes.
 
@@ -49,6 +51,9 @@ verified: human:panditankit1995@gmail.com
 - `tests/unit/CardFlash.spec.ts`
 - `tests/e2e/srs-review.spec.ts`
 - `tests/e2e/due-review.spec.ts`
+- `tests/unit/relativeTime.spec.ts`
+- `tests/e2e/library-search.spec.ts`
+- `tests/e2e/library-sort.spec.ts`
 - `tests/unit/setSize.spec.ts`
 - `tests/unit/cardImport.spec.ts`
 - `tests/unit/cardExport.spec.ts`
