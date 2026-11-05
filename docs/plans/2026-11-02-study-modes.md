@@ -43,7 +43,7 @@ None. The policy's `run.checkpoints` is `none`. Task 4 carries a `security` tag 
 - Modify: `src/locales/en.json`
 - Modify: `src/locales/hi.json`
 - Modify: `package.json`
-- Modify: `package-lock.json`
+- Modify: `pnpm-lock.yaml`
 - Test: `tests/unit/cardSetMapper.spec.ts`
 - Test: `tests/unit/dates.spec.ts`
 - Test: `tests/unit/prefs.spec.ts`
@@ -128,7 +128,7 @@ tests fail on behaviour rather than on a missing module.
 
 - [ ] **Step 3: Install the dev dependency**
 
-Run: `npm install --save-dev @vue/test-utils@^2`
+Run: `pnpm add -D @vue/test-utils@^2`
 
 - [ ] **Step 4: Write the minimal implementation** to the Interfaces (types, mapper, dates, prefs, both locale files), until the tests pass
 
@@ -140,7 +140,7 @@ Expected: PASS
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/types.ts src/services/cardSetMapper.ts src/utils/dates.ts src/stores/prefs.ts src/locales/en.json src/locales/hi.json package.json package-lock.json tests/unit/cardSetMapper.spec.ts tests/unit/dates.spec.ts tests/unit/prefs.spec.ts
+git add src/types.ts src/services/cardSetMapper.ts src/utils/dates.ts src/stores/prefs.ts src/locales/en.json src/locales/hi.json package.json pnpm-lock.yaml tests/unit/cardSetMapper.spec.ts tests/unit/dates.spec.ts tests/unit/prefs.spec.ts
 git commit -m "feat(study): keep unknown card fields, add studiedAt, dates and study prefs"
 ```
 
@@ -251,6 +251,8 @@ defineExpose({
 // existing `focused` event keeps firing with the index after any of these moves
 ```
 
+- `GroupCardFlash` already exposes `scrollToCard(index)` (centres a card; `Add.vue` calls it after inserting a card).
+  Keep it exposed and unchanged; `goTo` clamps the index and calls it.
 - `reverse` only changes which face is shown first; the front face still shows `front` text and the back face
   `back` text. When `reverse` changes, each card resets to its starting face.
 - The existing peek rule stays: in browse mode, flipping a learned card while the app is online marks it not

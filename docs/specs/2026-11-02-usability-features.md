@@ -1,7 +1,8 @@
 # Usability Features Spec
 
 **Date:** 2026-11-02
-**Status:** Approved 2026-11-03, with its nine plans; to be built later
+**Status:** Approved 2026-11-03, with its nine plans. Reverified 2026-11-05 against `master` at `64de011`; amended
+sections 2.3, 3.3, 5.3, 8.6, 10.5, 10.6, 11.8 and 15.3 (see the History at the end).
 **Scope:** Nine feature areas that make the flashcards PWA faster to fill and better to study with. Each area has
 its own plan in `docs/plans/`; this spec is what all nine quote.
 
@@ -30,7 +31,8 @@ Build the plans in this order. A plan may start once the plans it depends on are
   and `cards` stays a JSON string (the rules require it).
 - 2.3 "No new paid Firebase product." The project is on the Blaze plan, but these nine plans use only Hosting, Auth
   and Firestore within their free quotas: no Cloud Functions, no Cloud Storage, no Cloud Messaging. Features that
-  would cost money are kept for a later pro plan (section 15).
+  would cost money are kept for a later pro plan (section 15). The project already runs one Cloud Function,
+  `billingKillSwitch` in `functions/`; these plans add none.
 - 2.4 "Every screen keeps working at 390 px wide and passes the existing axe scan in `tests/e2e/a11y.spec.ts`."
   Every new control has an accessible name.
 - 2.5 "Keyboard shortcuts never fire while a text field, textarea or dialog has focus, or while Ctrl, Alt or Meta
@@ -69,6 +71,16 @@ five known fields and drops the rest.
 
 `updateDoc` leaves top-level fields it is not given alone, so set-level fields need no extra care. `learned` stays
 on every card, and every plan keeps it correct, because the live app reads only `learned`.
+
+### 3.3 New collections are owned collections
+
+"Delete account removes every document the user owns, in every collection." (Requirement
+`requirements/account-deletion-covers-every-collection`.) A plan that adds `user-stats` (plan 5, owner field `uid`) or
+`shared-sets` (plan 8, owner field `ownerUid`):
+
+- adds it to `OWNED_COLLECTIONS` in `src/services/ownedCollections.ts`, with its owner field;
+- lets the owner `delete` their documents, and `list` them with a query limited to the owner field equal to their
+  uid, because Delete account finds them with that query. Any other `list` is refused.
 
 ## 4. Study modes (plan 1)
 
@@ -121,7 +133,8 @@ on every card, and every plan keeps it correct, because the live app reads only 
   their text; missing ones are created, and the restored sets point at the matching labels. A file that is not a
   backup: "That file isn't a flashcards backup." Restore is online-only (rule 2.10). Like the other Settings rows,
   each has a description: "Download every set and label as one file." and "Add the sets from a backup file. Nothing
-  you have is overwritten."
+  you have is overwritten." "Back up all sets" is the data export that `requirements/account-data-export` asks for;
+  it lives in Settings, beside Restore.
 - 5.4 Duplicate. The editor's options get "Duplicate set" (only for a saved set), which creates
   "{title} (copy)" ("untitled set (copy)" when untitled) with the same cards, colour and labels, progress cleared,
   not a favourite and not shared, and opens the copy in the editor.
@@ -177,7 +190,8 @@ on every card, and every plan keeps it correct, because the live app reads only 
   "Current streak", "Longest streak" and "Sets mastered" (sets 100% learned). Each bar's accessible name is
   "{n} cards on {date}", with the date in the app language's medium format. If the stats fail to load, the page
   shows the existing load-error state with "Retry".
-- 8.6 `user-stats/{uid}` is readable and writable only by that user, and the document id must equal their uid.
+- 8.6 `user-stats/{uid}` is readable and writable only by that user, and the document id must equal their uid. A
+  `list` is allowed only when the query is limited to `uid` equal to theirs (3.3).
 - 8.7 If the stats write fails, the review progress is still saved and the error snack says "Couldn't update your
   stats. Your progress is saved."
 
@@ -208,12 +222,13 @@ on every card, and every plan keeps it correct, because the live app reads only 
 - 10.3 Offline, a save counts as done once it is in the local cache; the app does not wait for the server. The first
   offline save after going offline shows: "Saved on this device. It will sync when you're back online."
 - 10.4 A write the server later refuses shows the existing save error snack.
-- 10.5 Deleting forever from the bin, sign-in, profile changes, sharing (plan 8) and restore from backup stay
-  online-only. Offline, delete forever says "You're offline. Connect to the internet to delete this set."; the
+- 10.5 Deleting forever from the bin, sign-in, profile changes, deleting the account, sharing (plan 8) and restore
+  from backup stay online-only. Offline, delete forever says "You're offline. Connect to the internet to delete this set."; the
   others use rule 2.10's message.
 - 10.6 Signing out clears the local cache, so the next person on the device does not see the last user's sets.
   Offline, sign-out is refused with "You're offline. Connect to the internet to sign out, so your changes aren't
-  lost." because unsynced changes would be cleared with the cache.
+  lost." because unsynced changes would be cleared with the cache. Deleting the account also clears the local cache, the same
+  way, once the account is gone.
 - 10.7 Known limit: on a connection that is up but not working, the app thinks it is online, and saves wait for the
   server as they do today. The existing slow-network snack still shows after 8 seconds.
 
@@ -235,7 +250,8 @@ on every card, and every plan keeps it correct, because the live app reads only 
   cards rendered as Markdown through `renderCardText()`, and "Add to my library". Signed out, that button goes through sign-in and comes back to finish the copy. The copy is a new set
   with the shared title, colour and cards, and no labels; then "Added to your library" and the copy opens.
 - 11.7 A missing or stopped link: title "This link doesn't work", subtitle "The owner may have stopped sharing it."
-- 11.8 Rules: anyone may `get` a `shared-sets` document; nobody may `list` them. Only a signed-in user may create one,
+- 11.8 Rules: anyone may `get` a `shared-sets` document; nobody may `list` them, except the owner with a query
+  limited to `ownerUid` equal to their uid (3.3). Only a signed-in user may create one,
   with `ownerUid` equal to their uid, only the five fields of 11.3, `title` a string of at most 200 characters, and
   `cards` a string of at most 900,000 characters. Only the owner may update (keeping `ownerUid`) or delete.
 
@@ -329,4 +345,12 @@ the time of writing; check the Firebase and Google Cloud pricing pages before de
   are not users: every view of a shared link is a Firestore read. If a link spreads widely, revisit it here.
 - 15.2 A pro plan also needs payments (the Stripe extension for Firebase is the usual route), a pro flag per user,
   and Firestore and Storage rules that enforce it. Hiding buttons in the app is not enough.
-- 15.3 Before any of this ships, set a budget alert in Google Cloud Billing. Blaze has no spending cap.
+- 15.3 Blaze has no spending cap. The project has a budget and a kill switch (`billingKillSwitch` in `functions/`)
+  that unlinks billing when the month's budget is spent; before any of this ships, check that budget still fits.
+
+## History
+
+- 2026-11-05: reverified against `master` at `64de011`. 3.3 added and 8.6 and 11.8 amended, because Delete account
+  lists each owned collection by its owner field, which "nobody may list" would have refused. 5.3 now names the
+  data-export requirement it meets (in Settings, not Profile). 10.5 and 10.6 now cover deleting the account. 2.3 and
+  15.3 note the kill switch that shipped on 2026-11-02.

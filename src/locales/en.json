@@ -86,6 +86,34 @@
     "error": {
       "title": "Couldn't load your flashcards",
       "subtitle": "Check your connection and try again."
+    },
+    "study": {
+      "title": "All cards learned",
+      "subtitle": "Turn off “Unlearned only” or reset progress to study again."
+    }
+  },
+  "study": {
+    "options": "Study options",
+    "shuffle": "Shuffle",
+    "unlearned-only": "Unlearned only",
+    "reverse": "Back first",
+    "reset": "Reset progress",
+    "reset-confirm": "Reset progress for this set? All cards will be marked as not learned.",
+    "reset-action": "Reset",
+    "shortcuts": {
+      "title": "Keyboard shortcuts",
+      "flip": "Flip the card",
+      "next": "Next card",
+      "prev": "Previous card",
+      "learn": "Mark as learned",
+      "unlearn": "Mark as not learned",
+      "help": "Show keyboard shortcuts"
+    },
+    "summary": {
+      "title": "Session complete",
+      "result": "You knew {known} of {total} card. | You knew {known} of {total} cards.",
+      "review-missed": "Review {missed} missed",
+      "home": "Back to home"
     }
   },
   "settings": {
