@@ -18,7 +18,7 @@ Written by `cardSetToDoc` in `src/services/cardSetMapper.ts`:
 - `title`, `color` (a `#RRGGBB` string), `trashed`, `fav`.
 - `date`: a Firestore `Timestamp`, set when the set is first created in the editor.
 - `labels`: an array of label document ids.
-- `cards`: a JSON string of `FlashCard` objects (`id`, `front`, `back`, `learned`, `date`).
+- `cards`: a JSON string of `FlashCard` objects (`id`, `front`, `back`, `learned`, `date`, and an optional `srs` object, `due`, `interval`, `ease`, `reps`, `lapses`, once the card has been rated; see [spaced repetition](../features/spaced-repetition.md)).
 - `studiedAt`: optional Firestore `Timestamp`, when a review of the set last saved. The key is written only when
   set, since Firestore rejects `undefined`.
 
@@ -38,6 +38,7 @@ Written by `cardSetToDoc` in `src/services/cardSetMapper.ts`:
 
 ## History
 
+- 2026-11-05: a card had no schedule; now it may carry `srs` inside the `cards` string, for spaced repetition. No rules change: the mapper already keeps unknown card fields. See [SM-2 over FSRS](../decisions/sm2-over-fsrs.md).
 - 2026-11-05: cards lost fields the mapper didn't know and a set had no study time; now unknown card fields are kept and a set may carry `studiedAt`, for study modes.
 - 2026-11-03: `cards` had to stay a JSON string for older app versions; now no old version is in use, and the format may change. See [Original app compatibility](../decisions/original-app-compatibility.md).
 
@@ -47,5 +48,6 @@ Written by `cardSetToDoc` in `src/services/cardSetMapper.ts`:
 - `src/services/firebase.ts`
 - `src/types.ts`
 - `src/utils/cardSets.ts`
+- `src/utils/srs.ts`
 - `firestore.rules`
 - `tests/unit/cardSetMapper.spec.ts`

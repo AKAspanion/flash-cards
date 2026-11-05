@@ -13,7 +13,7 @@ verified: human:panditankit1995@gmail.com
 `/home` shows every set not in the bin as a card with its colour, labels and learned progress (`learnedCount`). The
 user can search by title, filter by one label or by favourites, open a set to study or edit, star it, or move it to
 the bin, with an Undo in the snack bar. A menu leads to the bin, labels (profile), about and settings. A floating
-button starts a new set. Below the sets list, once the sets have loaded, an AdSense banner shows when ads are configured
+button starts a new set. When cards are due, a banner shows "{n} cards due" with a Study now button that opens `/due`, and each set card shows "{n} due" and "{m} new", each hidden at 0 ([spaced repetition](spaced-repetition.md)). Below the sets list, once the sets have loaded, an AdSense banner shows when ads are configured
 ([one AdSense banner](../decisions/adsense-banner-ads.md)).
 
 ## Screens and routes
@@ -35,6 +35,7 @@ button starts a new set. Below the sets list, once the sets have loaded, an AdSe
 
 ## History
 
+- 2026-11-05: Home showed no due information; now a due banner and per-set due and new counts show, for spaced repetition.
 - 2026-11-04: no ads; now an AdSense banner sits below the sets list, because the developer wants the app to earn. See [the decision](../decisions/adsense-banner-ads.md).
 
 ## Sources
@@ -42,6 +43,7 @@ button starts a new set. Below the sets list, once the sets have loaded, an AdSe
 - `src/views/Home.vue`
 - `src/components/AdBanner.vue`
 - `src/components/CardFlashSet.vue`
+- `src/utils/srs.ts`
 - `src/components/ShimmerCardFlashSet.vue`
 - `src/utils/cardSets.ts`
 - `src/stores/library.ts`
