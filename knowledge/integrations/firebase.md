@@ -20,8 +20,12 @@ verified: human:panditankit1995@gmail.com
 - `getServices` in `src/services/firebase.ts` builds the SDK config from the `VUE_APP_*` variables and initialises
   Firebase lazily on first use. It throws `FirebaseConfigError`, naming the missing keys, if required ones are
   empty. See [environment](../operations/environment.md).
-- With `VUE_APP_USE_EMULATORS=true` it connects to the Auth and Firestore emulators; their hosts and ports are in
-  the same function and match the `emulators` block of `firebase.json`.
+- With `VUE_APP_USE_EMULATORS=true` it connects to the Auth and Firestore emulators at the ports in `DEV_PORTS`
+  (`dev-ports.ts`, mirrored in the `emulators` block of `firebase.json`). The host is `emulatorHostFor` in
+  `src/services/emulatorHost.ts`: the page's own hostname when it is `localhost` or `127.0.0.1`, else `127.0.0.1`.
+  It has to match the page's hostname because Google sign-in is a redirect: the SDK reads the result through an
+  iframe on the Auth emulator's origin, and on a different hostname the browser partitions that iframe's storage,
+  so the sign-in comes back with no result and no error.
 - The Firebase CLI is not a dependency: scripts run it with `npx` at a pinned version (`package.json`).
 
 ## Failure modes
@@ -37,11 +41,14 @@ verified: human:panditankit1995@gmail.com
 
 ## History
 
+- 2026-11-05: the emulators were always reached at `127.0.0.1`; now at the page's own loopback hostname, because Google sign-in on the Auth emulator failed silently from `localhost`.
 - 2026-11-04: Google sign-in failed on unlisted domains; now it also needs the redirect URI, because sign-in is a redirect.
 
 ## Sources
 
 - `src/services/firebase.ts`
+- `src/services/emulatorHost.ts`
+- `dev-ports.ts`
 - `src/stores/session.ts`
 - `src/stores/library.ts`
 - `firebase.json`

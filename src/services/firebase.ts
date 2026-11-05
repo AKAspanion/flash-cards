@@ -33,6 +33,7 @@ import {
 } from 'firebase/firestore';
 import type { CardSet, Label } from '@/types';
 import { authDomainFor } from './authDomain';
+import { emulatorHostFor } from './emulatorHost';
 import { OWNED_COLLECTIONS } from './ownedCollections';
 import { cardSetFromDoc, cardSetToDoc, labelFromDoc } from './cardSetMapper';
 import { DEV_PORTS } from '../../dev-ports';
@@ -78,8 +79,9 @@ function getServices() {
   const auth = getAuth(app);
   const db = getFirestore(app);
   if (useEmulators) {
-    connectAuthEmulator(auth, `http://127.0.0.1:${DEV_PORTS.auth}`, { disableWarnings: true });
-    connectFirestoreEmulator(db, '127.0.0.1', DEV_PORTS.firestore);
+    const host = emulatorHostFor(typeof window === 'undefined' ? undefined : window.location.hostname);
+    connectAuthEmulator(auth, `http://${host}:${DEV_PORTS.auth}`, { disableWarnings: true });
+    connectFirestoreEmulator(db, host, DEV_PORTS.firestore);
   }
   services = { app, auth, db };
   return services;
