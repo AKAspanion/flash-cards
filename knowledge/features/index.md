@@ -6,6 +6,7 @@
 - [Bin](bin.md) - Sets moved to the bin are only flagged trashed; from the bin the user restores them or deletes them permanently after confirming.
 - [Daily reminder and app badge](daily-reminder.md) - Settings downloads a daily reminder .ics at a time kept on the device, and the installed app's icon badge shows the number of due cards, cleared on sign-out.
 - [Create and edit a set](edit-set.md) - The set editor — title, colour, labels and cards — which saves when the user leaves it, and never saves an empty new set.
+- [Email verification reminder](email-verification.md) - Email sign-up sends a verification email, and a banner on signed-in screens reminds unverified users with Resend email and I've verified actions; it gates nothing.
 - [Library (home)](library.md) - The home screen listing the user's sets, with search, label and favourite filters, the saved sort order, swipe gestures, and move to bin with undo.
 - [Offline study](offline-study.md) - Firestore keeps a persistent IndexedDB cache, so sets open and saves work offline and sync later; a few actions stay online-only, and sign-out clears the cache within a bounded time.
 - [Privacy policy and delete-account pages](privacy-and-deletion-pages.md) - Two public pages, /privacy and /delete-account, that Google Play's listing points at; anyone can open them without signing in.

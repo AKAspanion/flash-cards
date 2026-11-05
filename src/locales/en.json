@@ -251,7 +251,8 @@
   },
   "toast": {
     "success": {
-      "sign-up": "Account created successfully!"
+      "sign-up": "Account created successfully!",
+      "sign-up-verify": "Account created. Check your inbox to verify your email."
     },
     "error": {
       "sign-up": "Could not create account. Please try again.",
@@ -305,6 +306,14 @@
       "user-mismatch": "That's a different Google account. Choose the account you signed in with.",
       "recent-login": "Please confirm it's you again, then try once more."
     }
+  },
+  "verify": {
+    "banner": "Verify your email to keep your account safe.",
+    "resend": "Resend email",
+    "check": "I've verified",
+    "sent": "Sent. Check your inbox.",
+    "not-yet": "Not verified yet. Open the link in the email first.",
+    "done": "Email verified."
   },
   "card": {
     "example": {

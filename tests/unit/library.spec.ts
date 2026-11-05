@@ -48,7 +48,15 @@ describe('library store', () => {
   afterEach(() => vi.useRealTimers());
 
   function signIn(uid: string) {
-    useSessionStore().user = { uid, email: '', displayName: '', photoURL: '', creationTime: '', lastSignInTime: '' };
+    useSessionStore().user = {
+      uid,
+      email: '',
+      displayName: '',
+      photoURL: '',
+      creationTime: '',
+      lastSignInTime: '',
+      emailVerified: false,
+    };
   }
 
   it("ignores a previous user's load that finishes after a user switch", async () => {

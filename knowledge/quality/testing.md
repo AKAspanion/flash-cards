@@ -33,6 +33,9 @@ verified: human:panditankit1995@gmail.com
   `freshLoad`, `signOutAndClear`, `account`, `sharedSets`; the rules spec also covers `user-stats` and `shared-sets`.
   New e2e specs: `stats`, `review-counts`, `rich-cards`, `read-aloud-language`, `reminders`, `offline`,
   `offline-signout`, `share`, `shared-link` (`tests/e2e/stats-helpers.ts` seeds stats).
+- The offline e2e tests wait for a write to reach the emulator before reloading: Firestore saves an offline write to
+  IndexedDB a moment after the UI shows it, so an immediate reload could lose it (the label test flaked 8 of 30 runs
+  before the wait, 0 of 30 after).
 - Nothing tests against the live Firebase project; that is left to the developer.
 
 ## How to run it
@@ -42,6 +45,7 @@ verified: human:panditankit1995@gmail.com
 
 ## History
 
+- 2026-11-05: an offline label test reloaded at once and could lose its write; now the offline e2e tests wait for the write to reach the emulator first, because the label test flaked 8 of 30 runs.
 - 2026-11-05: no tests covered stats, Markdown, read aloud, reminders, the offline cache, sign-out or sharing; now the specs listed above do, because of the progress-habits, rich-cards, reminders, offline-study and sharing plans.
 - 2026-11-05: library search and sort had no tests; now `relativeTime.spec.ts`, `library-search.spec.ts` and `library-sort.spec.ts` cover them.
 - 2026-11-05: no tests covered scheduling or rating; now `srs.spec.ts`, `CardFlash.spec.ts`, `srs-review.spec.ts` and `due-review.spec.ts` do, for spaced repetition.

@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, type RouteLocationRaw } from 'vue-router';
+import { createRouter, createWebHistory, type RouteLocationRaw, type RouteRecordRaw } from 'vue-router';
 import { getAuthUser, onUserChanged } from '@/services/firebase';
 import { useSessionStore } from '@/stores/session';
 import { useLibraryStore } from '@/stores/library';
@@ -9,16 +9,21 @@ declare module 'vue-router' {
   interface RouteMeta {
     requireAuth?: boolean;
     public?: boolean;
+    /**
+     * The view sizes itself against the viewport (`calc(100vh - …)`), assuming its top bar starts at the top of
+     * the page, so nothing may be shown above it: the verify-email banner stays off these screens.
+     */
+    fullHeight?: boolean;
   }
 }
 
-const routes = [
+export const routes: RouteRecordRaw[] = [
   { path: '/', redirect: '/home' },
   { path: '/home', name: 'home', component: () => import('@/views/Home.vue'), meta: { requireAuth: true } },
-  { path: '/add', name: 'add', component: () => import('@/views/Add.vue'), meta: { requireAuth: true } },
-  { path: '/:id/edit', name: 'edit', component: () => import('@/views/Add.vue'), meta: { requireAuth: true } },
-  { path: '/:id/view', name: 'view', component: () => import('@/views/View.vue'), meta: { requireAuth: true } },
-  { path: '/due', name: 'due', component: () => import('@/views/Due.vue'), meta: { requireAuth: true } },
+  { path: '/add', name: 'add', component: () => import('@/views/Add.vue'), meta: { requireAuth: true, fullHeight: true } },
+  { path: '/:id/edit', name: 'edit', component: () => import('@/views/Add.vue'), meta: { requireAuth: true, fullHeight: true } },
+  { path: '/:id/view', name: 'view', component: () => import('@/views/View.vue'), meta: { requireAuth: true, fullHeight: true } },
+  { path: '/due', name: 'due', component: () => import('@/views/Due.vue'), meta: { requireAuth: true, fullHeight: true } },
   { path: '/bin', name: 'bin', component: () => import('@/views/Bin.vue'), meta: { requireAuth: true } },
   { path: '/profile', name: 'profile', component: () => import('@/views/Profile.vue'), meta: { requireAuth: true } },
   { path: '/info', name: 'info', component: () => import('@/views/Info.vue'), meta: { requireAuth: true } },

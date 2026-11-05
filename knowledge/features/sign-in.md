@@ -35,9 +35,14 @@ A visitor who is not signed in lands on `/login`. They can sign in with email an
   ([offline study](offline-study.md)). A visitor who pressed Add to my library on a shared link while signed out
   comes back through `/login?redirect=/s/<id>` and the copy finishes once ([sharing](sharing.md)).
 - Emails are trimmed before they are sent to Firebase (`signInWithEmail`, `signUpWithEmail`).
+- Email sign-up sends a verification email (`signUpWithEmail`); a failed send never fails the sign-up and is logged by
+  error code only, since the error's data can carry the address. The success snack tells the user to check their
+  inbox, or says only that the account was created when the email didn't send. The reminder is
+  [email verification](email-verification.md).
 
 ## History
 
+- 2026-11-05: sign-up sent no email and the snack only said the account was created; now it sends a verification email and the snack says to check the inbox, because of the email-verification plan.
 - 2026-11-05: sign-in had no offline rule and no shared-link return; now it is online-only and a signed-out Add to my library returns through it, because of the offline-study and sharing plans.
 - 2026-11-04: the email field always auto-focused; now only with a fine pointer, because a phone's keyboard hid the screen.
 - 2026-11-04: Google sign-in was a popup; now a same-origin redirect, because a popup isn't dependable in the Android TWA. See [the decision](../decisions/google-sign-in-redirect.md).
@@ -48,6 +53,7 @@ A visitor who is not signed in lands on `/login`. They can sign in with email an
 - `src/router/index.ts`
 - `src/services/firebase.ts`
 - `src/services/authErrors.ts`
+- `tests/unit/emailVerification.spec.ts`
 - `tests/unit/router.spec.ts`
 - `tests/unit/authErrors.spec.ts`
 - `tests/e2e/auth.spec.ts`

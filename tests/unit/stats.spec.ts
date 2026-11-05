@@ -31,7 +31,7 @@ describe('stats store', () => {
 
   function signIn(uid: string | null) {
     useSessionStore().user = uid
-      ? { uid, email: '', displayName: '', photoURL: '', creationTime: '', lastSignInTime: '' }
+      ? { uid, email: '', displayName: '', photoURL: '', creationTime: '', lastSignInTime: '', emailVerified: false }
       : null;
   }
 

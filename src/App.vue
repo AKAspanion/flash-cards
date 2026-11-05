@@ -37,6 +37,7 @@
       </template>
     </v-snackbar>
     <v-main>
+      <banner-verify-email />
       <router-view v-slot="{ Component, route }">
         <transition
           name="slide-left"
@@ -57,6 +58,7 @@
 import { onBeforeUnmount, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useTheme } from 'vuetify';
+import BannerVerifyEmail from '@/components/BannerVerifyEmail.vue';
 import BarNav from '@/components/BarNav.vue';
 import { useSessionStore } from '@/stores/session';
 import { usePrefsStore } from '@/stores/prefs';
