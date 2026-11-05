@@ -14,9 +14,14 @@ verified: human:panditankit1995@gmail.com
   mobile Playwright projects (`tests/e2e/a11y.spec.ts`). A new screen gets added to that test.
 - White text on a set colour uses `shade()` so it meets 4.5:1 ([tokens](tokens.md)).
 - Icon-only buttons carry an `aria-label` from i18n (for example the learned toggle in `CardFlash.vue`).
+- A Vuetify select's open list gets its own `aria-label` (list props on the order select in `Settings.vue`), or axe reports `aria-input-field-name`.
 - With `prefers-reduced-motion: reduce`, animations and transitions are cut to near zero (`src/assets/style.css`);
   the e2e suite runs with reduced motion (`playwright.config.ts`).
 - `<html lang>` follows the chosen language (`App.vue`).
+
+## History
+
+- 2026-11-05: no rule for select lists; now the open list needs its own label, found by the library sort e2e scan.
 
 ## Sources
 
@@ -26,3 +31,4 @@ verified: human:panditankit1995@gmail.com
 - `src/assets/style.css`
 - `playwright.config.ts`
 - `src/App.vue`
+- `src/views/Settings.vue`
