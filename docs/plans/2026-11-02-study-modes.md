@@ -1,6 +1,8 @@
 # Study Modes Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: the project's workflow policy names the executor (`run.executor`): ga:implement-with-subagents by default, or ga:implement. Follow the policy and this plan's Checkpoints. Steps use checkbox (`- [ ]`) syntax for tracking.
+**Status:** complete
+
+> **For agentic workers:** REQUIRED SUB-SKILL: the project's workflow policy names the executor (`run.executor`): ga:implement-with-subagents by default, or ga:implement. Follow the policy and this plan's Checkpoints. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Make the review screen faster to study with: keyboard shortcuts, shuffle / unlearned-only / back-first
 options, reset progress and an end-of-session summary, and record when each set was last studied.
@@ -118,26 +120,26 @@ studyReverse: Ref<boolean>;        // localStorage 'study-reverse'
 - Given localStorage `study-shuffle` = `'true'`, when the store loads, then `studyShuffle` is `true`; when `studyReverse` is set to `true`, then localStorage `study-reverse` becomes `'true'`.
 - The existing `tests/unit/locales.spec.ts` passes: English and Hindi define the same keys, including every key in the table above.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/cardSetMapper.spec.ts`, `tests/unit/dates.spec.ts` and `tests/unit/prefs.spec.ts`
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/cardSetMapper.spec.ts`, `tests/unit/dates.spec.ts` and `tests/unit/prefs.spec.ts`
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm test`
 Expected: FAIL on the new assertions. Create `src/utils/dates.ts` with the two exported signatures first, so the
 tests fail on behaviour rather than on a missing module.
 
-- [ ] **Step 3: Install the dev dependency**
+- [x] **Step 3: Install the dev dependency**
 
 Run: `pnpm add -D @vue/test-utils@^2`
 
-- [ ] **Step 4: Write the minimal implementation** to the Interfaces (types, mapper, dates, prefs, both locale files), until the tests pass
+- [x] **Step 4: Write the minimal implementation** to the Interfaces (types, mapper, dates, prefs, both locale files), until the tests pass
 
-- [ ] **Step 5: Run them to verify they pass**
+- [x] **Step 5: Run them to verify they pass**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/types.ts src/services/cardSetMapper.ts src/utils/dates.ts src/stores/prefs.ts src/locales/en.json src/locales/hi.json package.json pnpm-lock.yaml tests/unit/cardSetMapper.spec.ts tests/unit/dates.spec.ts tests/unit/prefs.spec.ts
@@ -201,21 +203,21 @@ export function useStudyShortcuts(bindings: () => Record<string, () => void>): v
 - Given bindings that read a ref, when the ref changes between two key presses, then the second press calls the new binding.
 - Given the scope is stopped, when `k` is pressed again, then `spy` is not called.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/studyQueue.spec.ts` and `tests/unit/useStudyShortcuts.spec.ts`
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/studyQueue.spec.ts` and `tests/unit/useStudyShortcuts.spec.ts`
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm test`
 Expected: FAIL on the assertions. Create both modules with their exported signatures first.
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/utils/studyQueue.ts src/composables/useStudyShortcuts.ts tests/unit/studyQueue.spec.ts tests/unit/useStudyShortcuts.spec.ts
@@ -271,21 +273,21 @@ defineExpose({
 - Given the container's `scrollBy` and `scrollTo` are stubbed, when `next()` is called, then `scrollBy` is called with `left` equal to one item width; when `prev()` is called on the first card, then nothing scrolls; when `goTo(5)` is called with three cards, then it scrolls to the third card's offset.
 - Given the container is scrolled to the second card, when the `scroll` event fires, then `focused` is emitted with `1` (existing behaviour, kept).
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/GroupCardFlash.spec.ts`
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/GroupCardFlash.spec.ts`
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm test`
 Expected: FAIL on the assertions (the exposed methods and `reverse` prop don't exist yet).
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/components/CardFlash.vue src/components/GroupCardFlash.vue tests/unit/GroupCardFlash.spec.ts
@@ -375,33 +377,33 @@ emits: { 'update:modelValue': [open: boolean]; 'review-missed': []; home: [] }
 - Given the review screen with the Study options panel open, and again with the summary dialog open, when axe scans the page, then there are no violations; the same holds at the mobile project's width.
 - Given the save on leave fails (Firestore emulator write blocked by going offline with `context.setOffline(true)` before leaving), then the existing discard confirm is shown and accepting it reaches `/home`.
 
-- [ ] **Step 1: Write the failing e2e tests** for each Acceptance case, in `tests/e2e/study-modes.spec.ts`, using the account and set helpers in `tests/e2e/helpers.ts` and the axe check pattern from `tests/e2e/a11y.spec.ts`
+- [x] **Step 1: Write the failing e2e tests** for each Acceptance case, in `tests/e2e/study-modes.spec.ts`, using the account and set helpers in `tests/e2e/helpers.ts` and the axe check pattern from `tests/e2e/a11y.spec.ts`
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm run test:e2e`
 Expected: the new tests FAIL on the missing controls and copy; the existing suites still pass.
 
-- [ ] **Step 3: Build the two dialog components** to the Interfaces
+- [x] **Step 3: Build the two dialog components** to the Interfaces
 
-- [ ] **Step 4: Wire the queue, options panel, shortcuts, reset, summary and `studiedAt` into `View.vue`**, until the tests pass
+- [x] **Step 4: Wire the queue, options panel, shortcuts, reset, summary and `studiedAt` into `View.vue`**, until the tests pass
 
-- [ ] **Step 5: Run them to verify they pass**
+- [x] **Step 5: Run them to verify they pass**
 
 Run: `npm run test:e2e`
 Expected: PASS
 
-- [ ] **Step 6: Run the end checks**
+- [x] **Step 6: Run the end checks**
 
 Run: `npm run type-check`
 Expected: no errors
 
-- [ ] **Step 7: Run the linter**
+- [x] **Step 7: Run the linter**
 
 Run: `npm run lint`
 Expected: no errors
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/views/View.vue src/components/StudyShortcutsDialog.vue src/components/StudySummaryDialog.vue src/locales/en.json src/locales/hi.json tests/e2e/study-modes.spec.ts
