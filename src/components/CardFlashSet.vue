@@ -44,7 +44,7 @@
             role="button"
             :aria-label="t('common.edit')"
             class="ml-2"
-            :disabled="disabled || !session.online"
+            :disabled="disabled"
             size="small"
             variant="outlined"
             @click="router.push(`/${card.id}/edit`)"
@@ -166,7 +166,6 @@ import { localDate } from '@/utils/dates';
 import { setDueCounts } from '@/utils/srs';
 import { usePrefsStore } from '@/stores/prefs';
 import { useLibraryStore } from '@/stores/library';
-import { useSessionStore } from '@/stores/session';
 
 const SWIPE_MAX = 100;
 const SWIPE_TRIGGER = 62;
@@ -187,7 +186,6 @@ const emit = defineEmits<{
 const { t } = useI18n();
 const prefs = usePrefsStore();
 const router = useRouter();
-const session = useSessionStore();
 const library = useLibraryStore();
 
 const title = computed(() => props.card.title || t('add.set.notitle'));
@@ -207,7 +205,7 @@ const studiedText = computed(() =>
     ? t('home.set.studied', { time: relativeTime(props.card.studiedAt, new Date(), prefs.lang) })
     : t('home.set.not-studied'),
 );
-const swipeDisabled = computed(() => props.bin || props.disabled || !session.online);
+const swipeDisabled = computed(() => props.bin || props.disabled);
 
 // ---- swipe right to favourite, left to move to bin ----
 const start = ref<{ x: number; y: number } | null>(null);

@@ -1,5 +1,6 @@
-import type { CardSet, FlashCard, Label } from '@/types';
+import type { CardSet, FlashCard, Label, SpeechLanguages } from '@/types';
 import { localDate } from '@/utils/dates';
+import { toSpeechLanguages } from '@/utils/speech';
 
 export interface SetExport {
   format: 'flashcards-set';
@@ -15,6 +16,8 @@ export interface BackupSet {
   labels: string[];
   date: string;
   cards: FlashCard[];
+  /** The set's read-aloud languages; absent in backups made before they existed. */
+  speech?: SpeechLanguages;
 }
 export interface Backup {
   format: 'flashcards-backup';
@@ -71,6 +74,7 @@ export function buildBackup(sets: CardSet[], labels: Label[], now: Date): Backup
         labels: s.labels,
         date: s.date.toISOString(),
         cards: s.cards,
+        ...(s.speech ? { speech: s.speech } : {}),
       })),
   };
 }
@@ -100,6 +104,7 @@ export function parseBackup(text: string): Backup | null {
     for (const c of s.cards) {
       if (!isObject(c) || typeof c.front !== 'string' || typeof c.back !== 'string') return null;
     }
+    const speech = toSpeechLanguages(s.speech);
     sets.push({
       title: s.title,
       color: typeof s.color === 'string' ? s.color : '',
@@ -107,6 +112,7 @@ export function parseBackup(text: string): Backup | null {
       labels: Array.isArray(s.labels) ? s.labels.filter((x): x is string => typeof x === 'string') : [],
       date: typeof s.date === 'string' ? s.date : '',
       cards: s.cards as FlashCard[],
+      ...(speech ? { speech } : {}),
     });
   }
   return {

@@ -239,9 +239,10 @@ import BarTop from '@/components/BarTop.vue';
 import BtnAction from '@/components/BtnAction.vue';
 import DialogDeleteAccount from '@/components/DialogDeleteAccount.vue';
 import type { Label } from '@/types';
-import { signOut, updateUserProfile } from '@/services/firebase';
+import { updateUserProfile } from '@/services/firebase';
 import { authErrorMessage, isAuthCancel } from '@/services/authErrors';
 import { clearPendingDelete, readPendingDelete, shouldResumeDeletion } from '@/utils/pendingDelete';
+import { useAccountStore } from '@/stores/account';
 import { useLibraryStore } from '@/stores/library';
 import { useSessionStore } from '@/stores/session';
 
@@ -250,6 +251,7 @@ const router = useRouter();
 const { xs } = useDisplay();
 const session = useSessionStore();
 const library = useLibraryStore();
+const account = useAccountStore();
 
 const user = computed(() => session.user);
 const editing = ref<'photo' | 'name' | null>(null);
@@ -315,6 +317,11 @@ function cancelEdit() {
 }
 
 async function saveProfile() {
+  // Profile changes need the server (spec 10.5): offline, keep the field open with what was typed.
+  if (!session.online) {
+    session.showSnack(t('toast.offline-save'));
+    return;
+  }
   try {
     await session.track(updateUserProfile(form.value));
     session.patchUser({ displayName: form.value.displayName.trim(), photoURL: form.value.photoURL.trim() });
@@ -347,14 +354,14 @@ async function saveLabel() {
   }
 }
 
+// Signing out clears the device's cache (spec 10.6); the account store says why when it can't.
+// On success the page is being replaced, so the button keeps spinning.
 async function onSignOut() {
+  if (signingOut.value) {
+    return;
+  }
   signingOut.value = true;
-  try {
-    await signOut();
-    await router.push('/login');
-  } catch (err) {
-    session.showError(err);
-  } finally {
+  if (!(await account.signOut())) {
     signingOut.value = false;
   }
 }

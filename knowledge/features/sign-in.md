@@ -31,10 +31,14 @@ A visitor who is not signed in lands on `/login`. They can sign in with email an
   a failed Google redirect's error is read at start-up and shown on `/login`.
 - Google sign-in is a redirect: see [Google sign-in uses a same-origin redirect](../decisions/google-sign-in-redirect.md).
 - The email field auto-focuses only when `(pointer: coarse)` doesn't match: a touch keyboard opening over the screen hides it.
+- Signing in and signing up are online-only and refuse offline with the offline-save snack
+  ([offline study](offline-study.md)). A visitor who pressed Add to my library on a shared link while signed out
+  comes back through `/login?redirect=/s/<id>` and the copy finishes once ([sharing](sharing.md)).
 - Emails are trimmed before they are sent to Firebase (`signInWithEmail`, `signUpWithEmail`).
 
 ## History
 
+- 2026-11-05: sign-in had no offline rule and no shared-link return; now it is online-only and a signed-out Add to my library returns through it, because of the offline-study and sharing plans.
 - 2026-11-04: the email field always auto-focused; now only with a fine pointer, because a phone's keyboard hid the screen.
 - 2026-11-04: Google sign-in was a popup; now a same-origin redirect, because a popup isn't dependable in the Android TWA. See [the decision](../decisions/google-sign-in-redirect.md).
 

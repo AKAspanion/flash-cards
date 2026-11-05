@@ -28,6 +28,11 @@ Created by `addLabel` and renamed by `renameLabel` in `src/services/firebase.ts`
 
 - 2026-11-03: label deletion was an open question; now decided against. See [Labels cannot be deleted](../decisions/labels-cannot-be-deleted.md).
 
+## Notes
+
+- A new label gets its id on the device and is written with `setDoc` (`addLabel`), so it can be created offline
+  ([offline study](../features/offline-study.md)); the schema is unchanged.
+
 ## Sources
 
 - `src/services/firebase.ts`

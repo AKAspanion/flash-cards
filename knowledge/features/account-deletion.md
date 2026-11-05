@@ -25,11 +25,16 @@ with accounts ([requirement](../requirements/account-deletion-and-export.md)).
   documents removed in batches of 500, then the Auth user, so a failure part-way never leaves data without an owner.
   [A requirement](../requirements/account-deletion-covers-every-collection.md) keeps the list complete.
 - The dialog is persistent and Cancel is disabled only while the deletion itself runs; the Google step has its own spinner. A `pageshow` listener resets both when the browser restores the page from the back-forward cache, because the Google redirect can be cancelled and leave the dialog stuck.
+- Delete account is online-only and, once the account is gone, clears the device cache and loads `/login` as a new
+  page ([decision](../decisions/account-deletion-online-only.md), [offline study](offline-study.md)). The public
+  copies in `shared-sets` are removed first and the sets last, so a deletion that fails part-way leaves nothing public
+  behind ([sharing](sharing.md)); `user-stats` goes with them.
 - Nothing is kept: [deleted data is gone at once](../decisions/deletion-is-permanent.md). People who can't sign in use
   the [delete-account page](privacy-and-deletion-pages.md).
 
 ## History
 
+- 2026-11-05: deletion removed sets and labels in any order and left the device cache; now it is online-only, removes shared copies first and sets last, and clears the cache, because of the offline-study and sharing plans.
 - 2026-11-04: the dialog stayed locked after a cancelled Google redirect; now only a running deletion locks it, because users were stuck.
 
 ## Sources

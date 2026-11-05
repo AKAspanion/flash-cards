@@ -24,16 +24,21 @@ this repository.
   `authStateReady`) before every navigation, then applies `authRedirect`: a route with `meta.requireAuth` sends a
   signed-out user to `/login?redirect=<path>`, and `/login` sends a signed-in user on.
 - Every route except `/login` has `meta.requireAuth`, apart from the routes with `meta.public` (`/privacy`,
-  `/delete-account`), which anyone can open (the `routes` array in the same file). The guard only hides
+  `/delete-account`, `/s/:shareId`), which anyone can open (the `routes` array in the same file). The guard only hides
   screens; the data is protected by the Firestore rules.
 - `watchAuthChanges` reacts to sign-in or sign-out outside navigation (another tab, a revoked token): it swaps the
-  loaded library and moves to `/login` or `/home`.
+  loaded library and moves to `/login` or `/home`; a tab that sees the user signed out elsewhere loads `/login` as a
+  new page.
+- Sign-out (`signOutAndClear`) waits up to `SIGN_OUT_DEADLINE_MS` for unsynced writes, clears the device cache, then
+  signs out; past the deadline the user stays signed in and is told to connect
+  ([offline study](../features/offline-study.md)). Signing in, up, or changing the profile needs the device online.
 - `getRedirectResult` runs once at start-up, through `session.loadRedirectOutcome` called from `src/main.ts`, before
   the first navigation settles on `/login`.
 - Service calls fail with "You are signed out" when there is no current user (`requireUid`).
 
 ## History
 
+- 2026-11-05: sign-out ended at once and left the cache; now it waits for unsynced writes (15 s at most), clears the device cache and stays signed in past the deadline, and `/s/:shareId` is a third public route, because of the offline-study and sharing plans.
 - 2026-11-04: Google sign-in used a popup and every route but `/login` needed sign-in; now a redirect on the app's own host, with two public routes. See [the decision](../decisions/google-sign-in-redirect.md).
 
 ## Sources

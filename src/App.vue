@@ -60,7 +60,9 @@ import { useTheme } from 'vuetify';
 import BarNav from '@/components/BarNav.vue';
 import { useSessionStore } from '@/stores/session';
 import { usePrefsStore } from '@/stores/prefs';
+import { useAppBadge } from '@/composables/useAppBadge';
 
+useAppBadge();
 const { t, locale } = useI18n();
 const theme = useTheme();
 const session = useSessionStore();

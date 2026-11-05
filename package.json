@@ -27,7 +27,9 @@
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
+    "dompurify": "^3.4.17",
     "firebase": "^13.1.0",
+    "markdown-it": "^14.3.3",
     "pinia": "^4.1.0",
     "vue": "^3.5.44",
     "vue-i18n": "^11.4.17",
@@ -38,6 +40,7 @@
     "@axe-core/playwright": "^4.14.0",
     "@firebase/rules-unit-testing": "^6.0.0",
     "@playwright/test": "^1.64.1",
+    "@types/markdown-it": "^14.2.0",
     "@types/node": "^24.0.0",
     "@vitejs/plugin-vue": "^6.0.10",
     "@vue/devtools-api": "^8.2.1",

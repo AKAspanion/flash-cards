@@ -1,0 +1,66 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { createPinia, setActivePinia } from 'pinia';
+
+vi.mock('@/services/firebase', () => ({ getRedirectOutcome: vi.fn() }));
+
+const { useSessionStore } = await import('@/stores/session');
+const { PENDING_SNACK_KEY } = await import('@/utils/freshLoad');
+
+const OFFLINE_SAVED = "Saved on this device. It will sync when you're back online.";
+
+describe('session store: notifyOfflineSave', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia());
+  });
+
+  it('shows the offline-saved snack on the first offline save', () => {
+    const session = useSessionStore();
+    session.online = false;
+    session.notifyOfflineSave();
+    expect(session.snack.show).toBe(true);
+    expect(session.snack.text).toBe(OFFLINE_SAVED);
+  });
+
+  it('shows it once per offline period', () => {
+    const session = useSessionStore();
+    session.online = false;
+    session.notifyOfflineSave();
+    session.snack.show = false;
+    session.notifyOfflineSave();
+    expect(session.snack.show).toBe(false);
+  });
+
+  it('shows it again after the app has been back online', () => {
+    const session = useSessionStore();
+    session.online = false;
+    session.notifyOfflineSave();
+    session.snack.show = false;
+
+    session.online = true;
+    session.online = false;
+    session.notifyOfflineSave();
+    expect(session.snack.show).toBe(true);
+    expect(session.snack.text).toBe(OFFLINE_SAVED);
+  });
+});
+
+describe('session store: a snack left by a fresh page load', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia());
+    sessionStorage.clear();
+  });
+
+  it('shows it when the store starts, once', () => {
+    sessionStorage.setItem(PENDING_SNACK_KEY, 'Your account has been deleted.');
+    const session = useSessionStore();
+    expect(session.snack.show).toBe(true);
+    expect(session.snack.text).toBe('Your account has been deleted.');
+
+    setActivePinia(createPinia());
+    expect(useSessionStore().snack.show).toBe(false);
+  });
+
+  it('shows nothing when none was left', () => {
+    expect(useSessionStore().snack.show).toBe(false);
+  });
+});

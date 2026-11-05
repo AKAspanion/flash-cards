@@ -18,28 +18,40 @@ import {
   type User,
 } from 'firebase/auth';
 import {
-  addDoc,
+  clearIndexedDbPersistence,
   collection,
   connectFirestoreEmulator,
-  deleteDoc,
+  deleteField,
   doc,
+  getDoc,
   getDocs,
-  getFirestore,
+  increment,
+  initializeFirestore,
+  memoryLocalCache,
+  persistentLocalCache,
+  persistentMultipleTabManager,
   query,
+  setDoc,
   updateDoc,
+  terminate,
+  waitForPendingWrites,
   where,
   writeBatch,
   type Firestore,
 } from 'firebase/firestore';
-import type { CardSet, Label } from '@/types';
+import type { CardSet, Label, SharedSet, UserStats } from '@/types';
 import { authDomainFor } from './authDomain';
 import { emulatorHostFor } from './emulatorHost';
+import { chooseLocalCache } from './localCache';
 import { OWNED_COLLECTIONS } from './ownedCollections';
-import { cardSetFromDoc, cardSetToDoc, labelFromDoc } from './cardSetMapper';
+import { cardSetFromDoc, cardSetToDoc, isShareId, labelFromDoc, sharedSetFromDoc, toSharedDoc } from './cardSetMapper';
+import { statsFromDoc } from './statsMapper';
 import { DEV_PORTS } from '../../dev-ports';
 
 const SETS = 'flash-card-sets';
 const LABELS = 'labels';
+const STATS = 'user-stats';
+const SHARED = 'shared-sets';
 
 const env = import.meta.env;
 const useEmulators = env.VUE_APP_USE_EMULATORS === 'true';
@@ -77,7 +89,12 @@ function getServices() {
   }
   const app = initializeApp(config);
   const auth = getAuth(app);
-  const db = getFirestore(app);
+  // Persistent (IndexedDB, shared across tabs) so sets can be studied and saved offline (spec 10.1).
+  const localCache =
+    chooseLocalCache(globalThis) === 'persistent'
+      ? persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+      : memoryLocalCache();
+  const db = initializeFirestore(app, { localCache });
   if (useEmulators) {
     const host = emulatorHostFor(typeof window === 'undefined' ? undefined : window.location.hostname);
     connectAuthEmulator(auth, `http://${host}:${DEV_PORTS.auth}`, { disableWarnings: true });
@@ -188,10 +205,68 @@ export async function deleteAccount(): Promise<void> {
     }
   }
   await deleteUser(user);
+  // The account is gone, so a failure here doesn't undo the deletion; the page reload still follows.
+  try {
+    await clearLocalCache(db);
+  } catch (err) {
+    console.error('Could not clear the local cache after deleting the account', err);
+  }
 }
 
-export function signOut() {
-  return firebaseSignOut(getServices().auth);
+/**
+ * Stops Firestore and deletes its IndexedDB cache, so the next person on the device can't read it
+ * (spec 10.6). Firestore can't be used again afterwards: the caller loads a fresh page.
+ */
+async function clearLocalCache(db: Firestore): Promise<void> {
+  await terminate(db);
+  await clearIndexedDbPersistence(db);
+}
+
+/**
+ * How long sign-out waits for unsynced writes to reach the server. A connection that is up but not
+ * working (spec 10.7) never settles them, and sign-out must still end, signed in or out.
+ */
+export const SIGN_OUT_DEADLINE_MS = 15_000;
+
+/** Resolves once every queued write has reached the server; rejects with code `deadline-exceeded` past the deadline. */
+async function pendingWritesSettled(db: Firestore): Promise<void> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => {
+      reject(
+        Object.assign(new Error('Unsynced changes did not reach the server in time; still signed in.'), {
+          code: 'deadline-exceeded',
+        }),
+      );
+    }, SIGN_OUT_DEADLINE_MS);
+  });
+  try {
+    await Promise.race([waitForPendingWrites(db), deadline]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
+ * Waits for pending writes, terminates Firestore, deletes its IndexedDB cache, then signs out. When
+ * the writes don't reach the server within `SIGN_OUT_DEADLINE_MS`, it rejects with code
+ * `deadline-exceeded` and changes nothing.
+ */
+export async function signOutAndClear(): Promise<void> {
+  const { auth, db } = getServices();
+  // A failure here leaves everything as it was: still signed in, nothing lost.
+  await pendingWritesSettled(db);
+  let clearError: unknown = null;
+  try {
+    await clearLocalCache(db);
+  } catch (err) {
+    clearError = err;
+  }
+  // Sign out even when the cache couldn't be cleared, then report why.
+  await firebaseSignOut(auth);
+  if (clearError) {
+    throw clearError;
+  }
 }
 
 export async function updateUserProfile(profile: { displayName: string; photoURL: string }) {
@@ -216,6 +291,16 @@ export async function updateUserProfile(profile: { displayName: string; photoURL
 }
 
 // ---- Firestore ----
+//
+// Every write makes its Firestore call before its first `await`, so once the call returns the
+// write is in the local cache: offline, the stores count it as saved without waiting for the
+// server (spec 10.3), and catch a later refusal themselves (spec 10.4).
+
+/** A write already in the local cache, with the id it was given; `committed` settles when the server answers. */
+export interface PendingWrite {
+  docId: string;
+  committed: Promise<void>;
+}
 
 export async function fetchCardSets(): Promise<CardSet[]> {
   const { db } = getServices();
@@ -229,11 +314,33 @@ export async function fetchLabels(): Promise<Label[]> {
   return snapshot.docs.map((d) => labelFromDoc(d.id, d.data()));
 }
 
-/** Returns the new document id. */
-export async function addCardSet(set: CardSet): Promise<string> {
+/** Reads the user's stats document; a missing one reads as the default goal and no days. */
+export async function fetchUserStats(): Promise<UserStats> {
   const { db } = getServices();
-  const ref = await addDoc(collection(db, SETS), cardSetToDoc(set, requireUid()));
-  return ref.id;
+  const snapshot = await getDoc(doc(db, STATS, requireUid()));
+  return statsFromDoc(snapshot.exists() ? snapshot.data() : undefined);
+}
+
+/** Adds `count` to the cards reviewed on `day` ('YYYY-MM-DD'); the first write creates the document. */
+export async function addReviews(day: string, count: number): Promise<void> {
+  const { db } = getServices();
+  const uid = requireUid();
+  await setDoc(doc(db, STATS, uid), { uid, days: { [day]: increment(count) } }, { merge: true });
+}
+
+/** Saves the daily goal; the first write creates the document. */
+export async function saveDailyGoal(goal: number): Promise<void> {
+  const { db } = getServices();
+  const uid = requireUid();
+  await setDoc(doc(db, STATS, uid), { uid, goal }, { merge: true });
+}
+
+/** The id is made on the device, so an offline set has its final id at once. */
+export function addCardSet(set: CardSet): PendingWrite {
+  const { db } = getServices();
+  const ref = doc(collection(db, SETS));
+  const committed = setDoc(ref, cardSetToDoc(set, requireUid()));
+  return { docId: ref.id, committed };
 }
 
 export async function updateCardSet(set: CardSet): Promise<void> {
@@ -249,14 +356,84 @@ export async function deleteCardSet(set: CardSet): Promise<void> {
     return;
   }
   const { db } = getServices();
-  await deleteDoc(doc(db, SETS, set.docId));
+  // A shared set takes its public copy with it (spec 11.4).
+  const batch = writeBatch(db);
+  batch.delete(doc(db, SETS, set.docId));
+  if (set.shareId) {
+    batch.delete(doc(db, SHARED, set.shareId));
+  }
+  await batch.commit();
 }
 
-/** Returns the new document id. */
-export async function addLabel(label: string): Promise<string> {
+// ---- Shared sets (spec 11) ----
+//
+// A shared set's public copy lives in `shared-sets/{shareId}`, and the set keeps that id in
+// `shareId`. Creating or deleting the copy and setting or clearing `shareId` go in one batch, so
+// neither is ever left without the other.
+
+function savedSetRef(db: Firestore, set: CardSet) {
+  if (!set.docId) {
+    throw new Error('This set has not been saved yet.');
+  }
+  return doc(db, SETS, set.docId);
+}
+
+/** Creates the set's public copy and records its id on the set; resolves with that id. */
+export async function shareCardSet(set: CardSet): Promise<string> {
   const { db } = getServices();
-  const ref = await addDoc(collection(db, LABELS), { label, uid: requireUid() });
-  return ref.id;
+  const setRef = savedSetRef(db, set);
+  const copyRef = doc(collection(db, SHARED));
+  const batch = writeBatch(db);
+  batch.set(copyRef, toSharedDoc(set, requireUid()));
+  batch.update(setRef, { shareId: copyRef.id });
+  await batch.commit();
+  return copyRef.id;
+}
+
+/** Deletes the set's public copy and clears `shareId`; a set that isn't shared is left as it is. */
+export async function unshareCardSet(set: CardSet): Promise<void> {
+  if (!set.shareId) {
+    return;
+  }
+  const { db } = getServices();
+  const batch = writeBatch(db);
+  batch.delete(doc(db, SHARED, set.shareId));
+  batch.update(savedSetRef(db, set), { shareId: deleteField() });
+  await batch.commit();
+}
+
+/** Writes the set's current title, colour and cards to its public copy; rejects `not-found` once the copy is gone. */
+export async function syncSharedCopy(set: CardSet): Promise<void> {
+  if (!set.shareId) {
+    throw new Error('This set is not shared.');
+  }
+  const { db } = getServices();
+  await updateDoc(doc(db, SHARED, set.shareId), toSharedDoc(set, requireUid()));
+}
+
+/** Clears `shareId` on the set alone, for when its public copy has gone. */
+export async function clearShareId(set: CardSet): Promise<void> {
+  const { db } = getServices();
+  await updateDoc(savedSetRef(db, set), { shareId: deleteField() });
+}
+
+/** Reads a public copy, signed in or not; null when the id isn't a share id or the copy is gone. */
+export async function fetchSharedSet(shareId: string): Promise<SharedSet | null> {
+  // Checked first, so a crafted link can never name another collection's document.
+  if (!isShareId(shareId)) {
+    return null;
+  }
+  const { db } = getServices();
+  const snapshot = await getDoc(doc(db, SHARED, shareId));
+  return snapshot.exists() ? sharedSetFromDoc(shareId, snapshot.data()) : null;
+}
+
+/** The id is made on the device, so an offline label has its final id at once. */
+export function addLabel(label: string): PendingWrite {
+  const { db } = getServices();
+  const ref = doc(collection(db, LABELS));
+  const committed = setDoc(ref, { label, uid: requireUid() });
+  return { docId: ref.id, committed };
 }
 
 export async function renameLabel(docId: string, label: string): Promise<void> {

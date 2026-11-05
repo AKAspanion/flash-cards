@@ -17,10 +17,14 @@ verified: human:panditankit1995@gmail.com
   warning, because closing skips the router's save-on-leave (comment in `App.vue`).
 - A newly deployed version is applied as soon as nothing is unsaved: immediately when idle, otherwise once the user
   has saved or left (`setupPwaUpdates`, `registerType: 'prompt'` in `vite.config.ts`).
-- When the user signs out, from any tab, `unsavedChanges` is cleared and the user is sent to `/login`.
+- When the user signs out, from any tab, `unsavedChanges` is cleared and the user is sent to `/login`. Sign-out in
+  this tab first waits for writes not yet at the server; on a slow connection it stays signed in rather than lose
+  them ([offline study](../features/offline-study.md)).
+- Offline, a save counts as done once it is in the device cache, so leaving the screen no longer asks to discard.
 
 ## History
 
+- 2026-11-05: a save failed offline and the user was asked to discard; now an offline save is kept in the device cache, and sign-out waits for pending writes, because of the offline-study plan.
 - 2026-11-05: only the editor and the set review screen held unsaved edits; now `/due` does too, saving each rated set on leave, for [spaced repetition](../features/spaced-repetition.md).
 
 ## Where it is enforced

@@ -28,6 +28,17 @@ describe('OWNED_COLLECTIONS', () => {
     expect(uncovered(`${rules}\nmatch /other/{id} { allow read: if false; }`)).toEqual(['other']);
   });
 
+  it('lists the public shared sets, owned through ownerUid, so Delete account removes them', () => {
+    expect(OWNED_COLLECTIONS).toContainEqual({ name: 'shared-sets', ownerField: 'ownerUid' });
+  });
+
+  it('removes the public copies and the stats before the sets, so a part-way failure leaves nothing public', () => {
+    const order = OWNED_COLLECTIONS.map((c) => c.name);
+    expect(order.indexOf('shared-sets')).toBe(0);
+    expect(order.indexOf('user-stats')).toBeLessThan(order.indexOf('flash-card-sets'));
+    expect(order.at(-1)).toBe('flash-card-sets');
+  });
+
   it('names an owner field for each collection', () => {
     expect(OWNED_COLLECTIONS.length).toBeGreaterThan(0);
     for (const c of OWNED_COLLECTIONS) {

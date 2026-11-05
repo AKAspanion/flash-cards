@@ -21,6 +21,7 @@
         :number="index + 1"
         :rating="rating"
         :reverse="reverse"
+        :speech="speech"
         @add-after="onAddAfter"
         @check="onCheck"
         @delete="onDelete"
@@ -35,7 +36,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useDisplay } from 'vuetify';
-import type { FlashCard, Label } from '@/types';
+import type { FlashCard, Label, SpeechLanguages } from '@/types';
 import { uid } from '@/utils/cardSets';
 import type { Rating } from '@/utils/srs';
 import CardFlash from './CardFlash.vue';
@@ -49,8 +50,9 @@ const props = withDefaults(
     disabled?: boolean;
     reverse?: boolean;
     rating?: boolean;
+    speech?: SpeechLanguages;
   }>(),
-  { color: '', labels: () => [], browse: false, disabled: false, reverse: false, rating: false },
+  { color: '', labels: () => [], browse: false, disabled: false, reverse: false, rating: false, speech: undefined },
 );
 const emit = defineEmits<{
   'update:modelValue': [cards: FlashCard[]];
@@ -63,6 +65,7 @@ type CardHandle = {
   flip: () => void;
   edit: (side: 'front' | 'back') => void;
   rate: (rating: Rating) => boolean;
+  readAloud: () => void;
 };
 
 const { xs } = useDisplay();
@@ -156,6 +159,10 @@ function rateFocused(rating: Rating): boolean {
   return cardRefs[focused]?.rate(rating) ?? false;
 }
 
+function readFocused() {
+  cardRefs[focused]?.readAloud();
+}
+
 function updateFocused() {
   const size = itemSize();
   const index = size && container.value ? Math.round(container.value.scrollLeft / size) : 0;
@@ -234,7 +241,7 @@ onBeforeUnmount(() => {
   container.value?.removeEventListener('wheel', onWheel);
 });
 
-defineExpose({ scrollToCard, next, prev, goTo, flipFocused, rateFocused });
+defineExpose({ scrollToCard, next, prev, goTo, flipFocused, rateFocused, readFocused });
 </script>
 
 <style scoped>

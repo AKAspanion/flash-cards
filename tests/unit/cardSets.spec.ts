@@ -1,6 +1,36 @@
-import { describe, expect, it } from 'vitest';
-import { cardMatchCount, filterAndSortSets, isSetOrder, learnedCount, learnedPercent, titleMatches } from '@/utils/cardSets';
+import { afterEach, describe, expect, it } from 'vitest';
+import {
+  cardMatchCount,
+  filterAndSortSets,
+  isSetOrder,
+  learnedCount,
+  learnedPercent,
+  randomId,
+  titleMatches,
+  uid,
+} from '@/utils/cardSets';
 import type { CardSet } from '@/types';
+
+describe('randomId', () => {
+  // Outside a secure context (the app on an http LAN address), crypto.randomUUID is missing.
+  function withoutRandomUuid() {
+    Object.defineProperty(crypto, 'randomUUID', { value: undefined, configurable: true });
+  }
+  afterEach(() => {
+    delete (crypto as { randomUUID?: unknown }).randomUUID;
+  });
+
+  it('makes distinct UUID-shaped ids, with or without crypto.randomUUID', () => {
+    const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+    expect(randomId()).toMatch(uuid);
+    withoutRandomUuid();
+    expect(() => randomId()).not.toThrow();
+    const a = randomId();
+    expect(a).toMatch(uuid);
+    expect(randomId()).not.toBe(a);
+    expect(uid()).toMatch(/^_/);
+  });
+});
 
 function makeSet(partial: Partial<CardSet>): CardSet {
   return {

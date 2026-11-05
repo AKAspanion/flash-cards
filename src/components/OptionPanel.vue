@@ -5,6 +5,7 @@
     :style="panelStyle"
   >
     <v-card
+      class="option-panel__card"
       color="surface-light"
       elevation="6"
     >
@@ -33,7 +34,7 @@
       >
         {{ title }}
       </div>
-      <div class="option-panel__content pt-6 pb-12 px-5 mb-2">
+      <div class="option-panel__content option-panel__body pt-6 pb-12 px-5 mb-2">
         <slot />
       </div>
     </v-card>
@@ -144,12 +145,25 @@ defineExpose({ toggle });
   transition: transform 200ms ease-out;
   will-change: transform;
 }
+.option-panel__card {
+  display: flex;
+  flex-direction: column;
+  /* Open, the panel stops below the 120px top bar; longer content scrolls inside it. */
+  max-height: calc(100vh - 100px);
+  max-height: calc(100dvh - 100px);
+}
+.option-panel__body {
+  min-height: 0;
+  overflow-y: auto;
+}
 .option-panel__handle {
   display: flex;
   justify-content: center;
   cursor: pointer;
 }
 .option-panel__content {
+  /* Full width up to 400px: auto margins in the card's flex column would otherwise shrink it. */
+  width: 100%;
   max-width: 400px;
   margin: 0 auto;
 }

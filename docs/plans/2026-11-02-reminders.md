@@ -2,6 +2,8 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: the project's workflow policy names the executor (`run.executor`): ga:implement-with-subagents by default, or ga:implement. Follow the policy and this plan's Checkpoints. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+**Status:** complete (built 2026-11-05 on feat/usability-plans-5-9)
+
 **Goal:** People can add a daily "Study flashcards" event to their own calendar, and the installed app's icon shows how many cards are due.
 
 **Architecture:** A pure function builds an RFC 5545 calendar file for a daily event at a chosen local time. Settings stores the time on the device and downloads the file through `downloadText()` (existing, from the faster-authoring plan). A small composable, mounted once in `App.vue`, watches the library and sets the app badge to the due count (existing, from the spaced-repetition plan) through the Badging API, doing nothing where the browser doesn't support it. No server, no push (spec 12.3, rule 2.3).
@@ -86,21 +88,21 @@ New locale keys, with the spec's copy:
 - Given time `'25:00'`, `buildDailyReminderIcs` throws.
 - Given the locales test, the four new keys exist in both locale files.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/ics.spec.ts`
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/ics.spec.ts`
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm test`
 Expected: FAIL on the assertions. Create `src/utils/ics.ts` with the real signatures first, so the tests fail on behaviour
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, until they pass. Add the locale keys.
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, until they pass. Add the locale keys.
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/utils/ics.ts src/locales/en.json src/locales/hi.json tests/unit/ics.spec.ts
@@ -141,26 +143,26 @@ Settings gets a "Daily reminder" row, described "Add a daily study reminder to y
 - E2E: given the language is Hindi, the downloaded file's `SUMMARY` is the Hindi `reminder.summary` string.
 - `/settings` passes the axe scan (rule 2.4) with the new row, at 390 px and desktop width.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/prefs.spec.ts` and `tests/e2e/reminders.spec.ts`
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/prefs.spec.ts` and `tests/e2e/reminders.spec.ts`
 
-- [ ] **Step 2: Run the unit tests to verify they fail**
+- [x] **Step 2: Run the unit tests to verify they fail**
 
 Run: `npm test`
 Expected: FAIL on the `reminderTime` assertions
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, until the tests pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, until the tests pass
 
-- [ ] **Step 4: Run the unit tests to verify they pass**
+- [x] **Step 4: Run the unit tests to verify they pass**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 5: Run the e2e tests to verify they pass**
+- [x] **Step 5: Run the e2e tests to verify they pass**
 
 Run: `npm run test:e2e`
 Expected: PASS, `a11y.spec.ts` included
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/stores/prefs.ts src/views/Settings.vue tests/unit/prefs.spec.ts tests/e2e/reminders.spec.ts
@@ -206,26 +208,26 @@ export function useAppBadge(): void; // call once, from App.vue's setup
 - Given the library resets to `idle` (sign-out), the badge is cleared.
 - Given a set in the bin with 10 due cards and no other due cards, the badge is cleared (bin sets don't count).
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/appBadge.spec.ts`
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/appBadge.spec.ts`
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm test`
 Expected: FAIL on the assertions. Create `updateAppBadge` and `useAppBadge` with their real signatures first, so the tests fail on behaviour
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, and call `useAppBadge()` in `App.vue`, until they pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, and call `useAppBadge()` in `App.vue`, until they pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 5: Run the type check**
+- [x] **Step 5: Run the type check**
 
 Run: `npm run type-check`
 Expected: PASS
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/services/appBadge.ts src/composables/useAppBadge.ts src/App.vue tests/unit/appBadge.spec.ts

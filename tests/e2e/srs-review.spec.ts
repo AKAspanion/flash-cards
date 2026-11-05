@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { setCard, signUp } from './helpers';
+import { makeSetTooBigToSave } from './size-limit-helpers';
 import { DEV_PORTS } from '../../dev-ports';
 
 const AUTH = `http://127.0.0.1:${DEV_PORTS.auth}`;
@@ -237,8 +238,10 @@ for (const [name, size] of [
   });
 }
 
-test('a failed save on leave shows the discard confirm and accepting it reaches Home', async ({ page, context }) => {
+test('a failed save on leave shows the discard confirm and accepting it reaches Home', async ({ page }) => {
   await seedSet(page, email);
+  // Offline saves land on the device, so the failure is the size limit instead.
+  await makeSetTooBigToSave(page, 'Verbs');
   await openSet(page);
   await page.keyboard.press(' ');
   await item(page, 0).getByRole('button', { name: 'Good' }).click();
@@ -249,7 +252,6 @@ test('a failed save on leave shows the discard confirm and accepting it reaches 
     messages.push(d.message());
     void d.accept();
   });
-  await context.setOffline(true);
   await leave(page);
   expect(messages.join(' ')).toContain('Your progress could not be saved');
 });

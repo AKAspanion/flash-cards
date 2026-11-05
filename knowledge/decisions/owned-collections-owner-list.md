@@ -29,8 +29,17 @@ developer on 2026-11-05, when the spec was reverified (spec 3.3).
 - Strangers still can't enumerate shared sets; a shared link stays unguessable (a random document id).
 - Each plan that adds a collection (progress habits, sharing) carries a rules test for the owner's filtered list and
   keeps `tests/unit/ownedCollections.spec.ts` passing.
+- Built: `OWNED_COLLECTIONS` lists `user-stats` and `shared-sets`, and `firestore.rules` has each block
+  ([user-stats](../data/user-stats.md), [shared-sets](../data/shared-sets.md)).
+
+## History
+
+- 2026-11-05: planned; now built in both collections' rules and in `OWNED_COLLECTIONS`.
 
 ## Sources
+
+- `tests/unit/firestore.rules.spec.ts`
+- `tests/unit/ownedCollections.spec.ts`
 
 - `docs/specs/2026-11-02-usability-features.md`
 - `docs/plans/2026-11-02-progress-habits.md`

@@ -135,10 +135,11 @@ async function onDelete() {
   deleting.value = true;
   try {
     // A password user proves it's them first; a Google user already did, on the way back.
+    // Offline, the store refuses each step with the offline-save message and deletes nothing.
     if (!props.confirmed && method === 'password' && !(await account.confirmWithPassword(password.value))) {
       return;
     }
-    // Success signs the user out, and the auth listener moves them to /login.
+    // Success clears the device's cache and loads /login as a new page.
     await account.deleteAccount();
   } finally {
     deleting.value = false;

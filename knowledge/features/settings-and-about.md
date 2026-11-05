@@ -19,7 +19,11 @@ page](privacy-and-deletion-pages.md). The screen ends with the AdSense banner
 Settings also has "Back up all sets" and "Restore from backup". Backup downloads every set not in the bin and every
 label as one JSON file (`buildBackup`, `backupFileName` in `src/utils/cardExport.ts`, saved with `downloadText()`).
 Restore reads such a file (`parseBackup`) and adds its sets as new sets; labels are matched to existing ones by their
-text and created when missing. Both are online-only and refuse offline with the offline-save snack. See
+text and created when missing. Restore is online-only and refuses offline with the offline-save snack (backup reads the device cache).
+It keeps each set's read-aloud languages, checked as language tags, and an older backup without them still restores.
+
+It also has a Daily goal select (10, 20, 50 or 100; [progress and habits](progress-habits.md)) and a daily reminder
+time with Add to calendar ([daily reminder](daily-reminder.md)). `/stats` is reached from Home. See
 [export in Settings](../requirements/data-export-in-settings.md).
 
 ## Screens and routes
@@ -40,6 +44,7 @@ text and created when missing. Both are online-only and refuse offline with the 
 
 ## History
 
+- 2026-11-05: Settings had no goal or reminder, and a backup did not carry read-aloud languages; now it has a Daily goal select and a reminder time, and backups keep the languages, because of the progress-habits, reminders and rich-cards plans. Backup and restore no longer both refuse offline: only restore does.
 - 2026-11-05: the order list had three items; now five, adding Progress and Recently studied, and the open list is labelled for axe.
 - 2026-11-05: Settings had only device-local preferences; now it also backs up and restores the user's sets, because the usability spec's 5.3 put data export there.
 - 2026-11-05: the prefs store held only the Settings values; now it also holds three study options.
@@ -55,6 +60,8 @@ text and created when missing. Both are online-only and refuse offline with the 
 - `tests/e2e/backup.spec.ts`
 - `src/components/AdBanner.vue`
 - `src/stores/prefs.ts`
+- `src/stores/stats.ts`
+- `src/utils/ics.ts`
 - `src/App.vue`
 - `vite.config.ts`
 - `tests/unit/prefs.spec.ts`

@@ -16,7 +16,7 @@ directly to Firebase (see [architecture](../project/architecture.md)).
 ## Stack
 
 Vue 3, Vuetify, Pinia, Vue Router, vue-i18n and the Firebase web SDK, in TypeScript, built with Vite and
-`vite-plugin-pwa`; versions are in `package.json`. The Node version is in `.nvmrc`.
+`vite-plugin-pwa`, with `markdown-it` and `dompurify` for card text ([decision](../decisions/card-text-rendered-only-through-sanitizer.md)); versions are in `package.json`. The Node version is in `.nvmrc`.
 
 ## Entry points
 
@@ -31,13 +31,15 @@ Vue 3, Vuetify, Pinia, Vue Router, vue-i18n and the Firebase web SDK, in TypeScr
 ## Screens and routes
 
 The routes are the `routes` array in `src/router/index.ts`; each loads a view from `src/views/` lazily. Every route
-has `meta.requireAuth` except `/login` and the routes with `meta.public` (`/privacy`, `/delete-account`), which are open to everyone; unknown paths redirect to `/home`. The guard is described in
+has `meta.requireAuth` except `/login` and the routes with `meta.public` (`/privacy`, `/delete-account`, `/s/:shareId`), which are open to everyone; unknown paths redirect to `/home`. The guard is described in
 [auth](../security/auth.md). Each screen is a feature:
 
 - `/home`: [library](../features/library.md)
 - `/add`, `/:id/edit`: [edit a set](../features/edit-set.md)
 - `/:id/view`: [study a set](../features/study-set.md)
 - `/due`: [spaced repetition](../features/spaced-repetition.md)
+- `/stats`: [progress and habits](../features/progress-habits.md)
+- `/s/:shareId` (public): [sharing](../features/sharing.md)
 - `/bin`: [bin](../features/bin.md)
 - `/profile`: [profile and labels](../features/profile-and-labels.md)
 - `/settings`, `/info`: [settings and about](../features/settings-and-about.md)
@@ -58,6 +60,7 @@ has `meta.requireAuth` except `/login` and the routes with `meta.public` (`/priv
 
 ## History
 
+- 2026-11-05: two public routes; now `/s/:shareId` is public too, `/stats` exists, and the app uses `markdown-it` and `dompurify`, because of the sharing, progress-habits and rich-cards plans.
 - 2026-11-04: no outside services beyond Firebase; now Google AdSense shows one banner on Home and Info. See [one AdSense banner](../decisions/adsense-banner-ads.md).
 - 2026-11-04: a small `img.boot-logo` showed until Vue mounted; now `#boot-splash` shows until the first route is ready, then fades, because the launch showed five different screens. See [the decision](../decisions/splash-held-until-ready.md).
 - 2026-11-04: the page was blank white until the app mounted; now an early background and a logo show first, because the Android launch showed a white flash.

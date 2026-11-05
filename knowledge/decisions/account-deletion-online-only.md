@@ -23,11 +23,20 @@ load). Chosen by the developer on 2026-11-05 (spec 10.5, 10.6).
 
 ## Consequences
 
-- The offline-study plan's sign-out task also covers `src/components/DialogDeleteAccount.vue` and `deleteAccount`.
+- Built: `DialogDeleteAccount.vue` refuses offline, and `deleteAccount` in `src/services/firebase.ts` removes the shared
+  copies first and the sets last. The cache is cleared and `/login` loaded as a new page once the account is gone, with
+  the "Your account has been deleted." snack handed over through sessionStorage (`src/utils/freshLoad.ts`). See
+  [offline study](../features/offline-study.md).
+
+## History
+
+- 2026-11-05: planned; now built, and the new page carries the deletion snack through `freshLoad`.
 
 ## Sources
 
 - `docs/specs/2026-11-02-usability-features.md`
 - `docs/plans/2026-11-02-offline-study.md`
 - `src/components/DialogDeleteAccount.vue`
+- `src/stores/account.ts`
+- `src/utils/freshLoad.ts`
 - `src/services/firebase.ts`

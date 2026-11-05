@@ -37,6 +37,7 @@
       :model-value="queuedCards"
       rating
       :reverse="prefs.studyReverse"
+      :speech="set.speech"
       @focused="(index) => (focusedIndex = index)"
       @rate="onRate"
       @update:model-value="onQueueUpdate"
@@ -80,7 +81,7 @@
       <button
         v-ripple
         class="option-row option-row--action"
-        :disabled="saving || !session.online || !cards.length"
+        :disabled="saving || !cards.length"
         type="button"
         @click.stop="resetOpen = true"
       >
@@ -158,6 +159,7 @@ import { buildQueue, summarize } from '@/utils/studyQueue';
 import { useLibraryStore } from '@/stores/library';
 import { usePrefsStore } from '@/stores/prefs';
 import { useSessionStore } from '@/stores/session';
+import { useStatsStore } from '@/stores/stats';
 
 const { t } = useI18n();
 const route = useRoute();
@@ -165,6 +167,7 @@ const router = useRouter();
 const library = useLibraryStore();
 const session = useSessionStore();
 const prefs = usePrefsStore();
+const stats = useStatsStore();
 
 const set = ref<CardSet | null>(null);
 const cards = ref<FlashCard[]>([]);
@@ -182,9 +185,12 @@ const slider = ref<{
   prev: () => void;
   flipFocused: () => void;
   rateFocused: (rating: Rating) => boolean;
+  readFocused: () => void;
 } | null>(null);
 // Cards already re-queued by an "again" this visit; each comes back once.
 const requeued = new Set<string>();
+// Cards marked or rated on this visit; counted once each when the visit saves.
+const reviewed = new Set<string>();
 
 const learned = computed(() => cards.value.filter((c) => c.learned).length);
 const queuedCards = computed(() => {
@@ -237,6 +243,11 @@ function openSummary() {
 
 function onQueueUpdate(list: FlashCard[]) {
   const updated = new Map(list.map((c) => [c.id, c]));
+  for (const c of list) {
+    if (cards.value.find((o) => o.id === c.id)?.learned !== c.learned) {
+      reviewed.add(c.id);
+    }
+  }
   const lastId = queue.value[queue.value.length - 1];
   const wasLearned = cards.value.find((c) => c.id === lastId)?.learned;
   cards.value = cards.value.map((c) => updated.get(c.id) ?? c);
@@ -248,9 +259,10 @@ function onQueueUpdate(list: FlashCard[]) {
 
 function mark(learnedValue: boolean) {
   const id = queue.value[focusedIndex.value];
-  if (!id || saving.value || !session.online) {
+  if (!id || saving.value) {
     return;
   }
+  reviewed.add(id);
   cards.value = cards.value.map((c) => (c.id === id ? { ...c, learned: learnedValue } : c));
   if (learnedValue) {
     if (atLastCard.value) {
@@ -262,9 +274,10 @@ function mark(learnedValue: boolean) {
 }
 
 async function onRate({ card, rating }: { card: FlashCard; rating: Rating }) {
-  if (saving.value || !session.online) {
+  if (saving.value) {
     return;
   }
+  reviewed.add(card.id);
   const srs = schedule(card.srs, rating, localDate());
   cards.value = cards.value.map((c) => (c.id === card.id ? { ...c, srs, learned: rating !== 'again' } : c));
   if (rating === 'again' && !requeued.has(card.id)) {
@@ -306,6 +319,8 @@ useStudyShortcuts(() => ({
   '2': () => slider.value?.rateFocused('hard'),
   '3': () => slider.value?.rateFocused('good'),
   '4': () => slider.value?.rateFocused('easy'),
+  r: () => slider.value?.readFocused(),
+  R: () => slider.value?.readFocused(),
   '?': () => (shortcutsOpen.value = true),
 }));
 
@@ -323,7 +338,7 @@ function goBack() {
 }
 
 async function saveProgress(): Promise<boolean> {
-  if (!set.value || !session.online) {
+  if (!set.value) {
     return false;
   }
   saving.value = true;
@@ -335,14 +350,26 @@ async function saveProgress(): Promise<boolean> {
   return ok;
 }
 
+/** Writes this visit's review count; the stats store shows its own error and never blocks leaving. */
+function recordVisit() {
+  const count = reviewed.size;
+  reviewed.clear();
+  void stats.recordReviews(count);
+}
+
 onBeforeRouteLeave(async () => {
-  if (!session.user || !dirty.value) {
+  if (!session.user) {
+    return true;
+  }
+  if (!dirty.value) {
+    recordVisit();
     return true;
   }
   if (saving.value) {
     return false;
   }
   if (await saveProgress()) {
+    recordVisit();
     return true;
   }
   return window.confirm(t('view.discard-confirm'));

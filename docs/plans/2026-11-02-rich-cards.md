@@ -2,6 +2,8 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: the project's workflow policy names the executor (`run.executor`): ga:implement-with-subagents by default, or ga:implement. Follow the policy and this plan's Checkpoints. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+**Status:** complete (built 2026-11-05 on feat/usability-plans-5-9)
+
 **Goal:** Cards can hold formatted text, links and images, and the review screen can read each side aloud in the set's chosen language.
 
 **Architecture:** One renderer, `src/utils/markdown.ts`, turns card text into sanitized HTML. It uses markdown-it with raw HTML off, then a dedicated DOMPurify instance with an allowlist and URL hooks. Every place that shows card text uses it. A small `src/utils/speech.ts` wraps the browser's speech synthesis. The set gets an optional `speech` field holding a language per side, chosen in the editor's options; the review screen speaks the visible side through a button or the `r` key.
@@ -53,6 +55,8 @@ interface CardSet { speech?: SpeechLanguages }
 // cardSetFromDoc keeps a side only when it is a string of at most 35 characters matching
 //   /^[A-Za-z]{2,3}(-[A-Za-z0-9]{1,8})*$/ ; otherwise that side is dropped.
 // cardSetToDoc writes `speech` only when set.speech is defined, and never writes an undefined value inside it.
+// Amended 2026-11-05: saves merge (updateDoc), so a key left out is never cleared in Firestore. When both sides go back
+// to Browser default, Add.vue keeps `speech: {}`; it never deletes the `speech` key. Duplicate set keeps `speech`.
 ```
 
 Dependencies: `markdown-it` `^14` and `dompurify` `^3` in `dependencies`; `@types/markdown-it` `^14` in `devDependencies`; `pnpm-lock.yaml` from `pnpm add`.
@@ -72,6 +76,7 @@ New locale keys, en copy (add every one to `hi.json` too):
 | `add.speech.front` | Front |
 | `add.speech.back` | Back |
 | `add.speech.default` | Browser default |
+| `study.shortcuts.read-aloud` | Read aloud |
 
 **Spec:**
 - §3.2: "| set doc | `speech` | `{ front?: string; back?: string }`, optional | 6 | BCP 47 language for reading each side aloud |"
@@ -88,34 +93,34 @@ New locale keys, en copy (add every one to `hi.json` too):
 - Given a stored set with no `speech`, `cardSetFromDoc` has no `speech` key, and `cardSetToDoc` of it has no `speech` key.
 - Given a set with `speech: { front: 'hi-IN' }`, `cardSetToDoc` writes `speech: { front: 'hi-IN' }` with no `back` key.
 - Given the rules emulator, the owner can create and update a set that has `speech: { front: 'es-ES' }`.
-- Given `npm ls markdown-it dompurify`, both resolve to the major versions above.
+- Given `pnpm ls markdown-it dompurify`, both resolve to the major versions above.
 - Every new key exists in both locale files (`tests/unit/locales.spec.ts` passes unchanged).
 
-- [ ] **Step 1: Add the dependencies**
+- [x] **Step 1: Add the dependencies**
 
 Run: `pnpm add markdown-it@^14 dompurify@^3 && pnpm add -D @types/markdown-it@^14`
 Expected: `package.json` and `pnpm-lock.yaml` change; `pnpm audit --prod --audit-level moderate` reports no new advisories
 
-- [ ] **Step 2: Write the failing tests** for each Acceptance case, in `tests/unit/cardSetMapper.spec.ts` and `tests/unit/firestore.rules.spec.ts`
+- [x] **Step 2: Write the failing tests** for each Acceptance case, in `tests/unit/cardSetMapper.spec.ts` and `tests/unit/firestore.rules.spec.ts`
 
-- [ ] **Step 3: Run the unit tests to verify they fail**
+- [x] **Step 3: Run the unit tests to verify they fail**
 
 Run: `npm test`
 Expected: FAIL on the `speech` assertions
 
-- [ ] **Step 4: Write the minimal implementation** to the Interfaces, add the locale keys to both files, until they pass
+- [x] **Step 4: Write the minimal implementation** to the Interfaces, add the locale keys to both files, until they pass
 
-- [ ] **Step 5: Run the unit tests to verify they pass**
+- [x] **Step 5: Run the unit tests to verify they pass**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 6: Run the rules tests**
+- [x] **Step 6: Run the rules tests**
 
 Run: `npm run test:rules`
 Expected: PASS, including the new `speech` cases
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add package.json pnpm-lock.yaml src/types.ts src/services/cardSetMapper.ts src/locales/en.json src/locales/hi.json tests/unit/cardSetMapper.spec.ts tests/unit/firestore.rules.spec.ts
@@ -173,21 +178,21 @@ How it works:
 - Given `cardPlainText('**Hola** _mundo_\n![gato](https://example.com/g.png) [docs](https://example.com)')`, it returns `Hola mundo gato docs`.
 - Given `cardPlainText('<b>x</b>')`, it returns `<b>x</b>` (raw HTML is text).
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/markdown.spec.ts`, parsing the output with `DOMParser` to assert on elements and attributes, with the functions created first with their real signatures
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/markdown.spec.ts`, parsing the output with `DOMParser` to assert on elements and attributes, with the functions created first with their real signatures
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm test`
 Expected: FAIL on the assertions, not on a missing module
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/utils/markdown.ts tests/unit/markdown.spec.ts
@@ -216,7 +221,7 @@ export function voiceLanguages(): Promise<string[]>;              // unique voic
 export function languageName(tag: string, uiLocale: string): string; // Intl.DisplayNames(uiLocale, { type: 'language' }); falls back to the tag
 ```
 
-`Add.vue` gets an options row titled "Read-aloud language" with two selects, labelled "Front" and "Back". Each lists "Browser default" first, then `voiceLanguages()` by `languageName` in the app language. Picking "Browser default" removes that side from `draft.speech`. The row is hidden when `speechAvailable()` is false. The choice is saved with the set like any other edit.
+`Add.vue` gets an options row titled "Read-aloud language" with two selects, labelled "Front" and "Back". Each lists "Browser default" first, then `voiceLanguages()` by `languageName` in the app language. Picking "Browser default" removes that side from `draft.speech`. When both sides are removed, `draft.speech` stays `{}` (never deleted, since saves merge). `duplicateSet` in Add.vue copies `speech` to the copy (amended 2026-11-05: read-aloud languages are a set setting, not progress). The row is hidden when `speechAvailable()` is false. The choice is saved with the set like any other edit.
 
 **Spec:**
 - §9.4: "It speaks the card's text without Markdown, in the side's `speech` language, or the browser default when none is set. The button is hidden when the browser has no speech synthesis."
@@ -238,26 +243,26 @@ export function languageName(tag: string, uiLocale: string): string; // Intl.Dis
 - Given the save after a language change fails, the existing save error snack shows and the choice stays in the editor.
 - Given the options panel open at 390 px wide, the axe scan finds no violations.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/speech.spec.ts` and `tests/e2e/read-aloud-language.spec.ts` (fake voices through `page.addInitScript`)
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/speech.spec.ts` and `tests/e2e/read-aloud-language.spec.ts` (fake voices through `page.addInitScript`)
 
-- [ ] **Step 2: Run the unit tests to verify they fail**
+- [x] **Step 2: Run the unit tests to verify they fail**
 
 Run: `npm test`
 Expected: FAIL on the speech assertions
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, until the unit tests pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, until the unit tests pass
 
-- [ ] **Step 4: Run the unit tests to verify they pass**
+- [x] **Step 4: Run the unit tests to verify they pass**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 5: Run the end-to-end tests**
+- [x] **Step 5: Run the end-to-end tests**
 
 Run: `npm run test:e2e`
 Expected: PASS, including `read-aloud-language.spec.ts`
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/utils/speech.ts src/views/Add.vue tests/unit/speech.spec.ts tests/e2e/read-aloud-language.spec.ts
@@ -272,6 +277,8 @@ git commit -m "feat(cards): choose a read-aloud language for each side"
 - Modify: `src/components/CardFlash.vue`
 - Modify: `src/components/GroupCardFlash.vue`
 - Modify: `src/views/View.vue`
+- Modify: `src/views/Due.vue`
+- Modify: `src/components/StudyShortcutsDialog.vue`
 - Test: `tests/e2e/rich-cards.spec.ts`
 
 **Interfaces:**
@@ -288,8 +295,11 @@ defineProps<{ speech?: SpeechLanguages }>();        // passed down to each CardF
 defineExpose({ readFocused: () => void });          // readAloud() on the focused card
 
 // View.vue — passes set.speech to GroupCardFlash and adds bindings 'r' and 'R' → readFocused()
+// Due.vue — passes the current entry's set.speech to its CardFlash and binds 'r'/'R' → readAloud() (/due is a review screen too, spec 9.4)
+// StudyShortcutsDialog.vue — a row "R" with study.shortcuts.read-aloud (Task 1)
 ```
 
+- Amended 2026-11-05 (the code since the plan was written): CardFlash already has `reverse`, `rating`, emits `rate` and `add-after`, and exposes `{ flip, edit, rate }` (add `readAloud`); GroupCardFlash exposes `{ scrollToCard, next, prev, goTo, flipFocused, rateFocused }` (add `readFocused`) and has a `CardHandle` type to extend; View.vue's `slider` ref type gets `readFocused`; Due.vue's `cardRef` type (`{ flip, rate }`) gets `readAloud`. The faces render `{{ modelValue.front || t('card.example.front') }}`; styles are scoped, so rules for the rendered `img`, `a`, `pre` and `code` need `:deep()`. The text dialog's textarea ref is typed `{ focus }`: reach the inner `<textarea>` for `selectionStart`.
 - Each face shows `renderCardText` of its side through `v-html`, with an `eslint-disable-next-line vue/no-v-html` comment that names `renderCardText` as the sanitizer. The `white-space: pre-wrap` rule is removed, since `breaks: true` makes the line breaks. The example placeholder text stays plain text.
 - Images inside a face are at most 40% of that face's height, and never wider than the face.
 - A click on a link opens it and does not open the text dialog.
@@ -322,31 +332,31 @@ defineExpose({ readFocused: () => void });          // readAloud() on the focuse
 - Given an existing card with two lines and no Markdown, it still shows on two lines.
 - Given the review screen and the text dialog with "Insert image" open, at 390 px wide, the axe scan finds no violations.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/e2e/rich-cards.spec.ts` (fake `speechSynthesis` through `page.addInitScript`)
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/e2e/rich-cards.spec.ts` (fake `speechSynthesis` through `page.addInitScript`)
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm run test:e2e`
 Expected: FAIL on the rendering and read-aloud cases
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm run test:e2e`
 Expected: PASS
 
-- [ ] **Step 5: Run the type check**
+- [x] **Step 5: Run the type check**
 
 Run: `npm run type-check`
 Expected: no errors
 
-- [ ] **Step 6: Run lint**
+- [x] **Step 6: Run lint**
 
 Run: `npm run lint`
 Expected: no errors, and no `vue/no-v-html` warning without its justification comment
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/components/CardFlash.vue src/components/GroupCardFlash.vue src/views/View.vue tests/e2e/rich-cards.spec.ts

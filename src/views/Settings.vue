@@ -138,6 +138,62 @@
             variant="outlined"
           />
         </div>
+        <div class="settings__row settings__row--stacked">
+          <div class="d-flex align-start">
+            <v-icon>mdi-flag-checkered</v-icon>
+            <div class="settings__text">
+              <div class="text-body-large">
+                {{ t('settings.goal.title') }}
+              </div>
+            </div>
+          </div>
+          <v-select
+            :aria-label="t('settings.goal.title')"
+            class="settings__select"
+            density="compact"
+            :disabled="stats.status !== 'ready'"
+            hide-details
+            :items="goalItems"
+            :list-props="goalListProps"
+            :model-value="stats.goal"
+            rounded="xl"
+            variant="outlined"
+            @update:model-value="changeGoal"
+          />
+        </div>
+        <div class="settings__row settings__row--stacked">
+          <div class="d-flex align-start">
+            <v-icon>mdi-bell-outline</v-icon>
+            <div class="settings__text">
+              <div class="text-body-large">
+                {{ t('settings.reminder.title') }}
+              </div>
+              <div class="text-body-small">
+                {{ t('settings.reminder.desc') }}
+              </div>
+            </div>
+          </div>
+          <div class="settings__reminder">
+            <v-text-field
+              :aria-label="t('settings.reminder.title')"
+              density="compact"
+              hide-details
+              :model-value="reminderField"
+              rounded="xl"
+              type="time"
+              variant="outlined"
+              @update:model-value="changeReminderTime"
+            />
+            <v-btn
+              color="primary"
+              :disabled="!reminderValid"
+              variant="outlined"
+              @click="addReminder"
+            >
+              {{ t('settings.reminder.add') }}
+            </v-btn>
+          </div>
+        </div>
         <div class="settings__row">
           <v-icon>mdi-download</v-icon>
           <div class="settings__text">
@@ -196,16 +252,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import BarTop from '@/components/BarTop.vue';
 import { usePrefsStore } from '@/stores/prefs';
 import { useLibraryStore } from '@/stores/library';
 import { useSessionStore } from '@/stores/session';
-import { uid } from '@/utils/cardSets';
+import { useStatsStore } from '@/stores/stats';
+import { DAILY_GOALS } from '@/types';
+import { randomId, uid } from '@/utils/cardSets';
 import { backupFileName, buildBackup, parseBackup } from '@/utils/cardExport';
 import { downloadText } from '@/utils/download';
+import { buildDailyReminderIcs, isReminderTime, REMINDER_FILE_NAME } from '@/utils/ics';
 import type { CardSet } from '@/types';
 
 const { t } = useI18n();
@@ -213,19 +272,58 @@ const router = useRouter();
 const prefs = usePrefsStore();
 const library = useLibraryStore();
 const session = useSessionStore();
+const stats = useStatsStore();
+
+onMounted(() => void stats.load());
 
 const fileInput = ref<HTMLInputElement | null>(null);
 const restoring = ref(false);
 
 const orderListProps = computed(() => ({ 'aria-label': t('settings.card-set.title') }) as Record<string, string>);
 
-const orderItems = computed(() => [
+const goalListProps = computed(() => ({ 'aria-label': t('settings.goal.title') }) as Record<string, string>);
+
+/** The select is bound to the stored goal, so a refused save leaves the kept goal showing. */
+const goalItems: number[] = [...DAILY_GOALS];
+
+async function changeGoal(goal: number | null) {
+  if (goal !== null) {
+    await stats.setGoal(goal);
+  }
+}
+
+const orderItems =computed(() => [
   { label: t('settings.order-items.al'), value: 'Alphabetically' },
   { label: t('settings.order-items.nf'), value: 'New first' },
   { label: t('settings.order-items.of'), value: 'Old first' },
   { label: t('settings.order-items.progress'), value: 'Progress' },
   { label: t('settings.order-items.rs'), value: 'Recently studied' },
 ]);
+
+/** The field's own text, so an incomplete time can show without being stored. */
+const reminderField = ref(prefs.reminderTime);
+const reminderValid = computed(() => isReminderTime(reminderField.value));
+
+function changeReminderTime(value: string | null) {
+  reminderField.value = value ?? '';
+  if (isReminderTime(reminderField.value)) {
+    prefs.reminderTime = reminderField.value;
+  }
+}
+
+function addReminder() {
+  if (!isReminderTime(reminderField.value)) {
+    return;
+  }
+  const ics = buildDailyReminderIcs({
+    time: reminderField.value,
+    summary: t('reminder.summary'),
+    url: `${window.location.origin}/`,
+    now: new Date(),
+    uid: `${randomId()}@flashcards`,
+  });
+  downloadText(REMINDER_FILE_NAME, ics, 'text/calendar;charset=utf-8');
+}
 
 async function backUp() {
   // The library may still be loading when Settings is opened directly.
@@ -296,6 +394,7 @@ async function restore(event: Event) {
         fav: source.fav,
         labels: source.labels.flatMap((id) => labelIds.get(id) ?? []),
         cards: source.cards,
+        ...(source.speech ? { speech: source.speech } : {}),
       };
       if (await library.createSet(set)) {
         created++;
@@ -336,6 +435,13 @@ async function restore(event: Event) {
 }
 .settings__file {
   display: none;
+}
+.settings__reminder {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-left: 40px;
 }
 .settings__select {
   margin-left: 40px;
