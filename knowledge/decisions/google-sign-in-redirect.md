@@ -30,11 +30,16 @@ that Bubblewrap overwrites on every regeneration).
 - The app calls `getRedirectResult` when it loads, to show a failed sign-in's error; the session itself arrives
   through the usual auth listener.
 - Local development against the real project (the developer chose to keep Google sign-in working there) proxies `/__/auth` from the Vite dev server to the project's
-  `firebaseapp.com` helper, and needs `http://localhost:8080/__/auth/handler` as a redirect URI on the OAuth web
-  client.
+  `firebaseapp.com` helper, and needs `http://localhost:2100` as an authorised origin and
+  `http://localhost:2100/__/auth/handler` as a redirect URI on the OAuth web client
+  ([ports](local-ports-2100-block.md)).
 - Every host the app is served from must be an authorised redirect URI on the Google OAuth web client
   (`https://<host>/__/auth/handler`) and an authorised domain in Firebase Auth.
 - Inside the TWA, Google's sign-in page shows with a browser bar while it's open, because it is off the verified
   origin.
 - Popup errors no longer arise.
 - Sign-in still has to be tried on a real Android device before each Play submission.
+
+## History
+
+- 2026-11-05: dev-server sign-in needed `http://localhost:8080/__/auth/handler`; now `http://localhost:2100` and `http://localhost:2100/__/auth/handler`, because the dev server moved to port 2100. The decision itself stands. See [ports](local-ports-2100-block.md).

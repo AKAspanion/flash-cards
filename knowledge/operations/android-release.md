@@ -63,11 +63,12 @@ The ordered steps, from the first build to the Play submission, are in section 8
   still at least 36, which Play requires ([why](../decisions/play-compliance-in-twa-work.md)).
 - `android/manifest-checksum.txt` is committed; keep it with the regenerated project.
 - Google sign-in needs `https://spanion-flash-cards.web.app/__/auth/handler` and
-  `http://localhost:8080/__/auth/handler` as redirect URIs on the OAuth web client, besides the production host
+  `http://localhost:2100/__/auth/handler` as redirect URIs on the OAuth web client, besides the production host
   ([decision](../decisions/google-sign-in-redirect.md)). Try sign-in on a real device before each submission.
 
 ## History
 
+- 2026-11-05: the dev redirect URI was `http://localhost:8080/__/auth/handler`; now `http://localhost:2100/__/auth/handler`, because the dev server moved to port 2100. See [ports](../decisions/local-ports-2100-block.md).
 - 2026-11-04: assetlinks.json listed only the upload key and the runbook said Play's key would join it; now it lists Play's app-signing key and its Android 17 hybrid signer, because the first internal-test install opened with a URL bar.
 - 2026-11-04: the black gap on cold launch was a known open finding; now the runbook says to re-apply the splash self-grant after regeneration, because the grant fixed it.
 - 2026-11-04: the signed bundle, APK and feature graphic in `~/keys/flashcards/` were rebuilt for the FlashCards rename, because the name is in the artifacts. See [the decision](../decisions/app-name-flashcards.md).
