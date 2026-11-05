@@ -6,6 +6,7 @@ import vue from '@vitejs/plugin-vue';
 import vuetify from 'vite-plugin-vuetify';
 import { VitePWA } from 'vite-plugin-pwa';
 import { pwaManifest } from './pwa-manifest.ts';
+import { DEV_PORTS } from './dev-ports.ts';
 
 const { version } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf-8'));
 
@@ -74,9 +75,13 @@ export default defineConfig(({ mode }) => {
       ],
     },
     server: {
-      port: 8080,
+      port: DEV_PORTS.devServer,
       strictPort: true,
       proxy: authProxy,
+    },
+    preview: {
+      port: DEV_PORTS.preview,
+      strictPort: true,
     },
     test: {
       environment: 'jsdom',

@@ -27,7 +27,7 @@ verified: human:panditankit1995@gmail.com
 ## How to run it
 
 - `npm test` (unit), `npm run test:rules` (rules), `npm run test:e2e` (builds `dist-e2e/`, then starts the
-  emulators and Playwright). The rules and e2e scripts need Java for the emulators. Scripts are in `package.json`.
+  emulators and Playwright, whose preview runs on `DEV_PORTS.e2ePreview`, `2108`, from `dev-ports.ts`). The rules and e2e scripts need Java for the emulators. Scripts are in `package.json`.
 
 ## History
 
@@ -35,6 +35,7 @@ verified: human:panditankit1995@gmail.com
 
 ## Sources
 
+- `dev-ports.ts`
 - `vite.config.ts`
 - `playwright.config.ts`
 - `package.json`
@@ -45,3 +46,7 @@ verified: human:panditankit1995@gmail.com
 - `tests/e2e/auth.spec.ts`
 - `tests/e2e/sets.spec.ts`
 - `.env.emulator`
+
+## History
+
+- 2026-11-05: the e2e preview ran on the tool's default port; now `DEV_PORTS.e2ePreview` (`2108`), because every local port moved into one block. See [ports](../decisions/local-ports-2100-block.md).

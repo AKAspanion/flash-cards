@@ -1,8 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
 import { PASSWORD, createSet, signUp } from './helpers';
+import { DEV_PORTS } from '../../dev-ports';
 
-const AUTH = 'http://127.0.0.1:9099';
-const FIRESTORE = 'http://127.0.0.1:8085';
+const AUTH = `http://127.0.0.1:${DEV_PORTS.auth}`;
+const FIRESTORE = `http://127.0.0.1:${DEV_PORTS.firestore}`;
 const PROJECT = 'demo-flash-cards';
 const BODY = "This deletes your account and all your sets, cards and labels. It can't be undone.";
 

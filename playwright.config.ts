@@ -1,8 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
+import { DEV_PORTS } from './dev-ports.ts';
 
 // End-to-end tests run a production build (mode "emulator") against the local
 // Auth/Firestore emulators: `npm run test:e2e` starts both.
-const PORT = 4317;
+const PORT = DEV_PORTS.e2ePreview;
 
 export default defineConfig({
   testDir: 'tests/e2e',

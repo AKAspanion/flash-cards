@@ -19,7 +19,7 @@
 - §5.6: "An action's allowance is reserved before Claude is called and refunded if the call fails, times out or is refused. A user never pays for an error."
 - §6.5: functions never log card text, notes, files or answers.
 - Every new UI string is added to both `src/locales/en.json` and `src/locales/hi.json` (`tests/unit/locales.spec.ts` fails otherwise).
-- Firestore emulator port stays `8085`; functions emulator uses `5001`.
+- The emulator ports are `DEV_PORTS` in `dev-ports.ts`; the functions emulator takes `2109` (spec §2.3), added to `DEV_PORTS` as `functions` and to `firebase.json` as `emulators.functions.port`.
 - `firebase-tools` is never added as a dependency; scripts use `npx --yes firebase-tools@15.34.2`.
 - Branch: `feat/ai-foundation` off `master` (this repo's default branch).
 - Another worktree (`.claude/worktrees/google-play-policy-fixes-6f0029`) has uncommitted edits to `src/App.vue`; expect a merge conflict there and keep both changes.
@@ -36,7 +36,7 @@
 - Create: `functions/package.json`, `functions/package-lock.json`, `functions/tsconfig.json`, `functions/vitest.config.ts`, `functions/.gitignore`, `functions/src/index.ts`, `functions/src/config.ts`
 - Create: `shared/ai-contracts.ts`
 - Create: `tests/unit/aiContracts.spec.ts`
-- Modify: `firebase.json` (functions codebase, functions emulator `5001`, CSP `connect-src`)
+- Modify: `firebase.json` (functions codebase, functions emulator `2109` (`DEV_PORTS.functions`), CSP `connect-src`)
 - Modify: `firestore.rules` (deny-all blocks for `users`, `ai-usage`, `ai-rate`, `ai-reports`)
 - Modify: `tests/unit/firestore.rules.spec.ts`
 - Modify: `package.json` (scripts), `tsconfig.json` (include `shared/**/*.ts`)
@@ -124,7 +124,7 @@ Root `package.json` scripts added/changed:
 - Given `2026-11-30T23:59:59Z`, `monthKey` returns `2026-11` and `nextReset` returns `2026-12-01T00:00:00.000Z`; given `2026-12-31T23:00:00Z`, `nextReset` returns `2027-01-01T00:00:00.000Z`.
 - Given a signed-in user, when they read or write `users/{theirUid}`, `ai-usage/{theirUid}/months/2026-11`, `ai-rate/{theirUid}` or `ai-reports/x`, then the rules deny it.
 - Given the existing rules tests, then they still pass.
-- Given `firebase.json`, then the hosting CSP `connect-src` contains `https://*.cloudfunctions.net` and `https://*.run.app`, and `emulators.functions.port` is `5001`.
+- Given `firebase.json`, then the hosting CSP `connect-src` contains `https://*.cloudfunctions.net` and `https://*.run.app`, and `emulators.functions.port` is `2109` (`DEV_PORTS.functions`).
 - Given `npm run test:functions` in a fresh checkout after `npm --prefix functions ci`, then it runs (zero tests is a pass at this point) and `npm run functions:build` emits `functions/lib/index.js`.
 
 - [ ] **Step 1: Write the failing tests** for the contract and rules cases, in `tests/unit/aiContracts.spec.ts` and `tests/unit/firestore.rules.spec.ts`
@@ -415,7 +415,7 @@ git commit -m "feat(ai): add Claude and Gemini providers behind one interface"
 ### Task 4: App AI service, store, consent/upgrade/report UI and Pro screen
 
 **Files:**
-- Modify: `src/services/firebase.ts` (export `getFunctionsInstance()`; connect the functions emulator at `127.0.0.1:5001` when `VUE_APP_USE_EMULATORS=true`)
+- Modify: `src/services/firebase.ts` (export `getFunctionsInstance()`; connect the functions emulator at `127.0.0.1:2109` (`DEV_PORTS.functions`) when `VUE_APP_USE_EMULATORS=true`)
 - Create: `src/services/ai.ts`
 - Create: `src/stores/ai.ts`
 - Create: `src/components/AiConsentDialog.vue`, `src/components/AiUpgradeDialog.vue`, `src/components/AiReportButton.vue`, `src/components/AiProChip.vue`, `src/components/AiUsageMeter.vue`
