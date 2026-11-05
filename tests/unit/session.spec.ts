@@ -8,6 +8,11 @@ const { PENDING_SNACK_KEY } = await import('@/utils/freshLoad');
 
 const OFFLINE_SAVED = "Saved on this device. It will sync when you're back online.";
 
+/** A connectivity change as App.vue reports it; the session store's sync watcher reacts to each one. */
+function setOnline(value: boolean) {
+  useSessionStore().online = value;
+}
+
 describe('session store: notifyOfflineSave', () => {
   beforeEach(() => {
     setActivePinia(createPinia());
@@ -36,8 +41,9 @@ describe('session store: notifyOfflineSave', () => {
     session.notifyOfflineSave();
     session.snack.show = false;
 
-    session.online = true;
-    session.online = false;
+    // Back online, then offline again: going online ends the offline period.
+    setOnline(true);
+    setOnline(false);
     session.notifyOfflineSave();
     expect(session.snack.show).toBe(true);
     expect(session.snack.text).toBe(OFFLINE_SAVED);

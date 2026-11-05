@@ -159,6 +159,11 @@ describe('library store', () => {
       useSessionStore().online = false;
     }
 
+    /** A connectivity change as App.vue reports it; the session store's sync watcher reacts to each one. */
+    function setOnline(value: boolean) {
+      useSessionStore().online = value;
+    }
+
     it('offline, a save resolves once the write is queued and shows the offline snack', async () => {
       const library = await loadedLibrary();
       goOffline();
@@ -180,8 +185,9 @@ describe('library store', () => {
       await library.saveSet({ ...library.sets[0], title: 'two' });
       expect(session.snack.show).toBe(false);
 
-      session.online = true;
-      session.online = false;
+      // Back online, then offline again: going online ends the offline period.
+      setOnline(true);
+      setOnline(false);
       await library.saveSet({ ...library.sets[0], title: 'three' });
       expect(session.snack.show).toBe(true);
       expect(session.snack.text).toBe(OFFLINE_SAVED);
