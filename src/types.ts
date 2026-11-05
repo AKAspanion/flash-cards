@@ -19,6 +19,8 @@ export interface CardSet {
   /** Label docIds. */
   labels: string[];
   cards: FlashCard[];
+  /** When a review of this set last saved. */
+  studiedAt?: Date;
 }
 
 export interface Label {

@@ -19,12 +19,15 @@ Written by `cardSetToDoc` in `src/services/cardSetMapper.ts`:
 - `date`: a Firestore `Timestamp`, set when the set is first created in the editor.
 - `labels`: an array of label document ids.
 - `cards`: a JSON string of `FlashCard` objects (`id`, `front`, `back`, `learned`, `date`).
+- `studiedAt`: optional Firestore `Timestamp`, when a review of the set last saved. The key is written only when
+  set, since Firestore rejects `undefined`.
 
 ## Rules
 
 - Reading is forgiving: `cardSetFromDoc` falls back to defaults for missing or malformed fields (`id` falls back to
   the document id, `color` to `#E91E63`, an unparsable `cards` to an empty list, an unreadable `date` to the epoch).
   Tested in `tests/unit/cardSetMapper.spec.ts`.
+- `parseCards` keeps unknown fields on a card, so a field a newer version wrote survives a read and save.
 - `firestore.rules` (`validSet`) requires `cards` to be a string and `labels` a list on every create and update,
   and an update may not change `id`.
 - `cards` is a JSON string, as the original app stored it. The original app is no longer in use, so the format may
@@ -35,6 +38,7 @@ Written by `cardSetToDoc` in `src/services/cardSetMapper.ts`:
 
 ## History
 
+- 2026-11-05: cards lost fields the mapper didn't know and a set had no study time; now unknown card fields are kept and a set may carry `studiedAt`, for study modes.
 - 2026-11-03: `cards` had to stay a JSON string for older app versions; now no old version is in use, and the format may change. See [Original app compatibility](../decisions/original-app-compatibility.md).
 
 ## Sources

@@ -48,6 +48,7 @@ in spec 8.1).
 - Modify: `src/types.ts`
 - Create: `src/services/statsMapper.ts`
 - Modify: `src/services/firebase.ts`
+- Modify: `src/services/ownedCollections.ts`
 - Modify: `src/locales/en.json`
 - Modify: `src/locales/hi.json`
 - Test: `tests/unit/firestore.rules.spec.ts`
@@ -86,7 +87,9 @@ export function saveDailyGoal(goal: number): Promise<void>;           // merges 
   - create, update: signed in, `request.auth.uid == uid`, `request.resource.data.uid == uid`,
     `request.resource.data.keys().hasOnly(['uid', 'goal', 'days'])`, `days` is a map, and `goal`, when present,
     is one of 10, 20, 50, 100.
-  - list: nobody.
+  - list: signed in and `resource.data.uid == request.auth.uid` (a query limited to their own `uid`; spec 3.3),
+    so Delete account can find the document. Any other list fails.
+- `OWNED_COLLECTIONS` gains `{ name: 'user-stats', ownerField: 'uid' }` (spec 3.3), so Delete account removes it.
 - Locale keys (English word for word; Hindi by the implementer):
 
 | Key | English |
@@ -114,7 +117,9 @@ export function saveDailyGoal(goal: number): Promise<void>;           // merges 
 - Given alice's document exists, when bob reads, updates or deletes `user-stats/alice`, then each fails; a signed-out visitor's read fails too.
 - Given bob signed in, when he creates `user-stats/alice` with `uid: 'bob'`, or `user-stats/bob` with `uid: 'alice'`, then both fail.
 - Given alice, when she writes `goal: 25`, `goal: '20'`, `days: 'x'`, or an extra field `admin: true`, then each write fails.
-- Given alice, when she runs a `list` query over `user-stats`, then it fails.
+- Given alice, when she runs a `list` query over `user-stats` with no filter, or limited to `uid == 'bob'`, then it fails;
+  limited to `uid == 'alice'`, it succeeds and returns only her document.
+- `tests/unit/ownedCollections.spec.ts` passes with `user-stats` listed.
 - The existing rules cases (sets, labels, "other collections are closed") still pass.
 - Given `statsFromDoc(undefined)`, then it returns `{ goal: 20, days: {} }`.
 - Given `{ goal: 50, days: { '2026-11-01': 4, 'nope': 2, '2026-11-02': -1, '2026-11-03': 'x' } }`, then it returns `{ goal: 50, days: { '2026-11-01': 4 } }`.

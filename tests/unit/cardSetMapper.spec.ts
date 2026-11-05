@@ -73,6 +73,44 @@ describe('cardSetToDoc', () => {
   });
 });
 
+describe('study-mode fields', () => {
+  const srsCard = {
+    id: 'a', front: 'f', back: 'b', learned: true, date: '2026-01-01T00:00:00.000Z',
+    srs: { due: '2026-11-05', interval: 3, ease: 2.5, reps: 2, lapses: 0 },
+  };
+  const base: CardSet = { id: 'x', title: 'T', color: '#000000', date: new Date('2021-01-01T00:00:00Z'), trashed: false, fav: false, labels: [], cards: [] };
+
+  it('keeps unknown card fields through a read and write', () => {
+    const set = cardSetFromDoc('d', { cards: JSON.stringify([srsCard]) });
+    const doc = cardSetToDoc(set, 'u1');
+    expect(JSON.parse(doc.cards)[0].srs).toEqual(srsCard.srs);
+  });
+
+  it('normalises known fields but keeps extra keys', () => {
+    const set = cardSetFromDoc('d', { cards: JSON.stringify([{ id: 'a', front: 5, note: 'x' }]) });
+    expect(set.cards[0]).toMatchObject({ front: '', note: 'x' });
+  });
+
+  it('reads studiedAt from a Timestamp or { seconds }', () => {
+    const at = new Date('2026-10-30T10:00:00Z');
+    expect(cardSetFromDoc('d', { studiedAt: Timestamp.fromDate(at) }).studiedAt).toEqual(at);
+    expect(cardSetFromDoc('d', { studiedAt: { seconds: at.getTime() / 1000 } }).studiedAt).toEqual(at);
+  });
+
+  it('leaves studiedAt undefined when missing or unreadable', () => {
+    expect(cardSetFromDoc('d', {}).studiedAt).toBeUndefined();
+    expect(cardSetFromDoc('d', { studiedAt: 'garbage' }).studiedAt).toBeUndefined();
+  });
+
+  it('writes studiedAt only when the set has one', () => {
+    expect(cardSetToDoc(base, 'u1')).not.toHaveProperty('studiedAt');
+    const at = new Date('2026-10-30T10:00:00Z');
+    const doc = cardSetToDoc({ ...base, studiedAt: at }, 'u1');
+    expect(doc.studiedAt).toBeInstanceOf(Timestamp);
+    expect(doc.studiedAt.toDate()).toEqual(at);
+  });
+});
+
 describe('labelFromDoc', () => {
   it('maps a label document', () => {
     expect(labelFromDoc('l1', { label: 'Verbs', uid: 'u1' })).toEqual({ docId: 'l1', label: 'Verbs' });
