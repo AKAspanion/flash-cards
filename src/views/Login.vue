@@ -10,7 +10,7 @@
         {{ t('info.tagline.title') }}
       </h1>
       <div class="pa-2 pb-6 text-body-small">
-        {{ isSignIn ? t('login.subtitle.login') : t('login.subtitle.signup') }}
+        {{ t(SUBTITLE_KEYS[mode]) }}
       </div>
       <v-card
         class="login__card"
@@ -29,13 +29,14 @@
             height="48"
             hide-details
             :label="t('login.email')"
-            :rules="[rules.required(t('email.enter')), rules.noSpace(t('rule.space.email'))]"
+            :rules="emailRules"
             type="email"
             variant="solo"
           />
           <v-text-field
+            v-if="mode !== 'reset'"
             v-model="password"
-            :autocomplete="isSignIn ? 'current-password' : 'new-password'"
+            :autocomplete="mode === 'signIn' ? 'current-password' : 'new-password'"
             class="login__field"
             flat
             height="48"
@@ -47,7 +48,7 @@
           />
           <v-expand-transition>
             <v-text-field
-              v-if="!isSignIn"
+              v-if="mode === 'signUp'"
               v-model="repassword"
               autocomplete="new-password"
               class="login__field"
@@ -69,36 +70,65 @@
             :loading="busy && !googleBusy"
             type="submit"
           >
-            {{ isSignIn ? t('login.login') : t('login.signup') }}
+            {{ t(SUBMIT_KEYS[mode]) }}
           </v-btn>
         </v-form>
       </v-card>
-      <div class="text-label-medium text-uppercase py-6">
-        {{ t('login.or') }}
-      </div>
-      <v-btn
-        :aria-label="t('login.google')"
-        :disabled="busy"
-        icon
-        :loading="googleBusy"
-        :title="t('login.google')"
-        variant="text"
-        @click="onGoogle"
+      <div
+        v-if="mode === 'signIn'"
+        class="text-body-small pt-4"
       >
-        <v-icon color="rgb(23, 156, 82)">
-          mdi-google
-        </v-icon>
-      </v-btn>
-      <div class="text-body-small py-6">
-        {{ isSignIn ? t('login.no-account') : t('login.have-account') }}
         <button
           class="login__link"
+          :disabled="busy"
           type="button"
-          @click="toggleMode"
+          @click="setMode('reset')"
         >
-          {{ isSignIn ? t('login.signup') : t('login.login') }}
+          {{ t('login.forgot') }}
         </button>
       </div>
+      <div
+        v-if="mode === 'reset'"
+        class="text-body-small py-6"
+      >
+        <button
+          class="login__link"
+          :disabled="busy"
+          type="button"
+          @click="setMode('signIn')"
+        >
+          {{ t('login.reset.back') }}
+        </button>
+      </div>
+      <template v-else>
+        <div class="text-label-medium text-uppercase py-6">
+          {{ t('login.or') }}
+        </div>
+        <v-btn
+          :aria-label="t('login.google')"
+          :disabled="busy"
+          icon
+          :loading="googleBusy"
+          :title="t('login.google')"
+          variant="text"
+          @click="onGoogle"
+        >
+          <v-icon color="rgb(23, 156, 82)">
+            mdi-google
+          </v-icon>
+        </v-btn>
+        <div class="text-body-small py-6">
+          {{ mode === 'signIn' ? t('login.no-account') : t('login.have-account') }}
+          <button
+            class="login__link"
+            :disabled="busy"
+            type="button"
+            @click="setMode(mode === 'signIn' ? 'signUp' : 'signIn')"
+          >
+            {{ mode === 'signIn' ? t('login.signup') : t('login.login') }}
+          </button>
+        </div>
+      </template>
       <div class="text-body-small pb-6 login__legal">
         <router-link
           class="login__link"
@@ -115,12 +145,24 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { signInWithEmail, signInWithGoogle, signUpWithEmail } from '@/services/firebase';
+import { sendPasswordReset, signInWithEmail, signInWithGoogle, signUpWithEmail } from '@/services/firebase';
 import { authErrorMessage, isAuthCancel } from '@/services/authErrors';
 import { safeRedirect } from '@/router';
 import { useSessionStore } from '@/stores/session';
 
 const MIN_PASSWORD = 6;
+
+type Mode = 'signIn' | 'signUp' | 'reset';
+const SUBTITLE_KEYS: Record<Mode, string> = {
+  signIn: 'login.subtitle.login',
+  signUp: 'login.subtitle.signup',
+  reset: 'login.subtitle.reset',
+};
+const SUBMIT_KEYS: Record<Mode, string> = {
+  signIn: 'login.login',
+  signUp: 'login.signup',
+  reset: 'login.reset.send',
+};
 
 const { t } = useI18n();
 const route = useRoute();
@@ -133,7 +175,7 @@ const finePointer = !window.matchMedia('(pointer: coarse)').matches;
 const email = ref('');
 const password = ref('');
 const repassword = ref('');
-const isSignIn = ref(true);
+const mode = ref<Mode>('signIn');
 const busy = ref(false);
 const googleBusy = ref(false);
 const form = ref<{ validate: () => Promise<{ valid: boolean; errors: { errorMessages: string[] }[] }> } | null>(null);
@@ -141,15 +183,24 @@ const form = ref<{ validate: () => Promise<{ valid: boolean; errors: { errorMess
 const rules = {
   required: (message: string) => (v: string) => !!v || message,
   noSpace: (message: string) => (v: string) => !/\s/.test(v ?? '') || message,
+  emailShape: (message: string) => (v: string) => /^[^@\s]+@[^@\s]+$/.test(v ?? '') || message,
 };
+// Sign-in and sign-up get "not a valid email" from Firebase. A reset request can't rely on that:
+// the Auth emulator answers a malformed address as an unknown one, which reads as "link sent".
+const emailRules = computed(() => [
+  rules.required(t('email.enter')),
+  rules.noSpace(t('rule.space.email')),
+  ...(mode.value === 'reset' ? [rules.emailShape(t('auth.error.invalid-email'))] : []),
+]);
 const passwordRules = computed(() => [
   rules.required(t('rule.password.required')),
   rules.noSpace(t('rule.space.password')),
-  (v: string) => isSignIn.value || (v ?? '').length >= MIN_PASSWORD || t('rule.password.min', { n: MIN_PASSWORD }),
+  (v: string) => mode.value !== 'signUp' || (v ?? '').length >= MIN_PASSWORD || t('rule.password.min', { n: MIN_PASSWORD }),
 ]);
 
-function toggleMode() {
-  isSignIn.value = !isSignIn.value;
+// Every mode shares the email field, so switching keeps what was typed there.
+function setMode(next: Mode) {
+  mode.value = next;
   repassword.value = '';
 }
 
@@ -174,6 +225,21 @@ async function run(action: () => Promise<unknown>, successMessage?: string) {
   }
 }
 
+// The reply is the same whether or not the address has an account (sendPasswordReset swallows
+// "no such user" and "disabled"), and the screen stays here: the link in the email is the next step.
+async function sendReset() {
+  busy.value = true;
+  try {
+    await sendPasswordReset(email.value);
+    session.showSnack(t('toast.success.reset-sent'));
+    setMode('signIn');
+  } catch (err) {
+    session.showSnack(authErrorMessage(err, t));
+  } finally {
+    busy.value = false;
+  }
+}
+
 // Validate on submit rather than disabling the button: password-manager autofill
 // often doesn't fire input events, which would leave a disabled button stuck.
 async function onSubmit() {
@@ -185,7 +251,9 @@ async function onSubmit() {
     session.showSnack(errors[0]?.errorMessages[0] ?? t('auth.error.generic'));
     return;
   }
-  if (isSignIn.value) {
+  if (mode.value === 'reset') {
+    void sendReset();
+  } else if (mode.value === 'signIn') {
     void run(() => signInWithEmail(email.value, password.value));
   } else if (password.value !== repassword.value) {
     session.showSnack(t('rule.password.match'));
@@ -272,5 +340,10 @@ onBeforeUnmount(() => window.removeEventListener('pageshow', resetGoogle));
   cursor: pointer;
   background: none;
   border: 0;
+}
+/* The mode links wait while a request is in flight, so its answer lands in the mode that sent it. */
+.login__link:disabled {
+  cursor: default;
+  opacity: 0.5;
 }
 </style>

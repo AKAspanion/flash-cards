@@ -34,10 +34,15 @@ this repository.
   ([offline study](../features/offline-study.md)). Signing in, up, or changing the profile needs the device online.
 - `getRedirectResult` runs once at start-up, through `session.loadRedirectOutcome` called from `src/main.ts`, before
   the first navigation settles on `/login`.
+- `sendPasswordReset` sends Firebase's reset email with `<origin>/login` as the continue URL and resolves on
+  `auth/user-not-found` and `auth/user-disabled`, so the screen doesn't reveal who is registered. Against a network
+  observer that holds only while the project's Email Enumeration Protection is on:
+  [open question](../questions/email-enumeration-protection.md).
 - Service calls fail with "You are signed out" when there is no current user (`requireUid`).
 
 ## History
 
+- 2026-11-05: there was no password reset; now `sendPasswordReset` sends one with the same reply for every address, because of the password reset plan. See [the decision](../decisions/password-reset-uses-firebase-action-page.md).
 - 2026-11-05: sign-out ended at once and left the cache; now it waits for unsynced writes (15 s at most), clears the device cache and stays signed in past the deadline, and `/s/:shareId` is a third public route, because of the offline-study and sharing plans.
 - 2026-11-04: Google sign-in used a popup and every route but `/login` needed sign-in; now a redirect on the app's own host, with two public routes. See [the decision](../decisions/google-sign-in-redirect.md).
 
@@ -50,3 +55,4 @@ this repository.
 - `src/main.ts`
 - `tests/unit/router.spec.ts`
 - `tests/e2e/auth.spec.ts`
+- `tests/unit/passwordReset.spec.ts`

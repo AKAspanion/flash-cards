@@ -251,7 +251,8 @@
   },
   "toast": {
     "success": {
-      "sign-up": "Account created successfully!"
+      "sign-up": "Account created successfully!",
+      "reset-sent": "If an account exists for that address, we've sent it a link to reset the password."
     },
     "error": {
       "sign-up": "Could not create account. Please try again.",
@@ -285,9 +286,15 @@
     "google": "Continue with Google",
     "no-account": "Don't have an account?",
     "have-account": "Already have an account?",
+    "forgot": "Forgot password?",
+    "reset": {
+      "send": "Send reset link",
+      "back": "Back to login"
+    },
     "subtitle": {
       "login": "Login to application",
-      "signup": "Create an account"
+      "signup": "Create an account",
+      "reset": "Reset your password"
     }
   },
   "auth": {
@@ -303,7 +310,8 @@
       "generic": "Something went wrong. Please try again.",
       "unauthorized-domain": "Google sign-in is not enabled for this web address yet. Use email and password, or try again from the main site.",
       "user-mismatch": "That's a different Google account. Choose the account you signed in with.",
-      "recent-login": "Please confirm it's you again, then try once more."
+      "recent-login": "Please confirm it's you again, then try once more.",
+      "reset-unavailable": "Password reset isn't available right now. Please try again later."
     }
   },
   "card": {

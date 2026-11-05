@@ -4,6 +4,7 @@ const AUTH_ERROR_KEYS: Record<string, string> = {
   'auth/wrong-password': 'auth.error.invalid-credential',
   'auth/user-not-found': 'auth.error.invalid-credential',
   'auth/invalid-email': 'auth.error.invalid-email',
+  'auth/missing-email': 'email.enter',
   'auth/email-already-in-use': 'auth.error.email-in-use',
   'auth/weak-password': 'auth.error.weak-password',
   'auth/too-many-requests': 'auth.error.too-many-requests',
@@ -13,6 +14,10 @@ const AUTH_ERROR_KEYS: Record<string, string> = {
   'auth/operation-not-allowed': 'auth.error.not-allowed',
   'auth/user-disabled': 'auth.error.disabled',
   'auth/unauthorized-domain': 'auth.error.unauthorized-domain',
+  // A reset request can fail on the project's setup or its sending quota: nothing the user typed.
+  'auth/unauthorized-continue-uri': 'auth.error.reset-unavailable',
+  'auth/invalid-continue-uri': 'auth.error.reset-unavailable',
+  'auth/quota-exceeded': 'auth.error.reset-unavailable',
 };
 
 /** Sign-in cancelled by the user: not worth an error message. */
