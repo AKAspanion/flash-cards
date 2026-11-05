@@ -77,4 +77,8 @@ has `meta.requireAuth` except `/login` and the routes with `meta.public` (`/priv
 - `pwa-manifest.ts`
 - `src/plugins/vuetify.ts`
 - `src/plugins/i18n.ts`
+- `src/components/StudyShortcutsDialog.vue`
+- `src/components/StudySummaryDialog.vue`
+- `src/components/CardFlash.vue`
+- `src/components/GroupCardFlash.vue`
 - `firebase.json`

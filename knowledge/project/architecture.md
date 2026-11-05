@@ -46,6 +46,8 @@ a Cloud Billing budget publishes to. The web app has no jobs or queues.
 6. `useSessionStore` (`src/stores/session.ts`) holds the user, the busy counter (`track`), online state, the
    snack bar and `unsavedChanges`. `usePrefsStore` (`src/stores/prefs.ts`) holds device-local settings in
    localStorage.
+7. `src/utils/studyQueue.ts` builds the study queue and the session summary as pure functions, and
+   `src/composables/useStudyShortcuts.ts` binds the review screen's keyboard shortcuts.
 
 ## Sources
 
@@ -59,6 +61,8 @@ a Cloud Billing budget publishes to. The web app has no jobs or queues.
 - `src/stores/session.ts`
 - `src/stores/prefs.ts`
 - `src/utils/cardSets.ts`
+- `src/utils/studyQueue.ts`
+- `src/composables/useStudyShortcuts.ts`
 - `firebase.json`
 - `firestore.rules`
 - `vite.config.ts`
