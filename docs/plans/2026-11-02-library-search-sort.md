@@ -1,5 +1,7 @@
 # Library Search and Sort Implementation Plan
 
+**Status:** complete
+
 > **For agentic workers:** REQUIRED SUB-SKILL: the project's workflow policy names the executor (`run.executor`): ga:implement-with-subagents by default, or ga:implement. Follow the policy and this plan's Checkpoints. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Find sets by what is on their cards, sort them by progress or by when they were last studied, and show on each set when it was last studied.
@@ -93,21 +95,21 @@ New locale keys, en copy (add every one to `hi.json` too):
 - Given `t('home.set.matches', { n: 1 }, 1)`, the English text is `Matches in 1 card`; with 4 it is `Matches in 4 cards`.
 - Every new key exists in both locale files (`tests/unit/locales.spec.ts` passes unchanged).
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/cardSets.spec.ts`, `tests/unit/relativeTime.spec.ts` and `tests/unit/prefs.spec.ts`, with the new functions created first with their real signatures
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/unit/cardSets.spec.ts`, `tests/unit/relativeTime.spec.ts` and `tests/unit/prefs.spec.ts`, with the new functions created first with their real signatures
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm test`
 Expected: FAIL on the assertions, not on missing modules
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, add the locale keys to both files, until they pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, add the locale keys to both files, until they pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm test`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/types.ts src/utils/cardSets.ts src/utils/relativeTime.ts src/locales/en.json src/locales/hi.json tests/unit/cardSets.spec.ts tests/unit/relativeTime.spec.ts tests/unit/prefs.spec.ts
@@ -136,21 +138,21 @@ git commit -m "feat(library): search card text and sort by progress or last stud
 - Given sets `Alpha` and `Beta` and only `Alpha` reviewed (marked learned on the review screen, then back to Home), when "Recently studied" is picked, Home lists `Alpha` before `Beta`.
 - Given the Settings page with the select open at 390 px wide, the axe scan finds no violations.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/e2e/library-sort.spec.ts`
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/e2e/library-sort.spec.ts`
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm run test:e2e`
 Expected: FAIL on the missing select items
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm run test:e2e`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/views/Settings.vue tests/e2e/library-sort.spec.ts
@@ -196,31 +198,31 @@ The card shows "Matches in {n} cards" only when `search` is not empty, the title
 - Given the Bin, a set card shows neither line.
 - Given Home with a search active at 390 px wide, the axe scan finds no violations.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case, in `tests/e2e/library-search.spec.ts`
+- [x] **Step 1: Write the failing tests** for each Acceptance case, in `tests/e2e/library-search.spec.ts`
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm run test:e2e`
 Expected: FAIL on the missing lines
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm run test:e2e`
 Expected: PASS
 
-- [ ] **Step 5: Run the type check**
+- [x] **Step 5: Run the type check**
 
 Run: `npm run type-check`
 Expected: no errors
 
-- [ ] **Step 6: Run lint**
+- [x] **Step 6: Run lint**
 
 Run: `npm run lint`
 Expected: no errors
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/components/CardFlashSet.vue src/views/Home.vue tests/e2e/library-search.spec.ts
