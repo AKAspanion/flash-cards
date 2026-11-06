@@ -1,5 +1,7 @@
 # Friendly error messages Implementation Plan
 
+**Status:** complete, commits d9623fc..5c0f475, 2026-11-06; record in [2026-11-06-friendly-error-messages.record.md](2026-11-06-friendly-error-messages.record.md).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: the project's workflow policy names the executor (`run.executor`): ga:feature-build-team by default, or ga:feature-build. Follow the policy and this plan's Checkpoints. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 Plan, then build; tests with each task. Say 'test-first' or 'spec it first' to work that way.
@@ -64,19 +66,19 @@ Behaviour: `showError` logs `err` with `console.error` and shows `i18n.global.t(
 - Given a goal save the rules refuse (the existing e2e case), when it fails, then the snack contains `Could not save. Please try again.` and not `PERMISSION_DENIED`, and the select keeps the old goal.
 - Given a set save the rules refuse (the existing read-aloud e2e case), then the snack shows `Could not save. Please try again.` and not `PERMISSION_DENIED`.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case: unit cases in `tests/unit/session.spec.ts` and `tests/unit/authErrors.spec.ts` (replace "falls back to the raw message, then a generic one"), and change the two e2e assertions
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 1: Write the failing tests** for each Acceptance case: unit cases in `tests/unit/session.spec.ts` and `tests/unit/authErrors.spec.ts` (replace "falls back to the raw message, then a generic one"), and change the two e2e assertions
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `pnpm exec vitest run tests/unit/session.spec.ts tests/unit/authErrors.spec.ts`
 Expected: FAIL on the snack text and the generic fallback
 
-- [ ] **Step 3: Write the minimal implementation** in `session.ts` and `authErrors.ts`
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 3: Write the minimal implementation** in `session.ts` and `authErrors.ts`
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `pnpm exec vitest run tests/unit/session.spec.ts tests/unit/authErrors.spec.ts`
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/stores/session.ts src/services/authErrors.ts tests/unit/session.spec.ts tests/unit/authErrors.spec.ts tests/e2e/stats.spec.ts tests/e2e/read-aloud-language.spec.ts
