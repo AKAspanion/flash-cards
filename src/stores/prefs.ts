@@ -49,7 +49,7 @@ export const usePrefsStore = defineStore('prefs', () => {
   const storedReminder = read(KEYS.reminderTime);
   const reminderTime = ref(isReminderTime(storedReminder) ? storedReminder : DEFAULT_REMINDER_TIME);
 
-  // Firebase Auth sends its emails (verification, password reset) and shows its pages in the app's language.
+  // Firebase Auth sends its emails (verification, password reset) in the app's language.
   watch(
     lang,
     (value) => {
@@ -57,7 +57,8 @@ export const usePrefsStore = defineStore('prefs', () => {
         setAuthLanguage(value);
       } catch (err) {
         // Firebase not configured: the router shows that error; the store, and the app, still load.
-        console.error('Auth language not set:', (err as Error)?.name);
+        // The cause only, never the error's message.
+        console.error('Auth language not set:', (err as { code?: string })?.code ?? (err as Error)?.name);
       }
     },
     { immediate: true },

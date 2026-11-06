@@ -43,6 +43,21 @@ describe('prefs store', () => {
 
     expect(log).toHaveBeenCalledOnce();
     expect(log.mock.calls[0].join(' ')).toContain('FirebaseConfigError');
+    // The cause class only, never the error itself or its message.
+    expect(log.mock.calls[0].join(' ')).not.toContain('Firebase is not configured');
+  });
+
+  it("logs a Firebase error's code, not only its class, when Firebase cannot take the language", () => {
+    fb.setAuthLanguage.mockImplementation(() => {
+      throw Object.assign(new Error('Firebase: Error (app/no-options).'), { name: 'FirebaseError', code: 'app/no-options' });
+    });
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    usePrefsStore();
+
+    expect(log).toHaveBeenCalledOnce();
+    expect(log.mock.calls[0].join(' ')).toContain('app/no-options');
+    expect(log.mock.calls[0].join(' ')).not.toContain('Firebase: Error');
   });
 
   it('accepts the new orders and rejects unknown ones', () => {

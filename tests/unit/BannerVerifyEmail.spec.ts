@@ -14,6 +14,7 @@ const api = vi.hoisted(() => ({
   onUserChanged: vi.fn(),
   sendVerificationEmail: vi.fn(),
   reloadEmailVerified: vi.fn(),
+  setAuthLanguage: vi.fn(),
 }));
 vi.mock('@/services/firebase', () => api);
 vi.mock('@/services/appBadge', () => ({ updateAppBadge: vi.fn() }));

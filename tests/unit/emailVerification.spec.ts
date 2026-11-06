@@ -101,6 +101,35 @@ describe('signUpWithEmail', () => {
     expect(log.mock.calls[0].join(' ')).not.toContain('a@b.test');
   });
 
+  it('says it was not sent when the send, retried without the continue URL, is rejected again', async () => {
+    const user = fakeUser(false);
+    fb.createUserWithEmailAndPassword.mockResolvedValue({ user });
+    fb.sendEmailVerification.mockRejectedValue(authError('auth/unauthorized-continue-uri'));
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    await expect(signUpWithEmail('a@b.test', 'secret1')).resolves.toEqual({ verificationSent: false });
+
+    expect(fb.sendEmailVerification).toHaveBeenCalledTimes(2);
+    expect(fb.sendEmailVerification.mock.calls[1]).toEqual([user]);
+    expect(log).toHaveBeenCalledOnce();
+    expect(log.mock.calls[0].join(' ')).toContain('auth/unauthorized-continue-uri');
+  });
+
+  it.each(['auth/unauthorized-continue-uri', 'auth/invalid-continue-uri'])(
+    'says it was sent when the continue URL is refused (%s) and the send without it goes through',
+    async (code) => {
+      const user = fakeUser(false);
+      fb.createUserWithEmailAndPassword.mockResolvedValue({ user });
+      fb.sendEmailVerification.mockRejectedValueOnce(authError(code)).mockResolvedValueOnce(undefined);
+
+      await expect(signUpWithEmail('a@b.test', 'secret1')).resolves.toEqual({ verificationSent: true });
+
+      expect(fb.sendEmailVerification).toHaveBeenCalledTimes(2);
+      expect(fb.sendEmailVerification.mock.calls[0]).toEqual([user, CONTINUE]);
+      expect(fb.sendEmailVerification.mock.calls[1]).toEqual([user]);
+    },
+  );
+
   it('rejects with the error when the account cannot be created, and sends no email', async () => {
     const error = authError('auth/email-already-in-use');
     fb.createUserWithEmailAndPassword.mockRejectedValue(error);
@@ -127,12 +156,38 @@ describe('sendVerificationEmail', () => {
     expect(fb.sendEmailVerification).toHaveBeenCalledWith(user, CONTINUE);
   });
 
-  it('rejects with the send error', async () => {
+  it('rejects with the send error, without retrying it', async () => {
     fb.auth.currentUser = fakeUser(false);
     const error = authError('auth/too-many-requests');
     fb.sendEmailVerification.mockRejectedValue(error);
 
     await expect(sendVerificationEmail()).rejects.toBe(error);
+    expect(fb.sendEmailVerification).toHaveBeenCalledOnce();
+  });
+
+  it.each(['auth/unauthorized-continue-uri', 'auth/invalid-continue-uri'])(
+    'sends it again without the continue URL when Firebase refuses that URL (%s)',
+    async (code) => {
+      const user = fakeUser(false);
+      fb.auth.currentUser = user;
+      fb.sendEmailVerification.mockRejectedValueOnce(authError(code)).mockResolvedValueOnce(undefined);
+
+      await expect(sendVerificationEmail()).resolves.toBeUndefined();
+
+      expect(fb.sendEmailVerification).toHaveBeenCalledTimes(2);
+      expect(fb.sendEmailVerification.mock.calls[0]).toEqual([user, CONTINUE]);
+      expect(fb.sendEmailVerification.mock.calls[1]).toEqual([user]);
+    },
+  );
+
+  it('rejects with the retry error when the send without the continue URL fails too, retrying only once', async () => {
+    const user = fakeUser(false);
+    fb.auth.currentUser = user;
+    const retryError = authError('auth/invalid-continue-uri');
+    fb.sendEmailVerification.mockRejectedValueOnce(authError('auth/invalid-continue-uri')).mockRejectedValueOnce(retryError);
+
+    await expect(sendVerificationEmail()).rejects.toBe(retryError);
+    expect(fb.sendEmailVerification).toHaveBeenCalledTimes(2);
   });
 });
 

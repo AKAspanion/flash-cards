@@ -144,7 +144,7 @@ export async function signUpWithEmail(email: string, password: string): Promise<
   const { user } = await createUserWithEmailAndPassword(getServices().auth, email.trim(), password);
   // The account exists and the user is signed in either way; the verify banner's Resend covers a failed send.
   try {
-    await sendEmailVerification(user, verificationContinue());
+    await sendVerification(user);
     return { verificationSent: true };
   } catch (err) {
     // The cause class only: the error's custom data can carry the address.
@@ -153,23 +153,39 @@ export async function signUpWithEmail(email: string, password: string): Promise<
   }
 }
 
-/** Sets the language Firebase Auth uses for its emails and its own pages. */
+/** Sets the language of Firebase Auth's emails (verification, password reset). */
 export function setAuthLanguage(lang: 'en' | 'hi'): void {
-  // Each language's email template is edited separately in the Firebase console.
   getServices().auth.languageCode = lang;
 }
 
+/** Action code settings whose Continue link opens `path` on the page's own origin. */
+function continueTo(path: string) {
+  return { url: `${window.location.origin}${path}` };
+}
+
+/** The codes Firebase rejects a send with when the page's origin isn't an authorised domain for continue links. */
+const CONTINUE_URL_REFUSED = new Set(['auth/unauthorized-continue-uri', 'auth/invalid-continue-uri']);
+
 /**
- * Where Firebase's "email verified" page continues to: the home screen on the page's own origin, which is
- * always an authorised domain. The banner stays there until I've verified is pressed: the load keeps the cached user.
+ * Sends the verification email, whose "email verified" page continues to the home screen on the page's own
+ * origin. The banner stays there until I've verified is pressed: the load keeps the cached user.
+ * When Firebase refuses that continue URL (an origin not on the authorised domains, such as a preview channel),
+ * the same send is retried once without it, so the email still goes out; its outcome is the send's outcome.
  */
-function verificationContinue() {
-  return { url: `${window.location.origin}/home` };
+async function sendVerification(user: User): Promise<void> {
+  try {
+    await sendEmailVerification(user, continueTo('/home'));
+  } catch (err) {
+    if (!CONTINUE_URL_REFUSED.has((err as { code?: string })?.code ?? '')) {
+      throw err;
+    }
+    await sendEmailVerification(user);
+  }
 }
 
 /** Sends the verification email to the signed-in user. Rejects when nobody is signed in. */
 export async function sendVerificationEmail(): Promise<void> {
-  await sendEmailVerification(requireUser(), verificationContinue());
+  await sendVerification(requireUser());
 }
 
 /**
@@ -199,7 +215,7 @@ export async function reloadEmailVerified(): Promise<boolean> {
  */
 export async function sendPasswordReset(email: string): Promise<void> {
   try {
-    await sendPasswordResetEmail(getServices().auth, email.trim(), { url: `${window.location.origin}/login` });
+    await sendPasswordResetEmail(getServices().auth, email.trim(), continueTo('/login'));
   } catch (err) {
     // "No such account" and "account disabled" are answers only the existence of an account decides,
     // so both read as sent, and nothing is logged: a console line would tell the difference too.
