@@ -41,6 +41,11 @@ A visitor who is not signed in lands on `/login`. They can sign in with email an
   (`rules.emailShape`), because the Auth emulator answers a malformed address as unknown. While a request is in
   flight the mode links are disabled, so the mode can't change under it. Errors a user can't fix (the project's
   setup or sending quota) show `auth.error.reset-unavailable`; a missing email shows `email.enter`.
+- When Firebase refuses the reset email's continue link (`auth/unauthorized-continue-uri`, `auth/invalid-continue-uri`),
+  the email is sent again without it, so it still arrives, only with no Continue button back to `/login`. The reply
+  stays the same for every address, and the fallback logs nothing (the app has no remote logging, so a line would
+  reach only the user's own browser). Verification and reset share one helper, `withContinueFallback`
+  (`src/services/firebase.ts`).
 - Emails are trimmed before they are sent to Firebase (`signInWithEmail`, `signUpWithEmail`).
 - Email sign-up sends a verification email (`signUpWithEmail`); a failed send never fails the sign-up and is logged by
   error code only, since the error's data can carry the address. The success snack tells the user to check their
@@ -49,6 +54,7 @@ A visitor who is not signed in lands on `/login`. They can sign in with email an
 
 ## History
 
+- 2026-11-06: a refused continue link made the reset email fail; now it is sent again without the link, because of the password reset continue-fallback plan.
 - 2026-11-05: sign-up sent no email and the snack only said the account was created; now it sends a verification email and the snack says to check the inbox, because of the email-verification plan.
 - 2026-11-05: this concept said sign-in refuses offline with the offline-save snack, which `Login.vue` never did; corrected to say it shows Firebase's network error. Also gained the reset mode, because of the password reset plan.
 - 2026-11-05: sign-in had no offline rule and no shared-link return; now it is online-only and a signed-out Add to my library returns through it, because of the offline-study and sharing plans.

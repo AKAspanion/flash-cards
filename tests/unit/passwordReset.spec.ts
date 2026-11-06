@@ -70,4 +70,69 @@ describe('sendPasswordReset', () => {
       await expect(sendPasswordReset('user@example.test')).rejects.toBe(error);
     },
   );
+
+  it.each(['auth/user-not-found', 'auth/user-disabled'])(
+    'sends once, without retrying, when the first attempt is rejected with %s',
+    async (code) => {
+      fb.sendPasswordResetEmail.mockRejectedValue({ code });
+
+      await expect(sendPasswordReset('a@b.test')).resolves.toBeUndefined();
+      expect(fb.sendPasswordResetEmail).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  it('rejects with too-many-requests without retrying', async () => {
+    const error = { code: 'auth/too-many-requests' };
+    fb.sendPasswordResetEmail.mockRejectedValue(error);
+
+    await expect(sendPasswordReset('a@b.test')).rejects.toBe(error);
+    expect(fb.sendPasswordResetEmail).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('sendPasswordReset when Firebase refuses the continue link', () => {
+  it.each(['auth/unauthorized-continue-uri', 'auth/invalid-continue-uri'])(
+    'retries once without the continue link after %s, and resolves when that send succeeds',
+    async (code) => {
+      fb.sendPasswordResetEmail.mockRejectedValueOnce({ code }).mockResolvedValueOnce(undefined);
+
+      await expect(sendPasswordReset(' a@b.test ')).resolves.toBeUndefined();
+
+      expect(fb.sendPasswordResetEmail).toHaveBeenCalledTimes(2);
+      expect(fb.sendPasswordResetEmail).toHaveBeenNthCalledWith(1, fb.auth, 'a@b.test', {
+        url: `${window.location.origin}/login`,
+      });
+      expect(fb.sendPasswordResetEmail.mock.calls[1]).toEqual([fb.auth, 'a@b.test']);
+    },
+  );
+
+  it('rejects with the retry error when the send without the link is refused too, retrying only once', async () => {
+    const retryError = { code: 'auth/unauthorized-continue-uri' };
+    fb.sendPasswordResetEmail.mockRejectedValueOnce({ code: 'auth/unauthorized-continue-uri' }).mockRejectedValueOnce(retryError);
+
+    await expect(sendPasswordReset('a@b.test')).rejects.toBe(retryError);
+    expect(fb.sendPasswordResetEmail).toHaveBeenCalledTimes(2);
+  });
+
+  it.each(['auth/user-not-found', 'auth/user-disabled'])(
+    'resolves and logs nothing when the retry is rejected with %s',
+    async (code) => {
+      fb.sendPasswordResetEmail
+        .mockRejectedValueOnce({ code: 'auth/unauthorized-continue-uri' })
+        .mockRejectedValueOnce({ code });
+      const logs = (['error', 'warn', 'info', 'log', 'debug'] as const).map((level) =>
+        vi.spyOn(console, level).mockImplementation(() => {}),
+      );
+
+      try {
+        await expect(sendPasswordReset('a@b.test')).resolves.toBeUndefined();
+        expect(fb.sendPasswordResetEmail).toHaveBeenCalledTimes(2);
+        for (const log of logs) {
+          expect(log).not.toHaveBeenCalled();
+        }
+      } finally {
+        logs.forEach((log) => log.mockRestore());
+      }
+    },
+  );
 });

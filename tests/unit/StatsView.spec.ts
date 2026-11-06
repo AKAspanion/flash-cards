@@ -9,6 +9,11 @@ import { useStatsStore } from '@/stores/stats';
 import Stats from '@/views/Stats.vue';
 
 vi.mock('vue-router', () => ({ useRouter: () => ({ push: vi.fn() }) }));
+// The prefs store sets Firebase Auth's language; this view test needs no Firebase app for that.
+vi.mock('@/services/firebase', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/services/firebase')>()),
+  setAuthLanguage: vi.fn(),
+}));
 
 let wrapper: VueWrapper | null = null;
 

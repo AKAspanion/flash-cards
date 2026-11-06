@@ -26,6 +26,13 @@ verified**. It is a reminder only: no Firestore rule, route or function reads `e
   "every signed-in screen" (the run's ruling) and matches the rule of no ads while studying
   ([ads](../decisions/adsense-banner-ads.md)). To show it everywhere, those layouts would have to subtract the
   banner's height. What the flag means is commented on `RouteMeta` in `src/router/index.ts`.
+- The email carries a continue link to `/home` on the app's own origin (`continueTo` in `src/services/firebase.ts`),
+  so Firebase's page offers a Continue button back to the app. After Continue the banner stays until **I've
+  verified** is pressed, because the page load keeps the cached user.
+- If Firebase refuses that link (`auth/unauthorized-continue-uri`, `auth/invalid-continue-uri`, for example on an
+  origin missing from the authorised domains), the send is retried once without it, so the email still goes out,
+  without a Continue button. Any other send error is not retried. The password reset email uses the same helper
+  (`withContinueFallback`, [sign-in](sign-in.md)).
 - Resend email is followed by a cooldown of `RESEND_COOLDOWN_SECONDS = 60` seconds on the button, so presses don't
   run into Firebase's rate limit. The sign-up's own email is not counted in it.
 - I've verified reloads the user from Firebase; once verified the banner goes away. Both actions need the server and
@@ -39,6 +46,7 @@ verified**. It is a reminder only: no Firestore rule, route or function reads `e
 
 ## History
 
+- 2026-11-06: the email had no continue link; now it continues to `/home` and retries once without the link when Firebase refuses it, because Firebase's page offered no way back to the app.
 - 2026-11-05: planned for every signed-in screen with a status live region; built as a region that skips the full-height screens, because the countdown was re-announced every second and the banner broke those layouts.
 
 ## Sources
