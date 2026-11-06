@@ -88,7 +88,7 @@ describe('stats store', () => {
     const stats = useStatsStore();
     await stats.load();
     expect(stats.status).toBe('error');
-    expect(useSessionStore().snack.text).toBe('Error getting your flashcards. Please try later!');
+    expect(useSessionStore().snack.text).toBe("Couldn't load your stats. Please try again.");
   });
 
   it('adds reviews to today', async () => {

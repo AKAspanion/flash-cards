@@ -15,13 +15,27 @@ describe('authErrorMessage', () => {
     expect(authErrorMessage({ code: 'auth/unauthorized-domain' }, t)).toBe('t:auth.error.unauthorized-domain');
   });
 
-  it("shows the generic text for an unmapped code, never Firebase's message, and logs the error", () => {
+  it("shows the generic text for an unmapped code, never Firebase's message, and logs the code", () => {
     const err = { code: 'auth/some-unmapped-code', message: 'Firebase: Error (auth/some-unmapped-code).' };
     expect(authErrorMessage(err, t)).toBe('t:auth.error.generic');
-    expect(console.error).toHaveBeenCalledWith(err);
+    expect(console.error).toHaveBeenCalledWith('Unmapped auth error:', 'auth/some-unmapped-code');
     expect(authErrorMessage(new Error('Raw'), t)).toBe('t:auth.error.generic');
+    expect(console.error).toHaveBeenLastCalledWith('Unmapped auth error:', 'Error');
     expect(authErrorMessage({}, t)).toBe('t:auth.error.generic');
     expect(authErrorMessage(null, t)).toBe('t:auth.error.generic');
+  });
+
+  it("logs only an unmapped error's code, never its address or tokens", () => {
+    const err = Object.assign(new Error('Firebase: Error (auth/account-exists-with-different-credential).'), {
+      code: 'auth/account-exists-with-different-credential',
+      customData: { email: 'a@b.test', _tokenResponse: { oauthAccessToken: 'tok' } },
+    });
+    expect(authErrorMessage(err, t)).toBe('t:auth.error.generic');
+    const logged = vi.mocked(console.error).mock.calls.map((args) => args.map((a) => (typeof a === 'string' ? a : JSON.stringify(a))).join(' ')).join('\n');
+    expect(logged).toContain('auth/account-exists-with-different-credential');
+    expect(logged).not.toContain('a@b.test');
+    expect(logged).not.toContain('tok');
+    expect(vi.mocked(console.error).mock.calls.flat()).not.toContain(err);
   });
 
   it.each(['constructor', '__proto__', 'toString'])('treats the prototype key %s as unmapped', (code) => {

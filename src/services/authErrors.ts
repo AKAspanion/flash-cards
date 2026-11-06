@@ -31,7 +31,8 @@ export function authErrorMessage(err: unknown, t: (key: string) => string): stri
   if (typeof code === 'string' && Object.hasOwn(AUTH_ERROR_KEYS, code)) {
     return t(AUTH_ERROR_KEYS[code]);
   }
-  // Its own message never reaches the user, so the console is the only place the cause shows.
-  console.error(err);
+  // Its own message never reaches the user, so the console is the only place the cause shows. Only the code is
+  // logged: an IdP error's customData carries the user's address and the OAuth token response.
+  console.error('Unmapped auth error:', code ?? (err as { name?: string })?.name);
   return t('auth.error.generic');
 }
