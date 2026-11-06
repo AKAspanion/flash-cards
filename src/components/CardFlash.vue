@@ -551,5 +551,6 @@ defineExpose({ flip, edit, rate, readAloud });
   height: 22px;
   border: 1.5px solid white;
   border-radius: 50%;
+  line-height: inherit;
 }
 </style>
