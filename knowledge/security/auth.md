@@ -43,10 +43,16 @@ this repository.
   `auth/user-not-found` and `auth/user-disabled`, so the screen doesn't reveal who is registered. Against a network
   observer that holds only while the project's Email Enumeration Protection is on:
   [open question](../questions/email-enumeration-protection.md).
+- Firebase Auth's `languageCode` follows `prefs.lang`: the prefs store calls `setAuthLanguage` at start-up and on
+  every change (`src/stores/prefs.ts`), so the verification and password-reset emails are sent in English or Hindi.
+  It does not change Google's sign-in page (the SDK sends no language to Google; ruled out of scope). Whether each
+  language's email template reads well is unchecked: nobody has seen a Hindi email yet. A failure to set it (Firebase
+  unconfigured) is logged by code or class name only and the app still loads.
 - Service calls fail with "You are signed out" when there is no current user (`requireUid`).
 
 ## History
 
+- 2026-11-06: auth emails were sent in Firebase's default language; now `languageCode` follows `prefs.lang`, because the verification-email plan asked for emails in the app's language.
 - 2026-11-05: the app never handled tokens and verification didn't exist; now one best-effort token refresh follows a verified reload, and verification is a reminder that gates nothing, because of the email-verification plan.
 - 2026-11-05: there was no password reset; now `sendPasswordReset` sends one with the same reply for every address, because of the password reset plan. See [the decision](../decisions/password-reset-uses-firebase-action-page.md).
 - 2026-11-05: sign-out ended at once and left the cache; now it waits for unsynced writes (15 s at most), clears the device cache and stays signed in past the deadline, and `/s/:shareId` is a third public route, because of the offline-study and sharing plans.
@@ -58,6 +64,7 @@ this repository.
 - `src/router/index.ts`
 - `src/stores/session.ts`
 - `src/stores/account.ts`
+- `src/stores/prefs.ts`
 - `src/services/authDomain.ts`
 - `src/main.ts`
 - `tests/unit/router.spec.ts`
