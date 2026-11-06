@@ -77,6 +77,7 @@
       :title="t('empty.add.title')"
     />
     <group-card-flash
+      v-if="draft.cards.length"
       ref="cardGroup"
       v-model="draft.cards"
       :color="draft.color"
