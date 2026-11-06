@@ -20,6 +20,9 @@ screen is the same for every address. With protection off, Firebase's own respon
 still differs for an unknown address, so someone reading the network traffic can tell. See
 [the decision](../decisions/password-reset-uses-firebase-action-page.md) and [auth](../security/auth.md).
 
+The same reply on an unauthorised origin (where the email is sent again without its continue link) also assumes
+that Firebase checks the continue URL before it looks up the account. That order is undocumented.
+
 ## Status
 
 Open

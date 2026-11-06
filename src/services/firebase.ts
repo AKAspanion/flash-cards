@@ -16,6 +16,7 @@ import {
   signInWithRedirect,
   signOut as firebaseSignOut,
   updateProfile,
+  type ActionCodeSettings,
   type Auth,
   type User,
 } from 'firebase/auth';
@@ -75,7 +76,10 @@ const config = {
 
 let services: { app: FirebaseApp; auth: Auth; db: Firestore } | null = null;
 
-export class FirebaseConfigError extends Error {}
+export class FirebaseConfigError extends Error {
+  // Survives minification, so a log line can name the cause class.
+  override name = 'FirebaseConfigError';
+}
 
 function getServices() {
   if (services) {
@@ -141,7 +145,7 @@ export async function signUpWithEmail(email: string, password: string): Promise<
   const { user } = await createUserWithEmailAndPassword(getServices().auth, email.trim(), password);
   // The account exists and the user is signed in either way; the verify banner's Resend covers a failed send.
   try {
-    await sendEmailVerification(user);
+    await sendVerification(user);
     return { verificationSent: true };
   } catch (err) {
     // The cause class only: the error's custom data can carry the address.
@@ -150,9 +154,53 @@ export async function signUpWithEmail(email: string, password: string): Promise<
   }
 }
 
+/** Sets the language of Firebase Auth's emails (verification, password reset). */
+export function setAuthLanguage(lang: 'en' | 'hi'): void {
+  getServices().auth.languageCode = lang;
+}
+
+/** Action code settings whose Continue link opens `path` on the page's own origin. */
+function continueTo(path: string): ActionCodeSettings {
+  return { url: `${window.location.origin}${path}` };
+}
+
+/** The codes Firebase rejects a send with when the page's origin isn't an authorised domain for continue links. */
+const CONTINUE_URL_REFUSED = new Set(['auth/unauthorized-continue-uri', 'auth/invalid-continue-uri']);
+
+/**
+ * Runs an auth email send with its continue link. When Firebase refuses that link (an origin not on the
+ * authorised domains, such as a preview channel), the same send is retried once without it, so the email still
+ * goes out, with no Continue button; the retry's outcome is the send's outcome. Any other error rejects as it is.
+ * Nothing is logged here: callers decide what a failure may say.
+ */
+async function withContinueFallback(
+  send: (settings?: ActionCodeSettings) => Promise<void>,
+  settings: ActionCodeSettings,
+): Promise<void> {
+  try {
+    await send(settings);
+  } catch (err) {
+    if (!CONTINUE_URL_REFUSED.has((err as { code?: string })?.code ?? '')) {
+      throw err;
+    }
+    await send();
+  }
+}
+
+/**
+ * Sends the verification email, whose "email verified" page continues to the home screen on the page's own
+ * origin. The banner stays there until I've verified is pressed: the load keeps the cached user.
+ */
+async function sendVerification(user: User): Promise<void> {
+  await withContinueFallback(
+    (settings) => (settings ? sendEmailVerification(user, settings) : sendEmailVerification(user)),
+    continueTo('/home'),
+  );
+}
+
 /** Sends the verification email to the signed-in user. Rejects when nobody is signed in. */
 export async function sendVerificationEmail(): Promise<void> {
-  await sendEmailVerification(requireUser());
+  await sendVerification(requireUser());
 }
 
 /**
@@ -177,12 +225,19 @@ export async function reloadEmailVerified(): Promise<boolean> {
 }
 
 /**
- * Sends a password reset email. Resolves the same way whether or not the address has an account:
- * an `auth/user-not-found` rejection resolves instead. Every other error rejects, for authErrorMessage.
+ * Sends a password reset email, whose reset page continues to the login screen on the page's own origin, or
+ * without that link when Firebase refuses it (withContinueFallback). Resolves the same way whether or not the
+ * address has an account: an `auth/user-not-found` or `auth/user-disabled` rejection, from either attempt,
+ * resolves instead. Every other error rejects, for authErrorMessage.
  */
 export async function sendPasswordReset(email: string): Promise<void> {
+  const { auth } = getServices();
+  const address = email.trim();
   try {
-    await sendPasswordResetEmail(getServices().auth, email.trim(), { url: `${window.location.origin}/login` });
+    await withContinueFallback(
+      (settings) => (settings ? sendPasswordResetEmail(auth, address, settings) : sendPasswordResetEmail(auth, address)),
+      continueTo('/login'),
+    );
   } catch (err) {
     // "No such account" and "account disabled" are answers only the existence of an account decides,
     // so both read as sent, and nothing is logged: a console line would tell the difference too.

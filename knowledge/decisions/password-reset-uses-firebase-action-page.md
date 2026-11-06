@@ -31,3 +31,9 @@ the page's Continue button brings the user back to sign in. The developer approv
   Firebase project's Email Enumeration Protection is on; without it, Firebase answers an unknown address with
   `auth/user-not-found`, which `sendPasswordReset` hides from the screen but not from the wire. Whether it is on
   is [an open question](../questions/email-enumeration-protection.md).
+- On a host that isn't authorised, Firebase refuses the continue URL and the email is sent without it, so it still
+  arrives but has no Continue button.
+
+## History
+
+- 2026-11-06: on a host that wasn't authorised the request failed with `auth/unauthorized-continue-uri`; now the email goes without a continue URL, because of the password reset continue-fallback plan.
