@@ -1,12 +1,48 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { nextTick } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
 import { usePrefsStore } from '@/stores/prefs';
+
+const fb = vi.hoisted(() => ({ setAuthLanguage: vi.fn() }));
+vi.mock('@/services/firebase', () => ({ setAuthLanguage: fb.setAuthLanguage }));
 
 describe('prefs store', () => {
   beforeEach(() => {
     localStorage.clear();
     setActivePinia(createPinia());
+    fb.setAuthLanguage.mockReset();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("sets Firebase Auth's language to the saved one as the store is created", () => {
+    localStorage.setItem('lang', 'hi');
+    usePrefsStore();
+    expect(fb.setAuthLanguage).toHaveBeenCalledOnce();
+    expect(fb.setAuthLanguage).toHaveBeenCalledWith('hi');
+  });
+
+  it("follows a language change with Firebase Auth's language", async () => {
+    localStorage.setItem('lang', 'hi');
+    const prefs = usePrefsStore();
+    prefs.lang = 'en';
+    await nextTick();
+    expect(fb.setAuthLanguage).toHaveBeenLastCalledWith('en');
+    expect(fb.setAuthLanguage).toHaveBeenCalledTimes(2);
+  });
+
+  it('still creates the store when Firebase cannot take the language, logging only the cause', () => {
+    fb.setAuthLanguage.mockImplementation(() => {
+      throw Object.assign(new Error('Firebase is not configured (missing apiKey).'), { name: 'FirebaseConfigError' });
+    });
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    expect(usePrefsStore().lang).toBe('en');
+
+    expect(log).toHaveBeenCalledOnce();
+    expect(log.mock.calls[0].join(' ')).toContain('FirebaseConfigError');
   });
 
   it('accepts the new orders and rejects unknown ones', () => {

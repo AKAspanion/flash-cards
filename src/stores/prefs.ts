@@ -1,5 +1,6 @@
 import { ref, watch, type Ref } from 'vue';
 import { defineStore } from 'pinia';
+import { setAuthLanguage } from '@/services/firebase';
 import type { SetOrder } from '@/types';
 import { isSetOrder } from '@/utils/cardSets';
 import { DEFAULT_REMINDER_TIME, isReminderTime } from '@/utils/ics';
@@ -47,6 +48,20 @@ export const usePrefsStore = defineStore('prefs', () => {
   const studyReverse = ref(read(KEYS.studyReverse) === 'true');
   const storedReminder = read(KEYS.reminderTime);
   const reminderTime = ref(isReminderTime(storedReminder) ? storedReminder : DEFAULT_REMINDER_TIME);
+
+  // Firebase Auth sends its emails (verification, password reset) and shows its pages in the app's language.
+  watch(
+    lang,
+    (value) => {
+      try {
+        setAuthLanguage(value);
+      } catch (err) {
+        // Firebase not configured: the router shows that error; the store, and the app, still load.
+        console.error('Auth language not set:', (err as Error)?.name);
+      }
+    },
+    { immediate: true },
+  );
 
   persist(lang, KEYS.lang, String);
   persist(dark, KEYS.dark, String);

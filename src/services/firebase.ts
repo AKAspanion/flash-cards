@@ -75,7 +75,10 @@ const config = {
 
 let services: { app: FirebaseApp; auth: Auth; db: Firestore } | null = null;
 
-export class FirebaseConfigError extends Error {}
+export class FirebaseConfigError extends Error {
+  // Survives minification, so a log line can name the cause class.
+  override name = 'FirebaseConfigError';
+}
 
 function getServices() {
   if (services) {
@@ -141,7 +144,7 @@ export async function signUpWithEmail(email: string, password: string): Promise<
   const { user } = await createUserWithEmailAndPassword(getServices().auth, email.trim(), password);
   // The account exists and the user is signed in either way; the verify banner's Resend covers a failed send.
   try {
-    await sendEmailVerification(user);
+    await sendEmailVerification(user, verificationContinue());
     return { verificationSent: true };
   } catch (err) {
     // The cause class only: the error's custom data can carry the address.
@@ -150,9 +153,23 @@ export async function signUpWithEmail(email: string, password: string): Promise<
   }
 }
 
+/** Sets the language Firebase Auth uses for its emails and its own pages. */
+export function setAuthLanguage(lang: 'en' | 'hi'): void {
+  // Each language's email template is edited separately in the Firebase console.
+  getServices().auth.languageCode = lang;
+}
+
+/**
+ * Where Firebase's "email verified" page continues to: the home screen on the page's own origin, which is
+ * always an authorised domain. The banner stays there until I've verified is pressed: the load keeps the cached user.
+ */
+function verificationContinue() {
+  return { url: `${window.location.origin}/home` };
+}
+
 /** Sends the verification email to the signed-in user. Rejects when nobody is signed in. */
 export async function sendVerificationEmail(): Promise<void> {
-  await sendEmailVerification(requireUser());
+  await sendEmailVerification(requireUser(), verificationContinue());
 }
 
 /**

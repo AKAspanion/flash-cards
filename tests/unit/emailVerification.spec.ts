@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 // Each mocked Firebase call records its name, so the tests can check what ran and in what order.
 const calls = vi.hoisted(() => [] as string[]);
 const fb = vi.hoisted(() => {
-  const auth: { currentUser: unknown } = { currentUser: null };
+  const auth: { currentUser: unknown; languageCode: string | null } = { currentUser: null, languageCode: null };
   return {
     auth,
     createUserWithEmailAndPassword: vi.fn(),
@@ -32,7 +32,12 @@ vi.stubEnv('VUE_APP_AUTH_DOMAIN', 'test.firebaseapp.com');
 vi.stubEnv('VUE_APP_PROJECT_ID', 'test-project');
 vi.stubEnv('VUE_APP_APP_ID', 'test-app');
 
-const { signUpWithEmail, sendVerificationEmail, reloadEmailVerified } = await import('@/services/firebase');
+const { signUpWithEmail, sendVerificationEmail, reloadEmailVerified, setAuthLanguage, FirebaseConfigError } = await import(
+  '@/services/firebase'
+);
+
+/** Firebase's page continues to the home screen on the page's own origin, an authorised domain. */
+const CONTINUE = { url: `${window.location.origin}/home` };
 
 /** A signed-in Firebase user whose reload() comes back with `verifiedAfterReload`. */
 function fakeUser(verifiedAfterReload: boolean) {
@@ -58,6 +63,7 @@ function authError(code: string) {
 beforeEach(() => {
   calls.length = 0;
   fb.auth.currentUser = null;
+  fb.auth.languageCode = null;
   fb.createUserWithEmailAndPassword.mockReset();
   fb.sendEmailVerification.mockReset();
 });
@@ -76,15 +82,18 @@ describe('signUpWithEmail', () => {
 
     expect(fb.createUserWithEmailAndPassword).toHaveBeenCalledWith(fb.auth, 'a@b.test', 'secret1');
     expect(fb.sendEmailVerification).toHaveBeenCalledOnce();
-    expect(fb.sendEmailVerification).toHaveBeenCalledWith(user);
+    expect(fb.sendEmailVerification).toHaveBeenCalledWith(user, CONTINUE);
   });
 
   it('still resolves when the email fails to send, says it was not sent, and logs the cause', async () => {
-    fb.createUserWithEmailAndPassword.mockResolvedValue({ user: fakeUser(false) });
+    const user = fakeUser(false);
+    fb.createUserWithEmailAndPassword.mockResolvedValue({ user });
     fb.sendEmailVerification.mockRejectedValue(authError('auth/too-many-requests'));
     const log = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     await expect(signUpWithEmail('a@b.test', 'secret1')).resolves.toEqual({ verificationSent: false });
+
+    expect(fb.sendEmailVerification).toHaveBeenCalledWith(user, CONTINUE);
 
     expect(log).toHaveBeenCalledOnce();
     expect(log.mock.calls[0].join(' ')).toContain('auth/too-many-requests');
@@ -115,7 +124,7 @@ describe('sendVerificationEmail', () => {
 
     await sendVerificationEmail();
 
-    expect(fb.sendEmailVerification).toHaveBeenCalledWith(user);
+    expect(fb.sendEmailVerification).toHaveBeenCalledWith(user, CONTINUE);
   });
 
   it('rejects with the send error', async () => {
@@ -124,6 +133,22 @@ describe('sendVerificationEmail', () => {
     fb.sendEmailVerification.mockRejectedValue(error);
 
     await expect(sendVerificationEmail()).rejects.toBe(error);
+  });
+});
+
+describe('setAuthLanguage', () => {
+  it("sets the auth instance's language code to the app's language", () => {
+    setAuthLanguage('hi');
+    expect(fb.auth.languageCode).toBe('hi');
+
+    setAuthLanguage('en');
+    expect(fb.auth.languageCode).toBe('en');
+  });
+});
+
+describe('FirebaseConfigError', () => {
+  it('is named, so a log line can carry its cause class', () => {
+    expect(new FirebaseConfigError('missing apiKey').name).toBe('FirebaseConfigError');
   });
 });
 

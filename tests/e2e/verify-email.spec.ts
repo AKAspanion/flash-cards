@@ -48,6 +48,14 @@ test('the banner stays until the email is verified, then goes for good', async (
   await expect(verifyBanner(page)).toHaveCount(0);
 });
 
+test("the verification email's link continues to the app's home screen", async ({ page }) => {
+  const email = await signUp(page);
+  await expect(verifyBanner(page)).toBeVisible();
+
+  const link = new URL(await verifyLinkFor(page, email));
+  expect(link.searchParams.get('continueUrl')).toBe(`${new URL(page.url()).origin}/home`);
+});
+
 test('Resend email sends again and waits before the next send', async ({ page }) => {
   await signUp(page);
   const banner = verifyBanner(page);
