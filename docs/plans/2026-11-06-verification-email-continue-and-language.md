@@ -1,5 +1,7 @@
 # Verification Email Continue Link and Language Implementation Plan
 
+**Status:** complete, commits ff0039e..ebd7ab1, 2026-11-06; record in `2026-11-06-verification-email-continue-and-language.record.md`
+
 > **For agentic workers:** REQUIRED SUB-SKILL: the project's workflow policy names the executor (`run.executor`): ga:feature-build-team by default, or ga:feature-build. Follow the policy and this plan's Checkpoints. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 Plan, then build; tests with each task. Say 'test-first' or 'spec it first' to work that way.
@@ -64,26 +66,26 @@ export function setAuthLanguage(lang: 'en' | 'hi'): void;
 - Given saved `lang` of `hi`, when the prefs store is created, then `setAuthLanguage` is called with `'hi'` before anything else uses it; when `lang` changes to `en`, it is called with `'en'`.
 - E2E, in `tests/e2e/verify-email.spec.ts`: after `signUp()`, the Auth emulator's `VERIFY_EMAIL` code for that email has an `oobLink` whose `continueUrl` query parameter is the app's own origin plus `/home`.
 
-- [ ] **Step 1: Write the failing tests** for each Acceptance case: the send calls and `setAuthLanguage` in `tests/unit/emailVerification.spec.ts`, the store sync in `tests/unit/prefs.spec.ts` (mock `@/services/firebase`), the continue URL in `tests/e2e/verify-email.spec.ts`
+- [x] **Step 1: Write the failing tests** for each Acceptance case: the send calls and `setAuthLanguage` in `tests/unit/emailVerification.spec.ts`, the store sync in `tests/unit/prefs.spec.ts` (mock `@/services/firebase`), the continue URL in `tests/e2e/verify-email.spec.ts`
 
-- [ ] **Step 2: Run the unit tests to verify they fail**
+- [x] **Step 2: Run the unit tests to verify they fail**
 
 Run: `npx vitest run tests/unit/emailVerification.spec.ts tests/unit/prefs.spec.ts`
 Expected: FAIL on the assertions. Add `setAuthLanguage` with its real signature first, so the failure is behaviour
 
-- [ ] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
+- [x] **Step 3: Write the minimal implementation** to the Interfaces, until they pass
 
-- [ ] **Step 4: Run the unit tests to verify they pass**
+- [x] **Step 4: Run the unit tests to verify they pass**
 
 Run: `npx vitest run tests/unit/emailVerification.spec.ts tests/unit/prefs.spec.ts`
 Expected: PASS
 
-- [ ] **Step 5: Run the e2e spec alone to verify it passes**
+- [x] **Step 5: Run the e2e spec alone to verify it passes**
 
 Run: `pnpm run build:e2e && npx --yes firebase-tools@15.34.2 emulators:exec --only auth,firestore --project demo-flash-cards "playwright test tests/e2e/verify-email.spec.ts"`
 Expected: PASS
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/services/firebase.ts src/stores/prefs.ts tests/unit/emailVerification.spec.ts tests/unit/prefs.spec.ts tests/e2e/verify-email.spec.ts
