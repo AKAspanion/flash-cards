@@ -17,6 +17,8 @@ name and photo URL, create a label, select a label to rename it, sign out, and [
 
 The sheet is grouped under two `h2` headings: a Labels section (create and rename labels) and an Account section
 (member since, last login, delete account). Sign out stays below them. The old `profile.label.title` text was removed.
+The headings use the default text colour: the brand pink on the grey `surface-light` sheet is 3.29:1, below the 4.5:1
+the axe scan in `tests/e2e/a11y.spec.ts` requires ([accessibility](../design-system/accessibility.md)).
 
 ## Screens and routes
 
@@ -35,6 +37,7 @@ The sheet is grouped under two `h2` headings: a Labels section (create and renam
 
 ## History
 
+- 2026-11-06: the section headings were brand pink; now they use the default text colour, because pink on the grey sheet failed the a11y scan on master's deploy run.
 - 2026-11-06: the sheet was one ungrouped list; now it has Labels and Account sections under their own headings, because of the bug batch.
 - 2026-11-04: gained a Delete account action. See [Delete account](account-deletion.md).
 - 2026-11-03: label deletion was an open question; now decided against. See [Labels cannot be deleted](../decisions/labels-cannot-be-deleted.md).
@@ -42,6 +45,7 @@ The sheet is grouped under two `h2` headings: a Labels section (create and renam
 ## Sources
 
 - `src/views/Profile.vue`
+- `tests/e2e/a11y.spec.ts`
 - `src/services/firebase.ts`
 - `src/stores/library.ts`
 - `src/stores/session.ts`

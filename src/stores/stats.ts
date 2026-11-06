@@ -55,7 +55,7 @@ export const useStatsStore = defineStore('stats', () => {
       .catch((err) => {
         if (isCurrent()) {
           status.value = 'error';
-          session.showError(err, 'toast.error.load');
+          session.showError(err, 'toast.error.stats-load');
         }
       })
       .finally(() => {

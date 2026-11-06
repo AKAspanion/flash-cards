@@ -128,7 +128,7 @@
       flat
     >
       <div class="profile__card-content">
-        <h2 class="profile__heading text-title-medium text-primary">
+        <h2 class="profile__heading text-title-medium">
           {{ t('profile.section.labels') }}
         </h2>
         <div class="d-flex align-start pb-8">
@@ -177,7 +177,7 @@
             </div>
           </div>
         </div>
-        <h2 class="profile__heading profile__heading--next text-title-medium text-primary">
+        <h2 class="profile__heading profile__heading--next text-title-medium">
           {{ t('profile.section.account') }}
         </h2>
         <div

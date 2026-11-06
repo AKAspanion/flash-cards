@@ -1,17 +1,50 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { authErrorMessage, isAuthCancel } from '@/services/authErrors';
 
 const t = (key: string) => `t:${key}`;
 
 describe('authErrorMessage', () => {
+  beforeEach(() => {
+    // An unmapped error is logged, since its own message never reaches the user.
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    return () => vi.restoreAllMocks();
+  });
+
   it('maps known Firebase codes to translated messages', () => {
     expect(authErrorMessage({ code: 'auth/invalid-credential' }, t)).toBe('t:auth.error.invalid-credential');
     expect(authErrorMessage({ code: 'auth/unauthorized-domain' }, t)).toBe('t:auth.error.unauthorized-domain');
   });
 
-  it('falls back to the raw message, then a generic one', () => {
-    expect(authErrorMessage({ code: 'auth/other', message: 'Raw' }, t)).toBe('Raw');
+  it("shows the generic text for an unmapped code, never Firebase's message, and logs the code", () => {
+    const err = { code: 'auth/some-unmapped-code', message: 'Firebase: Error (auth/some-unmapped-code).' };
+    expect(authErrorMessage(err, t)).toBe('t:auth.error.generic');
+    expect(console.error).toHaveBeenCalledWith('Unmapped auth error:', 'auth/some-unmapped-code');
+    expect(authErrorMessage(new Error('Raw'), t)).toBe('t:auth.error.generic');
+    expect(console.error).toHaveBeenLastCalledWith('Unmapped auth error:', 'Error');
     expect(authErrorMessage({}, t)).toBe('t:auth.error.generic');
+    expect(authErrorMessage(null, t)).toBe('t:auth.error.generic');
+  });
+
+  it("logs only an unmapped error's code, never its address or tokens", () => {
+    const err = Object.assign(new Error('Firebase: Error (auth/account-exists-with-different-credential).'), {
+      code: 'auth/account-exists-with-different-credential',
+      customData: { email: 'a@b.test', _tokenResponse: { oauthAccessToken: 'tok' } },
+    });
+    expect(authErrorMessage(err, t)).toBe('t:auth.error.generic');
+    const logged = vi.mocked(console.error).mock.calls.map((args) => args.map((a) => (typeof a === 'string' ? a : JSON.stringify(a))).join(' ')).join('\n');
+    expect(logged).toContain('auth/account-exists-with-different-credential');
+    expect(logged).not.toContain('a@b.test');
+    expect(logged).not.toContain('tok');
+    expect(vi.mocked(console.error).mock.calls.flat()).not.toContain(err);
+  });
+
+  it.each(['constructor', '__proto__', 'toString'])('treats the prototype key %s as unmapped', (code) => {
+    expect(authErrorMessage({ code, message: 'Raw' }, t)).toBe('t:auth.error.generic');
+  });
+
+  it('still maps a known code even when the error has a message', () => {
+    expect(authErrorMessage({ code: 'auth/invalid-credential', message: 'Raw' }, t)).toBe('t:auth.error.invalid-credential');
+    expect(console.error).not.toHaveBeenCalled();
   });
 
   it('maps re-authentication errors', () => {
@@ -31,7 +64,7 @@ describe('authErrorMessage', () => {
   );
 
   it('no longer maps a blocked popup', () => {
-    expect(authErrorMessage({ code: 'auth/popup-blocked', message: 'Raw' }, t)).toBe('Raw');
+    expect(authErrorMessage({ code: 'auth/popup-blocked', message: 'Raw' }, t)).toBe('t:auth.error.generic');
   });
 
   it('treats only a cancelled redirect as a cancel, not an error', () => {

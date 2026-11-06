@@ -39,7 +39,9 @@ verified: human:panditankit1995@gmail.com
   with `toast.offline-save` instead.
 - Failure tests don't go offline to force a failed save (an offline save now succeeds): use a set over the size limit,
   which `saveSet` refuses before any write.
-- Firebase Auth errors are mapped to i18n keys by `authErrorMessage` (`src/services/authErrors.ts`).
+- An error snack shows the i18n key the caller passes to `session.showError` (`toast.error.generic` by default), never
+  the error's own text; the raw error goes only to the console (`src/stores/session.ts`).
+- Firebase Auth errors are mapped to i18n keys by `authErrorMessage` (`src/services/authErrors.ts`). An unmapped code gives `auth.error.generic`.
 
 ## Tests
 
@@ -72,6 +74,7 @@ command.
 
 ## History
 
+- 2026-11-06: an error snack could show the error's own message; now it always shows the caller's i18n key (`toast.error.generic` by default), because the friendly-error-messages plan hid Firebase's technical wording.
 - 2026-11-05: store writes were awaited from the server and failed offline; now offline they resolve once cached, because of the offline-study plan.
 - 2026-11-05: no composables folder; now `src/composables/` holds Vue composables, because `useStudyShortcuts` is neither a store nor a pure function.
 - 2026-11-04: commands ran with npm (`package-lock.json`); now pnpm (`pnpm-lock.yaml`), as the developer switched. See [pnpm](../decisions/pnpm-package-manager.md).

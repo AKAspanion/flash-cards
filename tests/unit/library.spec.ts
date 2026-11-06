@@ -119,7 +119,7 @@ describe('library store', () => {
     const ok = await library.saveSet({ ...library.sets[0], title: 'renamed' });
     expect(ok).toBe(false);
     expect(library.sets[0].title).toBe('a');
-    expect(useSessionStore().snack.text).toBe('offline');
+    expect(useSessionStore().snack.text).toBe('Could not save. Please try again.');
   });
 
   const TOO_BIG = 'This set is too big to save. Split it into smaller sets.';
@@ -482,6 +482,19 @@ describe('library store', () => {
       expect(library.sets[0]).not.toHaveProperty('shareId');
       expect(library.sets[0].title).toBe('renamed');
       expect(useSessionStore().snack.show).toBe(false);
+    });
+
+    it('when clearing a gone copy\'s shareId fails, says only the link failed, since the set is saved', async () => {
+      const library = await libraryWith({ ...set('a'), docId: 'd1', shareId: 'x' });
+      api.updateCardSet.mockResolvedValue(undefined);
+      api.syncSharedCopy.mockRejectedValue(firestoreError('not-found'));
+      api.clearShareId.mockRejectedValue(firestoreError('unavailable'));
+      vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      expect(await library.saveSet({ ...library.sets[0], title: 'renamed' })).toBe(true);
+      await flush();
+      expect(useSessionStore().snack.text).toBe(SYNC_FAILED);
+      expect(console.error).toHaveBeenCalled();
     });
 
     it('a gone copy does not clear a shareId the set has been given since', async () => {

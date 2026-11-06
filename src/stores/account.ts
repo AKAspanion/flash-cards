@@ -105,7 +105,7 @@ export const useAccountStore = defineStore('account', () => {
         return false;
       }
       // Signed out, but the cache may be left: say so on the new page.
-      session.showError(err);
+      session.showError(err, 'account.signout.cache-left');
       loadFresh('/login', session.snack.text);
       return true;
     }

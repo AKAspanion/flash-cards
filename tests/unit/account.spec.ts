@@ -324,25 +324,29 @@ describe('signing out', () => {
     expect(useSessionStore().signingOut).toBe(false);
   });
 
-  it('on any other failure while still signed in, shows the error and stays', async () => {
-    api.signOutAndClear.mockRejectedValue(new Error('user changed'));
+  it('on any other failure while still signed in, shows the generic error, logs the cause, and stays', async () => {
+    const err = new Error('user changed');
+    api.signOutAndClear.mockRejectedValue(err);
     api.getAuthUser.mockResolvedValue(signedIn);
     const log = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     expect(await useAccountStore().signOut()).toBe(false);
+    expect(log).toHaveBeenCalledWith(err);
     log.mockRestore();
     expect(fresh.loadFresh).not.toHaveBeenCalled();
-    expect(useSessionStore().snack.text).toBe('user changed');
+    expect(useSessionStore().snack.text).toBe('Something went wrong. Please try again.');
     expect(useSessionStore().signingOut).toBe(false);
   });
 
-  it('signed out but with the cache left, loads /login afresh and says why there', async () => {
-    api.signOutAndClear.mockRejectedValue(new Error('cache in use'));
+  it('signed out but with the cache left, loads /login afresh and says the sets may still be on this device', async () => {
+    const err = new Error('cache in use');
+    api.signOutAndClear.mockRejectedValue(err);
     api.getAuthUser.mockResolvedValue(null);
     const log = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     expect(await useAccountStore().signOut()).toBe(true);
+    expect(log).toHaveBeenCalledWith(err);
     log.mockRestore();
-    expect(fresh.loadFresh).toHaveBeenCalledWith('/login', 'cache in use');
+    expect(fresh.loadFresh).toHaveBeenCalledWith('/login', "You're signed out, but your sets may still be stored on this device.");
   });
 });
