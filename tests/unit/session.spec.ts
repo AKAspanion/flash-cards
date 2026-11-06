@@ -1,11 +1,19 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import type { User } from 'firebase/auth';
+import type { Composer } from 'vue-i18n';
 
 vi.mock('@/services/firebase', () => ({ getRedirectOutcome: vi.fn() }));
 
 const { useSessionStore, toSessionUser } = await import('@/stores/session');
 const { PENDING_SNACK_KEY } = await import('@/utils/freshLoad');
+const { default: i18n } = await import('@/plugins/i18n');
+const { default: hi } = await import('@/locales/hi.json');
+
+/** The plugin is created with `legacy: false`, so its global is a Composer whose locale is a ref. */
+function setLocale(locale: 'en' | 'hi') {
+  (i18n.global as unknown as Composer).locale.value = locale;
+}
 
 const OFFLINE_SAVED = "Saved on this device. It will sync when you're back online.";
 
@@ -69,6 +77,49 @@ describe('session store: a snack left by a fresh page load', () => {
 
   it('shows nothing when none was left', () => {
     expect(useSessionStore().snack.show).toBe(false);
+  });
+});
+
+describe('session store: showError', () => {
+  const RULES_REFUSAL = "PERMISSION_DENIED: evaluation error at L50:32 for 'update' @ L50";
+
+  beforeEach(() => {
+    setActivePinia(createPinia());
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    return () => {
+      vi.restoreAllMocks();
+      setLocale('en');
+    };
+  });
+
+  it("shows the key's text, not the error's message, and logs the error", () => {
+    const session = useSessionStore();
+    const err = new Error(RULES_REFUSAL);
+    session.showError(err, 'toast.error.save');
+    expect(session.snack.show).toBe(true);
+    expect(session.snack.text).toBe('Could not save. Please try again.');
+    expect(session.snack.text).not.toContain('PERMISSION_DENIED');
+    expect(console.error).toHaveBeenCalledWith(err);
+  });
+
+  it('shows the generic text when no key is given', () => {
+    const session = useSessionStore();
+    session.showError(new Error(RULES_REFUSAL));
+    expect(session.snack.text).toBe('Something went wrong. Please try again.');
+  });
+
+  it("shows the key's text in the current locale", () => {
+    setLocale('hi');
+    const session = useSessionStore();
+    session.showError(new Error(RULES_REFUSAL), 'toast.error.save');
+    expect(session.snack.text).toBe(hi.toast.error.save);
+  });
+
+  it.each([['a string', 'boom'], ['null', null]])("shows the key's text for an error that is %s", (_name, err) => {
+    const session = useSessionStore();
+    session.showError(err, 'toast.error.save');
+    expect(session.snack.text).toBe('Could not save. Please try again.');
+    expect(console.error).toHaveBeenCalledWith(err);
   });
 });
 

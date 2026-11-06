@@ -166,8 +166,10 @@ test('a failed save shows the save error and keeps the choice in the editor', as
   await pick(page, 'Front', spanish);
   await closeOptions(page);
   await page.getByRole('button', { name: 'Save', exact: true }).click();
-  // session.showError shows the Firebase error's own message when there is one.
-  await expect(page.getByText(/PERMISSION_DENIED/)).toBeVisible();
+  // session.showError shows the app's own message; Firebase's text goes only to the console.
+  const snack = page.locator('.v-snackbar');
+  await expect(snack).toContainText('Could not save. Please try again.');
+  await expect(snack).not.toContainText('PERMISSION_DENIED');
   await expect(page).toHaveURL(/\/edit$/);
   await expectSide(page, 'Front', spanish);
 });
