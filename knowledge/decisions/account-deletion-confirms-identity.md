@@ -4,6 +4,8 @@ title: Deleting an account always confirms who you are first
 description: Account deletion shows a can't-be-undone dialog, then always re-confirms identity (password, or a Google redirect followed by a final tap) before anything is deleted; there's no typed confirmation.
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-04T07:38:06Z }
 verified: human:panditankit1995@gmail.com
+superseded_by: decisions/account-deletion-typed-delete-and-identity
+status: superseded
 ---
 
 # Deleting an account always confirms who you are first

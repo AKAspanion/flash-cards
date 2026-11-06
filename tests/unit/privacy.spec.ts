@@ -11,10 +11,12 @@ vi.mock('@/components/BarTop.vue', () => ({ default: { template: '<div />' } }))
 
 const ADS_BODY =
   'FlashCards shows ads from Google AdSense at the bottom of some screens, never while you study. ' +
-  'Google and its partners use cookies and device identifiers to show and measure these ads, and may personalise them. ' +
+  'Third-party vendors, including Google, use cookies to serve ads based on your prior visits to this app and other websites. ' +
+  "Google's use of advertising cookies lets it and its partners serve ads to you based on those visits. " +
+  'Each ad request sends Google your IP address and information about your browser and device. ' +
   'If you are in the EEA, the UK or Switzerland, you are asked for your consent first. ' +
-  'You can turn off personalised ads at adssettings.google.com, and read how Google uses this data at ' +
-  'policies.google.com/technologies/partner-sites.';
+  "You can turn off personalised ads at adssettings.google.com, opt out of other vendors' cookies for personalised ads at " +
+  'www.aboutads.info, and read how Google uses this data at policies.google.com/technologies/partner-sites.';
 
 let Privacy: typeof import('@/views/Privacy.vue').default;
 let host: HTMLElement | null = null;
@@ -47,7 +49,7 @@ describe('Privacy view', () => {
   it('says how data is used without claiming there are no ads', async () => {
     const rows = await render('en');
     expect(text(rows[1])).toContain(
-      "To sign you in and to show and save your sets. We don't use analytics, and we don't sell your data.",
+      "To sign you in, to show and save your sets, and to show ads (see Ads). We don't use analytics, and we don't sell your data.",
     );
     expect(JSON.stringify(en)).not.toContain("We don't show ads");
   });
@@ -60,11 +62,12 @@ describe('Privacy view', () => {
     expect(text(ads.querySelector('p')!)).toBe(ADS_BODY);
   });
 
-  it('links the two Google addresses in a new tab', async () => {
+  it('links the three ad-choice addresses in a new tab', async () => {
     const rows = await render('en');
     const links = Array.from(rows[2].querySelectorAll('a'));
     expect(links.map((a) => [a.getAttribute('href'), a.textContent])).toEqual([
       ['https://adssettings.google.com', 'adssettings.google.com'],
+      ['https://www.aboutads.info/choices/', 'www.aboutads.info'],
       ['https://policies.google.com/technologies/partner-sites', 'policies.google.com/technologies/partner-sites'],
     ]);
     for (const a of links) {
@@ -78,12 +81,17 @@ describe('Privacy view', () => {
     const ads = rows[2];
     expect(ads.querySelector('.mdi-bullhorn-outline')).not.toBeNull();
     expect(text(ads)).toContain(hi.privacy.ads.title);
-    expect(ads.querySelectorAll('a')).toHaveLength(2);
+    expect(ads.querySelectorAll('a')).toHaveLength(3);
+    const body = text(ads.querySelector('p')!)!;
+    for (const link of ['adssettings.google.com', 'www.aboutads.info', 'policies.google.com/technologies/partner-sites']) {
+      expect(body).toContain(link);
+    }
+    expect(body).not.toContain('{');
     expect(hi.privacy.use.body).not.toContain('विज्ञापन नहीं दिखाते');
   });
 
   it('dates the policy with the build date', () => {
     expect(en.privacy.updated).toMatch(/^Last updated: \d{1,2} [A-Z][a-z]+ 2026$/);
-    expect(en.privacy.updated).toBe('Last updated: 4 November 2026');
+    expect(en.privacy.updated).toBe('Last updated: 6 November 2026');
   });
 });

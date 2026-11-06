@@ -46,6 +46,7 @@ test('offline, deleting the account is refused and deletes nothing', async ({ pa
   await page.goto('/profile');
   await page.getByRole('button', { name: 'Delete account' }).click();
   const dialog = page.getByRole('dialog');
+  await dialog.getByLabel('Type DELETE to confirm').fill('DELETE');
   await dialog.getByLabel('Password').fill(PASSWORD);
 
   await context.setOffline(true);

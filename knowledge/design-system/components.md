@@ -24,7 +24,7 @@ All in `src/components/`, built on Vuetify components:
 - `OptionPanel`: a draggable bottom panel for options, with `toggle` exposed; closes on an outside tap. It stops below
   the top bar and its body scrolls when the content doesn't fit, so a long list of options can't cover the top bar's
   Options button.
-- `BannerVerifyEmail`: the top-of-screen verify-email reminder, mounted once in `App.vue`
+- `BannerVerifyEmail`: the verify-email reminder shown on Profile and Home only, mounted once in `App.vue`
   ([email verification](../features/email-verification.md)). Its buttons are uncoloured on purpose: brand-pink text
   on the surface misses AA contrast, so only its icon takes the brand colour.
 - `DialogShare`: the editor's Share set dialog, showing the public link to copy and a Stop sharing action

@@ -31,6 +31,9 @@ const { routes } = await import('@/router');
 const BANNER_TEXT = 'Verify your email to keep your account safe.';
 const RESEND = 'Resend email';
 const CHECK = "I've verified";
+const DISMISS = 'Dismiss';
+const DAY = 86_400_000;
+const DISMISS_KEY = 'flashcards.verifyBannerDismissedAt.u1';
 
 const Page = defineComponent({ render: () => h('div', { class: 'test-page' }, 'page') });
 
@@ -76,6 +79,10 @@ function banner() {
   return wrapper!.find('.v-banner');
 }
 
+function hasButton(label: string): boolean {
+  return wrapper!.findAll('button').some((b) => b.text() === label);
+}
+
 function button(label: string | RegExp) {
   const found = wrapper!.findAll('button').find((b) => (typeof label === 'string' ? b.text() === label : label.test(b.text())));
   if (!found) {
@@ -104,6 +111,7 @@ function deferred<T>() {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  localStorage.clear();
   window.matchMedia ??= ((query: string) => ({
     matches: false,
     media: query,
@@ -138,7 +146,14 @@ describe('BannerVerifyEmail in the app', () => {
     expect(html.indexOf('v-banner')).toBeGreaterThan(-1);
     expect(html.indexOf('v-banner')).toBeLessThan(html.indexOf('test-page'));
     expect(button(RESEND).exists()).toBe(true);
-    expect(button(CHECK).exists()).toBe(true);
+    expect(button(DISMISS).exists()).toBe(true);
+  });
+
+  it('sits at the top of v-main on /profile too', async () => {
+    await mountAt(App, '/profile', makeUser(false));
+    const main = wrapper!.find('main.v-main');
+    expect(main.find('.v-banner').exists()).toBe(true);
+    expect(main.html().indexOf('v-banner')).toBeLessThan(main.html().indexOf('test-page'));
   });
 });
 
@@ -171,12 +186,146 @@ describe('BannerVerifyEmail visibility', () => {
     expect(banner().exists()).toBe(false);
   });
 
-  it('appears once the route moves to a signed-in screen', async () => {
+  // Only Home and Profile show it, as the developer asked on 2026-11-06.
+  it.each(['/settings', '/stats', '/bin', '/info'])('renders nothing on %s', async (path) => {
+    await mountAt(BannerVerifyEmail, path, makeUser(false));
+    expect(banner().exists()).toBe(false);
+  });
+
+  it('appears once the route moves to Home', async () => {
     const { router } = await mountAt(BannerVerifyEmail, '/privacy', makeUser(false));
     expect(banner().exists()).toBe(false);
     await router.push('/home');
     await flushPromises();
     expect(banner().exists()).toBe(true);
+  });
+
+  it('on Home with no dismissal stored, offers Resend email and Dismiss, not I\'ve verified', async () => {
+    await mountAt(BannerVerifyEmail, '/home', makeUser(false));
+    expect(banner().exists()).toBe(true);
+    expect(hasButton(RESEND)).toBe(true);
+    expect(hasButton(DISMISS)).toBe(true);
+    expect(hasButton(CHECK)).toBe(false);
+  });
+
+  it('on Home, stays hidden while the dismissal is 3 days old', async () => {
+    localStorage.setItem(DISMISS_KEY, String(Date.now() - 3 * DAY));
+    await mountAt(BannerVerifyEmail, '/home', makeUser(false));
+    expect(banner().exists()).toBe(false);
+  });
+
+  it('on Home, shows again once the dismissal is 8 days old', async () => {
+    localStorage.setItem(DISMISS_KEY, String(Date.now() - 8 * DAY));
+    await mountAt(BannerVerifyEmail, '/home', makeUser(false));
+    expect(banner().exists()).toBe(true);
+  });
+
+  it("on /profile, shows with Resend email and I've verified, and no Dismiss, even after a fresh dismissal", async () => {
+    localStorage.setItem(DISMISS_KEY, String(Date.now()));
+    await mountAt(BannerVerifyEmail, '/profile', makeUser(false));
+    expect(banner().exists()).toBe(true);
+    expect(hasButton(RESEND)).toBe(true);
+    expect(hasButton(CHECK)).toBe(true);
+    expect(hasButton(DISMISS)).toBe(false);
+  });
+
+  it("shows another user's banner on Home when only the first user dismissed it", async () => {
+    localStorage.setItem(DISMISS_KEY, String(Date.now()));
+    await mountAt(BannerVerifyEmail, '/home', { ...makeUser(false), uid: 'u2', email: 'b@example.test' });
+    expect(banner().exists()).toBe(true);
+  });
+});
+
+describe('BannerVerifyEmail dismiss on Home', () => {
+  it('hides at once, then, while the quiet check says not verified, stores the time with no snack', async () => {
+    const { session } = await mountAt(BannerVerifyEmail, '/home', makeUser(false));
+    const pending = deferred<boolean>();
+    api.reloadEmailVerified.mockReturnValue(pending.promise);
+    const before = Date.now();
+
+    await button(DISMISS).trigger('click');
+    // Hidden before the check answers.
+    expect(banner().exists()).toBe(false);
+    expect(api.reloadEmailVerified).toHaveBeenCalledOnce();
+    pending.resolve(false);
+    await flushPromises();
+
+    expect(banner().exists()).toBe(false);
+    expect(session.snack.text).toBe('');
+    const stored = Number(localStorage.getItem(DISMISS_KEY));
+    expect(stored).toBeGreaterThanOrEqual(before);
+    expect(stored).toBeLessThanOrEqual(Date.now());
+  });
+
+  it('marks the user verified, and stores nothing, when the email was verified in another tab', async () => {
+    const { session, router } = await mountAt(BannerVerifyEmail, '/home', makeUser(false));
+    api.reloadEmailVerified.mockResolvedValue(true);
+
+    await button(DISMISS).trigger('click');
+    await flushPromises();
+
+    expect(banner().exists()).toBe(false);
+    expect(session.user?.emailVerified).toBe(true);
+    expect(localStorage.getItem(DISMISS_KEY)).toBeNull();
+    // Gone everywhere, /profile included.
+    await router.push('/profile');
+    await flushPromises();
+    expect(banner().exists()).toBe(false);
+  });
+
+  it('stores the dismissal, with no error snack, when the quiet check fails', async () => {
+    const { session } = await mountAt(BannerVerifyEmail, '/home', makeUser(false));
+    api.reloadEmailVerified.mockRejectedValue(
+      Object.assign(new Error('Firebase: Error (auth/network-request-failed).'), { code: 'auth/network-request-failed' }),
+    );
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    await button(DISMISS).trigger('click');
+    await flushPromises();
+
+    expect(log).toHaveBeenCalledOnce();
+    log.mockRestore();
+    expect(banner().exists()).toBe(false);
+    expect(session.snack.text).toBe('');
+    expect(localStorage.getItem(DISMISS_KEY)).not.toBeNull();
+  });
+
+  it('offline, skips the check and stores the dismissal, with no snack', async () => {
+    const { session } = await mountAt(BannerVerifyEmail, '/home', makeUser(false));
+    session.online = false;
+
+    await button(DISMISS).trigger('click');
+    await flushPromises();
+
+    expect(api.reloadEmailVerified).not.toHaveBeenCalled();
+    expect(banner().exists()).toBe(false);
+    expect(session.snack.text).toBe('');
+    expect(localStorage.getItem(DISMISS_KEY)).not.toBeNull();
+  });
+
+  it('still shows on /profile after a dismissal on Home', async () => {
+    const { router } = await mountAt(BannerVerifyEmail, '/home', makeUser(false));
+    api.reloadEmailVerified.mockResolvedValue(false);
+    await button(DISMISS).trigger('click');
+    await flushPromises();
+
+    await router.push('/profile');
+    await flushPromises();
+    expect(banner().exists()).toBe(true);
+    expect(hasButton(CHECK)).toBe(true);
+  });
+
+  it('shows on Home for the next user who signs in on this browser', async () => {
+    const { session } = await mountAt(BannerVerifyEmail, '/home', makeUser(false));
+    api.reloadEmailVerified.mockResolvedValue(false);
+    await button(DISMISS).trigger('click');
+    await flushPromises();
+    expect(banner().exists()).toBe(false);
+
+    session.user = { ...makeUser(false), uid: 'u2', email: 'b@example.test' };
+    await flushPromises();
+    expect(banner().exists()).toBe(true);
+    expect(localStorage.getItem('flashcards.verifyBannerDismissedAt.u2')).toBeNull();
   });
 });
 
@@ -223,7 +372,7 @@ describe('BannerVerifyEmail resend', () => {
 
 describe('BannerVerifyEmail check', () => {
   it('shows loading until the check settles, then hides the banner once verified', async () => {
-    const { account, session } = await mountAt(BannerVerifyEmail, '/home', makeUser(false));
+    const { account, session } = await mountAt(BannerVerifyEmail, '/profile', makeUser(false));
     const pending = deferred<boolean>();
     vi.spyOn(account, 'checkVerified').mockImplementation(async () => {
       const verified = await pending.promise;
@@ -241,7 +390,7 @@ describe('BannerVerifyEmail check', () => {
   });
 
   it('keeps the banner and ends loading when not verified yet', async () => {
-    const { account } = await mountAt(BannerVerifyEmail, '/home', makeUser(false));
+    const { account } = await mountAt(BannerVerifyEmail, '/profile', makeUser(false));
     vi.spyOn(account, 'checkVerified').mockResolvedValue(false);
 
     await button(CHECK).trigger('click');

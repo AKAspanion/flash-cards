@@ -57,16 +57,37 @@ test('deleting with a password removes the account and everything in it', async 
   await expect(dialog.getByText('Delete your account?')).toBeVisible();
   await expect(dialog.getByText(BODY)).toBeVisible();
 
-  // A wrong password deletes nothing.
+  const word = dialog.getByLabel('Type DELETE to confirm');
+  const deleteButton = dialog.getByRole('button', { name: 'Delete my account' });
+  await expect(dialog.getByText('Type the word DELETE in capitals.')).toBeVisible();
+
+  // The right password alone, or with the word in the wrong case, keeps Delete off.
+  await dialog.getByLabel('Password').fill(PASSWORD);
+  await expect(deleteButton).toBeDisabled();
+  await word.fill('delete');
+  await expect(deleteButton).toBeDisabled();
+  await word.fill('Delete');
+  await expect(deleteButton).toBeDisabled();
+
+  // Enter in the password field does nothing until the word matches.
+  await dialog.getByLabel('Password').press('Enter');
+  await expect(dialog).toBeVisible();
+  expect(await ownedDocs(page, 'flash-card-sets', uid)).toBe(1);
+
+  // A wrong password deletes nothing, and keeps the typed word.
+  await word.fill('DELETE');
   await dialog.getByLabel('Password').fill('wrong-password');
-  await dialog.getByRole('button', { name: 'Delete my account' }).click();
+  await deleteButton.click();
   await expect(page.getByText('Incorrect email or password.')).toBeVisible();
   await expect(dialog).toBeVisible();
+  await expect(word).toHaveValue('DELETE');
   expect(await ownedDocs(page, 'flash-card-sets', uid)).toBe(1);
   expect(await ownedDocs(page, 'labels', uid)).toBe(1);
 
+  // Surrounding spaces are trimmed.
+  await word.fill(' DELETE ');
   await dialog.getByLabel('Password').fill(PASSWORD);
-  await dialog.getByRole('button', { name: 'Delete my account' }).click();
+  await deleteButton.click();
   await expect(page).toHaveURL(/\/login/);
   await expect(page.getByText('Your account has been deleted.')).toBeVisible();
 
@@ -84,11 +105,16 @@ test('cancel in the first step leaves the user signed in on profile', async ({ p
   await page.goto('/profile');
   await page.getByRole('button', { name: 'Delete account' }).click();
   await expect(page.getByRole('dialog').getByText('Delete your account?')).toBeVisible();
+  await page.getByRole('dialog').getByLabel('Type DELETE to confirm').fill('DELETE');
 
   await page.getByRole('dialog').getByRole('button', { name: 'Cancel' }).click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(page).toHaveURL(/\/profile$/);
   await expect(page.getByRole('button', { name: 'Sign out' })).toBeVisible();
+
+  // Opened again, the typed word is gone.
+  await page.getByRole('button', { name: 'Delete account' }).click();
+  await expect(page.getByRole('dialog').getByLabel('Type DELETE to confirm')).toHaveValue('');
 });
 
 test('a Google user reconfirms on Google, then deletes with one more tap', async ({ page }) => {
@@ -100,7 +126,12 @@ test('a Google user reconfirms on Google, then deletes with one more tap', async
   await page.goto('/profile');
   const email = (await page.locator('.profile__text', { hasText: '@' }).innerText()).trim();
   await page.getByRole('button', { name: 'Delete account' }).click();
-  await page.getByRole('dialog').getByRole('button', { name: 'Continue with Google' }).click();
+  const google = page.getByRole('dialog').getByRole('button', { name: 'Continue with Google' });
+  await expect(page.getByRole('dialog').getByLabel('Password')).toHaveCount(0);
+  await expect(google).toBeDisabled();
+  await page.getByRole('dialog').getByLabel('Type DELETE to confirm').fill('DELETE');
+  await expect(google).toBeEnabled();
+  await google.click();
 
   // The emulator lists every account tests made; choose this one again.
   await expect(page.getByRole('button', { name: 'Add new account' })).toBeVisible();
@@ -109,9 +140,41 @@ test('a Google user reconfirms on Google, then deletes with one more tap', async
   await expect(page).toHaveURL(/\/profile$/);
   const dialog = page.getByRole('dialog');
   await expect(dialog.getByText("You're confirmed. Delete your account now?")).toBeVisible();
+  // The word was typed before the redirect; the final tap doesn't ask for it again.
+  await expect(dialog.getByLabel('Type DELETE to confirm')).toHaveCount(0);
+  await expect(dialog.getByRole('button', { name: 'Delete my account' })).toBeEnabled();
   await dialog.getByRole('button', { name: 'Delete my account' }).click();
   await expect(page).toHaveURL(/\/login/);
   await expect(page.getByText('Your account has been deleted.')).toBeVisible();
+});
+
+test('a confirmed Google return, cancelled, asks for DELETE and Google again when reopened', async ({ page }) => {
+  await page.goto('/login');
+  await page.getByRole('button', { name: 'Continue with Google' }).click();
+  await chooseNewGoogleAccount(page);
+  await expect(page).toHaveURL(/\/home$/);
+
+  await page.goto('/profile');
+  const email = (await page.locator('.profile__text', { hasText: '@' }).innerText()).trim();
+  await page.getByRole('button', { name: 'Delete account' }).click();
+  await page.getByRole('dialog').getByLabel('Type DELETE to confirm').fill('DELETE');
+  await page.getByRole('dialog').getByRole('button', { name: 'Continue with Google' }).click();
+  await expect(page.getByRole('button', { name: 'Add new account' })).toBeVisible();
+  await page.locator('.mdc-list-item, li, [role="listitem"], button').filter({ hasText: email }).first().click();
+
+  await expect(page).toHaveURL(/\/profile$/);
+  const dialog = page.getByRole('dialog');
+  await expect(dialog.getByText("You're confirmed. Delete your account now?")).toBeVisible();
+  await dialog.getByRole('button', { name: 'Cancel' }).click();
+  await expect(dialog).toHaveCount(0);
+
+  // The confirmation was for that one opening: the next one starts over.
+  await page.getByRole('button', { name: 'Delete account' }).click();
+  await expect(dialog.getByText('Delete your account?')).toBeVisible();
+  await expect(dialog.getByText("You're confirmed. Delete your account now?")).toHaveCount(0);
+  await expect(dialog.getByLabel('Type DELETE to confirm')).toHaveValue('');
+  await expect(dialog.getByRole('button', { name: 'Continue with Google' })).toBeDisabled();
+  await expect(dialog.getByRole('button', { name: 'Delete my account' })).toHaveCount(0);
 });
 
 test('delete account is a row in the profile card, not a red text button', async ({ page }) => {
@@ -136,6 +199,7 @@ test('the dialog locks Cancel only while the deletion runs', async ({ page }) =>
   const dialog = page.getByRole('dialog');
   await expect(dialog.getByRole('button', { name: 'Cancel' })).toBeEnabled();
 
+  await dialog.getByLabel('Type DELETE to confirm').fill('DELETE');
   await dialog.getByLabel('Password').fill(PASSWORD);
   await dialog.getByRole('button', { name: 'Delete my account' }).click();
   await expect(dialog.getByRole('button', { name: 'Cancel' })).toBeDisabled();
@@ -150,6 +214,7 @@ test('coming back from Google without reconfirming leaves the dialog cancellable
 
   await page.goto('/profile');
   await page.getByRole('button', { name: 'Delete account' }).click();
+  await page.getByRole('dialog').getByLabel('Type DELETE to confirm').fill('DELETE');
   await page.getByRole('dialog').getByRole('button', { name: 'Continue with Google' }).click();
   await expect(page.getByRole('button', { name: 'Add new account' })).toBeVisible();
 

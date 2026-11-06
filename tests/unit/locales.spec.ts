@@ -57,6 +57,15 @@ describe('locales', () => {
     }
   });
 
+  it('the public deletion steps say to type DELETE and confirm with the password or Google', () => {
+    expect(en.deletion.app.body).toBe(
+      'Open your profile, choose Delete account, type DELETE, and confirm with your password or Google.',
+    );
+    expect(hi.deletion.app.body).toContain('DELETE');
+    expect(hi.deletion.app.body).toContain(hi.account.delete.password);
+    expect(hi.deletion.app.body).toContain('Google');
+  });
+
   it('every t("...") key used in the source exists', () => {
     const used = new Set<string>();
     for (const file of sourceFiles(join(__dirname, '../../src'))) {

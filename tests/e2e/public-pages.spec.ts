@@ -7,7 +7,7 @@ test('a signed-out visitor can read the privacy policy', async ({ page }) => {
   await page.goto('/privacy');
   await expect(page).toHaveURL(/\/privacy$/);
   await expect(page.getByRole('heading', { name: 'Privacy policy' })).toBeVisible();
-  await expect(page.getByText('Last updated: 4 November 2026')).toBeVisible();
+  await expect(page.getByText('Last updated: 6 November 2026')).toBeVisible();
   for (const title of [
     'What we store',
     'How it is used',

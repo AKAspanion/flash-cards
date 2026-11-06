@@ -72,6 +72,13 @@
                   rel="noopener noreferrer"
                 >{{ t('privacy.ads.settingsLink') }}</a>
               </template>
+              <template #aboutads>
+                <a
+                  href="https://www.aboutads.info/choices/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >{{ t('privacy.ads.aboutadsLink') }}</a>
+              </template>
               <template #partners>
                 <a
                   href="https://policies.google.com/technologies/partner-sites"

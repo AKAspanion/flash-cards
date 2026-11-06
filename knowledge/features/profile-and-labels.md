@@ -13,6 +13,11 @@ verified: human:panditankit1995@gmail.com
 `/profile` shows the user's photo, name, email, when they joined and last signed in. They can edit their display
 name and photo URL, create a label, select a label to rename it, sign out, and [delete their account](account-deletion.md).
 
+## Layout
+
+The sheet is grouped under two `h2` headings: a Labels section (create and rename labels) and an Account section
+(member since, last login, delete account). Sign out stays below them. The old `profile.label.title` text was removed.
+
 ## Screens and routes
 
 - `/profile`: `src/views/Profile.vue`, reached from the home top bar and from the menu's "Labels" entry.
@@ -30,6 +35,7 @@ name and photo URL, create a label, select a label to rename it, sign out, and [
 
 ## History
 
+- 2026-11-06: the sheet was one ungrouped list; now it has Labels and Account sections under their own headings, because of the bug batch.
 - 2026-11-04: gained a Delete account action. See [Delete account](account-deletion.md).
 - 2026-11-03: label deletion was an open question; now decided against. See [Labels cannot be deleted](../decisions/labels-cannot-be-deleted.md).
 

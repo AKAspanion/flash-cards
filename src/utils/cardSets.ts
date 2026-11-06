@@ -70,6 +70,11 @@ export function cardMatchCount(set: CardSet, search: string): number {
   ).length;
 }
 
+/** True when a set outside the bin holds at least one card. */
+export function hasCards(sets: CardSet[]): boolean {
+  return sets.some((set) => !set.trashed && set.cards.length > 0);
+}
+
 export function learnedPercent(set: CardSet): number {
   return set.cards.length ? (learnedCount(set) / set.cards.length) * 100 : 0;
 }

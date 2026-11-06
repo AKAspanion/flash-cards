@@ -131,6 +131,65 @@ describe('email verification', () => {
     expect(useSessionStore().snack.text).toBe('Network error. Check your connection and try again.');
   });
 
+  describe('the quiet check', () => {
+    it('marks the user verified, with no snack and no loading bar, once Firebase says so', async () => {
+      let loadingWhileCalled: boolean | null = null;
+      api.reloadEmailVerified.mockImplementation(async () => {
+        loadingWhileCalled = useSessionStore().loading;
+        return true;
+      });
+      expect(await useAccountStore().checkVerifiedQuietly()).toBe(true);
+      expect(api.reloadEmailVerified).toHaveBeenCalledOnce();
+      expect(loadingWhileCalled).toBe(false);
+      expect(useSessionStore().user?.emailVerified).toBe(true);
+      expect(useSessionStore().snack.text).toBe('');
+    });
+
+    it('resolves false, with no snack, while Firebase says not yet', async () => {
+      api.reloadEmailVerified.mockResolvedValue(false);
+      expect(await useAccountStore().checkVerifiedQuietly()).toBe(false);
+      expect(useSessionStore().user?.emailVerified).toBe(false);
+      expect(useSessionStore().snack.text).toBe('');
+    });
+
+    it('resolves false, logs, and shows no snack when the check cannot reach Firebase', async () => {
+      api.reloadEmailVerified.mockRejectedValue(authError('auth/network-request-failed'));
+      const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+      expect(await useAccountStore().checkVerifiedQuietly()).toBe(false);
+      expect(log).toHaveBeenCalledOnce();
+      log.mockRestore();
+      expect(useSessionStore().user?.emailVerified).toBe(false);
+      expect(useSessionStore().snack.text).toBe('');
+    });
+
+    it('offline, resolves false without calling Firebase or showing a snack', async () => {
+      useSessionStore().online = false;
+      expect(await useAccountStore().checkVerifiedQuietly()).toBe(false);
+      expect(api.reloadEmailVerified).not.toHaveBeenCalled();
+      expect(useSessionStore().snack.text).toBe('');
+    });
+
+    it('with no signed-in user, resolves false without calling Firebase', async () => {
+      useSessionStore().user = null;
+      expect(await useAccountStore().checkVerifiedQuietly()).toBe(false);
+      expect(api.reloadEmailVerified).not.toHaveBeenCalled();
+    });
+
+    it('does not mark a new user verified when the check for the old one says verified', async () => {
+      let finish!: (verified: boolean) => void;
+      api.reloadEmailVerified.mockReturnValue(new Promise<boolean>((r) => (finish = r)));
+      const check = useAccountStore().checkVerifiedQuietly();
+      const session = useSessionStore();
+      session.user = { ...session.user!, uid: 'u2', email: 'b@example.test', emailVerified: false };
+      finish(true);
+
+      expect(await check).toBe(false);
+      expect(session.user?.uid).toBe('u2');
+      expect(session.user?.emailVerified).toBe(false);
+      expect(session.snack.text).toBe('');
+    });
+  });
+
   describe('when another user signs in while the call runs', () => {
     function deferred<T>() {
       let resolve!: (value: T) => void;
