@@ -325,6 +325,8 @@ async function moveToBin(set: CardSet) {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
   gap: 24px 32px;
   padding: 12px 32px;
+  /* A swiped set header may travel past the viewport edge; clip, not hidden, keeps vertical scrolling intact. */
+  overflow-x: clip;
 }
 .set-list-enter-active {
   transition: all 0.3s ease;
