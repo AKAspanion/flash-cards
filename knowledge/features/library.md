@@ -33,7 +33,11 @@ Home also shows the review streak and, when a set outside the bin holds a card, 
   and `Recently studied` (most recent `studiedAt` first, never-studied sets last, ties by title); favourites can be
   pinned on top. The "Studied" text comes from `relativeTime` (`src/utils/relativeTime.ts`, `Intl.RelativeTimeFormat`). Order and favourites-on-top come from [settings](settings-and-about.md). Tested in
   `tests/unit/cardSets.spec.ts`.
-- On touch screens a set card swipes right to favourite and left to move to the bin (`CardFlashSet.vue`).
+- On touch screens a set card swipes right to favourite and left to move to the bin (`CardFlashSet.vue`). While it
+  is swiped, the coloured header slides over the card's edge with a lifted shadow and stays visible, and the whole
+  card is raised above its neighbours until the header has slid back, so in a multi-column grid it never passes
+  under the next card. The grid clips only horizontally (`overflow-x: clip` on `.set-grid`), so a swipe adds no
+  sideways page scroll. Tested in `tests/e2e/set-card-swipe.spec.ts`.
 - Starring or moving to the bin saves the whole set through `library.saveSet`, which also updates a shared set's
   public copy and, offline, counts as done once in the device cache ([sharing](sharing.md),
   [offline study](offline-study.md)). `shareSet` and `unshareSet` are the store's other sharing actions; a copy that
@@ -44,6 +48,7 @@ Home also shows the review streak and, when a set outside the bin holds a card, 
 
 ## History
 
+- 2026-11-06: a swiped set header was clipped by its own card (and passed under the next card on tablets); now it slides over the card's edge, lifted and visible, because the developer asked for it to stay on top. See `docs/plans/2026-11-06-set-card-swipe-clipping.md`.
 - 2026-11-05: Home showed no progress; now it shows the streak and today's count, and saves of sets work offline and sync a shared copy, because of the progress-habits, offline-study and sharing plans.
 - 2026-11-05: search matched titles only and there were three orders; now search also matches card text, there are two more orders, and each set card shows when it was last studied, for the usability spec's library search and sort.
 - 2026-11-05: Home showed no due information; now a due banner and per-set due and new counts show, for spaced repetition.
@@ -65,3 +70,4 @@ Home also shows the review streak and, when a set outside the bin holds a card, 
 - `src/stores/stats.ts`
 - `tests/unit/cardSets.spec.ts`
 - `tests/e2e/sets.spec.ts`
+- `tests/e2e/set-card-swipe.spec.ts`

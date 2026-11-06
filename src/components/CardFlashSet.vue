@@ -1,6 +1,7 @@
 <template>
   <v-card
     class="set-card"
+    :class="{ 'set-card--swiping': raised }"
     color="surface-light"
     elevation="3"
     height="182"
@@ -13,11 +14,12 @@
       @touchmove.passive="onTouchMove"
       @touchend="onTouchEnd"
       @touchcancel="resetSwipe"
+      @transitionend="onSwipeTransitionEnd"
     >
       <v-card
         class="pa-6"
         :color="headerColor"
-        flat
+        :elevation="offset !== 0 ? 4 : 0"
         height="100"
         theme="dark"
       >
@@ -155,7 +157,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onBeforeUnmount, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import type { CardSet, Label } from '@/types';
@@ -212,6 +214,9 @@ const start = ref<{ x: number; y: number } | null>(null);
 const direction = ref<'none' | 'horizontal' | 'vertical'>('none');
 const offset = ref(0);
 const dragging = ref(false);
+// The card paints above its neighbours while its header is off the resting position: dragging and sliding back.
+const raised = ref(false);
+let lowerTimer: ReturnType<typeof setTimeout> | undefined;
 
 const favTriggered = computed(() => offset.value >= SWIPE_TRIGGER);
 const binTriggered = computed(() => offset.value <= -SWIPE_TRIGGER);
@@ -244,7 +249,22 @@ function onTouchMove(e: TouchEvent) {
   }
   dragging.value = true;
   offset.value = Math.max(-SWIPE_MAX, Math.min(SWIPE_MAX, dx));
+  clearTimeout(lowerTimer);
+  raised.value = true;
 }
+
+function lower() {
+  clearTimeout(lowerTimer);
+  raised.value = false;
+}
+
+function onSwipeTransitionEnd(e: TransitionEvent) {
+  if (e.target === e.currentTarget && e.propertyName === 'transform' && offset.value === 0) {
+    lower();
+  }
+}
+
+onBeforeUnmount(() => clearTimeout(lowerTimer));
 
 function onTouchEnd() {
   if (favTriggered.value) {
@@ -259,14 +279,26 @@ function resetSwipe() {
   start.value = null;
   direction.value = 'none';
   dragging.value = false;
+  if (offset.value === 0) {
+    lower();
+    return;
+  }
   offset.value = 0;
+  // Fallback for a transitionend that never fires (reduced motion, interrupted transition).
+  clearTimeout(lowerTimer);
+  lowerTimer = setTimeout(lower, 400);
 }
 </script>
 
 <style scoped>
-.set-card {
+/* Vuetify's .v-card clips its content; the swiped header must stay visible past the card's edge. */
+.set-card.v-card {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+}
+/* Each card is its own stacking context, so the swiped header only beats the neighbours if its card does. */
+.set-card.v-card.set-card--swiping {
+  z-index: 1;
 }
 .set-card__swipe {
   position: relative;

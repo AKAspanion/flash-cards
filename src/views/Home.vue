@@ -275,7 +275,7 @@ const visibleSets = computed(() =>
 );
 // Like Study now, the goal is only offered once there is something to study.
 const showGoal = computed(() => library.status === 'ready' && hasCards(library.sets));
-const dueTotal =computed(() => dueCount(library.sets, localDate()));
+const dueTotal = computed(() => dueCount(library.sets, localDate()));
 const shimmerCount = computed(() => ({ xs: 3, sm: 4, md: 4, lg: 6, xl: 9, xxl: 9 })[display.name.value] ?? 3);
 
 const menuItems = computed(() => [
@@ -327,6 +327,8 @@ async function moveToBin(set: CardSet) {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
   gap: 24px 32px;
   padding: 12px 32px;
+  /* A swiped set header may travel past the viewport edge; clip, not hidden, keeps vertical scrolling intact. */
+  overflow-x: clip;
 }
 .set-list-enter-active {
   transition: all 0.3s ease;
