@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { PASSWORD, createSet, signUp } from './helpers';
+import { PASSWORD, createSet, goOffline, signUp } from './helpers';
 
 const OFFLINE_SIGNOUT = "You're offline. Connect to the internet to sign out, so your changes aren't lost.";
 const OFFLINE_SAVE = "You're offline. Connect to the internet to save.";
@@ -29,7 +29,7 @@ test('offline, sign-out is refused and the user stays signed in', async ({ page,
   await page.goto('/profile');
   await expect(page.getByRole('button', { name: 'Sign out' })).toBeVisible();
 
-  await context.setOffline(true);
+  await goOffline(page);
   await page.getByRole('button', { name: 'Sign out' }).click();
   await expect(page.getByText(OFFLINE_SIGNOUT)).toBeVisible();
   await expect(page).toHaveURL(/\/profile$/);
@@ -49,7 +49,7 @@ test('offline, deleting the account is refused and deletes nothing', async ({ pa
   await dialog.getByLabel('Type DELETE to confirm').fill('DELETE');
   await dialog.getByLabel('Password').fill(PASSWORD);
 
-  await context.setOffline(true);
+  await goOffline(page);
   await dialog.getByRole('button', { name: 'Delete my account' }).click();
   await expect(page.getByText(OFFLINE_SAVE)).toBeVisible();
   await expect(dialog).toBeVisible();

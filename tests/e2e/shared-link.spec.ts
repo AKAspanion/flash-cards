@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { PASSWORD, createSet, setCard, signUp, uniqueEmail } from './helpers';
+import { PASSWORD, createSet, goOffline, setCard, signUp, uniqueEmail } from './helpers';
 import { DEV_PORTS } from '../../dev-ports';
 
 const DOCS = `http://127.0.0.1:${DEV_PORTS.firestore}/v1/projects/demo-flash-cards/databases/(default)/documents`;
@@ -266,7 +266,7 @@ test.describe('Add to my library', () => {
     await signUp(page);
     await page.goto(link);
     await expect(addButton(page)).toBeVisible();
-    await context.setOffline(true);
+    await goOffline(page);
     await addButton(page).click();
     await expect(page.getByText(OFFLINE)).toBeVisible();
     await expect(page).toHaveURL(new RegExp(`${link}$`));

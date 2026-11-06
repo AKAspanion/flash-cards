@@ -1,12 +1,10 @@
 import { expect, test } from '@playwright/test';
-import { PASSWORD, signUp, uniqueEmail } from './helpers';
+import { PASSWORD, signOut, signUp, uniqueEmail } from './helpers';
 
 test('signed-out visitors are sent to login and back after signing in', async ({ page }) => {
   const email = await signUp(page);
 
-  await page.goto('/profile');
-  await page.getByRole('button', { name: 'Sign out' }).click();
-  await expect(page).toHaveURL(/\/login/);
+  await signOut(page);
 
   await page.goto('/settings');
   await expect(page).toHaveURL(/\/login\?redirect=\/settings$/);

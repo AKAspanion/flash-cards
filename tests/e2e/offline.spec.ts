@@ -1,5 +1,5 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { createSet, setCard, signUp } from './helpers';
+import { createSet, goOffline, setCard, signUp } from './helpers';
 import { DEV_PORTS } from '../../dev-ports';
 
 // Service workers are blocked in e2e (playwright.config.ts), so nothing can serve a page load offline.
@@ -196,7 +196,7 @@ test.beforeEach(async ({ page }) => {
 test('offline, marking a card learned is saved on the device and syncs when back online', async ({ page, context }) => {
   await createSet(page, 'Spanish verbs');
   await warmStudyPage(page, 'Spanish verbs');
-  await context.setOffline(true);
+  await goOffline(page);
 
   await openStudy(page, 'Spanish verbs');
   await page.getByRole('button', { name: 'Mark as learned' }).click();
@@ -216,7 +216,7 @@ test('offline, marking a card learned is saved on the device and syncs when back
 test('offline, a new set is created and is there after reconnecting', async ({ page, context }) => {
   await goInApp(page, '/add');
   await expect(page.getByRole('button', { name: 'untitled set' })).toBeVisible();
-  await context.setOffline(true);
+  await goOffline(page);
 
   await page.getByRole('button', { name: 'untitled set' }).click();
   await page.getByPlaceholder('untitled set').fill('Offline set');
@@ -241,9 +241,9 @@ test('offline, a new set is created and is there after reconnecting', async ({ p
   await expect(setCard(page, 'Offline set')).toBeVisible();
 });
 
-test('offline, the Edit button on a set card is enabled and opens the editor', async ({ page, context }) => {
+test('offline, the Edit button on a set card is enabled and opens the editor', async ({ page }) => {
   await createSet(page, 'Spanish verbs');
-  await context.setOffline(true);
+  await goOffline(page);
 
   const edit = setCard(page, 'Spanish verbs').getByRole('button', { name: 'Edit' });
   await expect(edit).not.toHaveClass(/v-chip--disabled/);
@@ -252,7 +252,7 @@ test('offline, the Edit button on a set card is enabled and opens the editor', a
 
 test('offline, swiping a set card right marks it favourite', async ({ page, context }) => {
   await createSet(page, 'Spanish verbs');
-  await context.setOffline(true);
+  await goOffline(page);
 
   await swipeRight(setCard(page, 'Spanish verbs'));
   await expect(setCard(page, 'Spanish verbs').locator(FAV_STAR)).toHaveCount(1);
@@ -265,7 +265,7 @@ test('offline, swiping a set card right marks it favourite', async ({ page, cont
 
 test('offline, favouriting a set from its editor shows the star and keeps it after reconnecting', async ({ page, context }) => {
   await createSet(page, 'Spanish verbs');
-  await context.setOffline(true);
+  await goOffline(page);
 
   await openEditor(page, 'Spanish verbs');
   await openEditorOptions(page);
@@ -282,7 +282,7 @@ test('offline, favouriting a set from its editor shows the star and keeps it aft
 
 test('offline, moving a set to the bin from its editor takes it off Home and into the bin', async ({ page, context }) => {
   await createSet(page, 'Old notes');
-  await context.setOffline(true);
+  await goOffline(page);
 
   await openEditor(page, 'Old notes');
   await openEditorOptions(page);
@@ -302,7 +302,7 @@ test('offline, delete forever is refused and the set stays in the bin', async ({
   await seedSet(page, email, 'Old notes', { trashed: true });
   await page.goto('/bin');
   await expect(setCard(page, 'Old notes')).toBeVisible();
-  await context.setOffline(true);
+  await goOffline(page);
 
   await setCard(page, 'Old notes').getByRole('button', { name: 'Delete' }).click();
   const dialog = page.getByRole('dialog');
@@ -320,7 +320,7 @@ test('offline, delete forever is refused and the set stays in the bin', async ({
 test('offline, a label created on Profile is kept after reconnecting', async ({ page, context }) => {
   await page.goto('/profile');
   await expect(page.getByPlaceholder('Create new label')).toBeVisible();
-  await context.setOffline(true);
+  await goOffline(page);
 
   await page.getByPlaceholder('Create new label').fill('Verbs');
   await page.keyboard.press('Enter');
@@ -337,7 +337,7 @@ test('offline, a label created on Profile is kept after reconnecting', async ({ 
 test('offline, a profile change is refused and the name stays as it was', async ({ page, context }) => {
   await page.goto('/profile');
   await expect(page.getByRole('button', { name: 'Add your name' })).toBeVisible();
-  await context.setOffline(true);
+  await goOffline(page);
 
   await page.getByRole('button', { name: 'Add your name' }).click();
   await page.getByPlaceholder('Enter your name').fill('Ana');
@@ -355,7 +355,7 @@ test('offline, a profile change is refused and the name stays as it was', async 
 test('offline, restore from backup is refused and adds no set', async ({ page, context }) => {
   await page.goto('/settings');
   await expect(page.getByRole('button', { name: 'Restore from backup' })).toBeVisible();
-  await context.setOffline(true);
+  await goOffline(page);
 
   await page.getByRole('button', { name: 'Restore from backup' }).click();
   await expect(page.getByText(OFFLINE_SAVE)).toBeVisible();
@@ -391,13 +391,13 @@ test('offline, restore from backup is refused and adds no set', async ({ page, c
   expect(await storedSets(page, email)).toEqual([]);
 });
 
-test('offline, the saved-on-this-device snack shows once per offline period', async ({ page, context }) => {
+test('offline, the saved-on-this-device snack shows once per offline period', async ({ page }) => {
   await seedSet(page, email, 'Verbs');
   await seedSet(page, email, 'Nouns');
   await page.goto('/home');
   await warmStudyPage(page, 'Verbs');
   await countOfflineSavedSnacks(page);
-  await context.setOffline(true);
+  await goOffline(page);
 
   await openStudy(page, 'Verbs');
   await page.getByRole('button', { name: 'Mark as learned' }).click();

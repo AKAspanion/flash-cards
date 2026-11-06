@@ -42,3 +42,27 @@ export async function createSet(page: Page, title: string, front = 'hablar', bac
 export function setCard(page: Page, title: string) {
   return page.locator('.set-card').filter({ hasText: title.toUpperCase() });
 }
+
+/**
+ * Takes the browser offline and waits until the app shows its offline indicator. The app learns the
+ * network is gone from the browser's `offline` event, which can land after setOffline returns; acting
+ * before it does tests an app that still thinks it is online.
+ */
+export async function goOffline(page: Page) {
+  await page.context().setOffline(true);
+  await expect(page.getByText("You're offline", { exact: true })).toBeVisible();
+}
+
+/**
+ * Signs out from /profile and waits for the fresh /login page. Sign-out routes to /login inside the
+ * app first, then clears the device cache and loads /login again from scratch; acting on the first
+ * /login loses whatever the test does to that second load.
+ */
+export async function signOut(page: Page) {
+  await page.goto('/profile');
+  await Promise.all([
+    page.waitForEvent('load'),
+    page.getByRole('button', { name: 'Sign out' }).click(),
+  ]);
+  await expect(page).toHaveURL(/\/login/);
+}
