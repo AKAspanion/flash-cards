@@ -37,10 +37,11 @@ gone.
   `src/utils/freshLoad.ts`), which passes a one-time snack through sessionStorage (`flashcards.pendingSnack`). A tab
   that sees the user signed out elsewhere does the same; a tab signing out or deleting the account itself loads it only
   once its cache is cleared.
-- The old sign-out that left the cache behind is no longer exported.
+- The old sign-out that left the cache behind is no longer exported. If the session ends but the cache can't be cleared, the snack says so (`account.signout.cache-left`); any other failed sign-out shows `toast.error.generic`.
 
 ## History
 
+- 2026-11-06: a sign-out that cleared the session but not the cache showed a generic error; now it says `account.signout.cache-left`, because the friendly-error-messages plan gave each action its own wording.
 - 2026-11-05: listed sign-in and sign-up as refused offline with the standard message; now says they have no check of their own and show Firebase's network error, because `Login.vue` never had one.
 
 ## Sources

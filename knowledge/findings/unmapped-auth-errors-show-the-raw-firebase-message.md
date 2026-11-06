@@ -1,11 +1,11 @@
 ---
 type: Finding
-title: Unmapped Firebase auth errors show the raw SDK message
-description: authErrorMessage falls back to the error's own English message for codes it doesn't map, so some failures reach the snack untranslated; it predates the email-verification work, which adds two more paths into it.
+title: "Fixed: unmapped Firebase auth errors showed the raw SDK message"
+description: authErrorMessage fell back to the error's own English message for codes it didn't map, so some failures reached the snack untranslated; fixed by falling back to auth.error.generic.
 generated: { by: agent:after-finish/claude-sonnet-5-5, at: 2026-11-05T12:00:00Z }
 ---
 
-# Unmapped Firebase auth errors show the raw SDK message
+# Fixed: unmapped Firebase auth errors showed the raw SDK message
 
 ## Finding
 
@@ -23,7 +23,7 @@ again." from `requireUser()`, whatever language they chose. Resend and I've veri
 
 ## Status
 
-Open. Map the codes these paths can meet, or fall back to `auth.error.generic`.
+Fixed in d9623fc: `authErrorMessage` returns `auth.error.generic` for a code it doesn't map, looks codes up with `Object.hasOwn`, and logs only the code. Signed-out errors from `requireUser()` now also show the caller's key rather than their own text.
 
 ## Sources
 
