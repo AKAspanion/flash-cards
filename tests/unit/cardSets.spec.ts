@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import {
   cardMatchCount,
   filterAndSortSets,
+  hasCards,
   isSetOrder,
   learnedCount,
   learnedPercent,
@@ -165,5 +166,19 @@ describe('new orders', () => {
     expect(isSetOrder('Progress')).toBe(true);
     expect(isSetOrder('Recently studied')).toBe(true);
     expect(isSetOrder('Newest')).toBe(false);
+  });
+});
+
+describe('hasCards', () => {
+  const withCard = [{ id: 'c1', front: 'a', back: 'b', learned: false, date: '2020-01-01T00:00:00.000Z' }];
+
+  it('is false with no sets, an empty set, or cards only in the bin', () => {
+    expect(hasCards([])).toBe(false);
+    expect(hasCards([makeSet({ title: 'empty' })])).toBe(false);
+    expect(hasCards([makeSet({ title: 'binned', trashed: true, cards: withCard })])).toBe(false);
+  });
+
+  it('is true when a set outside the bin holds a card', () => {
+    expect(hasCards([makeSet({ title: 'empty' }), makeSet({ title: 'full', cards: withCard })])).toBe(true);
   });
 });

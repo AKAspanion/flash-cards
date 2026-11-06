@@ -175,5 +175,34 @@ export const useAccountStore = defineStore('account', () => {
     return true;
   }
 
-  return { confirmWithPassword, confirmWithGoogle, deleteAccount, signOut, resendVerification, checkVerified };
+  /** Reloads the user and, when verified, sets session.user.emailVerified. No snack, no loading bar; false offline, on any error, or when the user changed. */
+  async function checkVerifiedQuietly(): Promise<boolean> {
+    const uid = session.user?.uid;
+    if (!uid || !session.online) {
+      return false;
+    }
+    let verified: boolean;
+    try {
+      // Not tracked: the banner's Dismiss runs it in the background, with no loading bar.
+      verified = await api.reloadEmailVerified();
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+    if (!verified || userChangedFrom(uid)) {
+      return false;
+    }
+    session.patchUser({ emailVerified: true });
+    return true;
+  }
+
+  return {
+    confirmWithPassword,
+    confirmWithGoogle,
+    deleteAccount,
+    signOut,
+    resendVerification,
+    checkVerified,
+    checkVerifiedQuietly,
+  };
 });

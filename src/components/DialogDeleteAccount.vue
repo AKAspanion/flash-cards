@@ -15,19 +15,34 @@
         >
           {{ t('account.delete.confirmed') }}
         </p>
-        <v-text-field
-          v-else-if="method === 'password'"
-          v-model="password"
-          autocomplete="current-password"
-          class="mt-4"
-          density="comfortable"
-          :disabled="deleting"
-          hide-details
-          :label="t('account.delete.password')"
-          type="password"
-          variant="outlined"
-          @keyup.enter="onDelete"
-        />
+        <template v-else>
+          <v-text-field
+            v-model="word"
+            autocapitalize="characters"
+            autocomplete="off"
+            class="mt-4"
+            density="comfortable"
+            :disabled="deleting"
+            :hint="t('account.delete.typeHint')"
+            :label="t('account.delete.type')"
+            persistent-hint
+            spellcheck="false"
+            variant="outlined"
+          />
+          <v-text-field
+            v-if="method === 'password'"
+            v-model="password"
+            autocomplete="current-password"
+            class="mt-4"
+            density="comfortable"
+            :disabled="deleting"
+            hide-details
+            :label="t('account.delete.password')"
+            type="password"
+            variant="outlined"
+            @keyup.enter="onDelete"
+          />
+        </template>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -41,6 +56,7 @@
         <v-btn
           v-if="method === 'google' && !confirmed"
           color="error"
+          :disabled="!wordMatches"
           :loading="googleBusy"
           variant="flat"
           @click="onGoogle"
@@ -50,7 +66,7 @@
         <v-btn
           v-else
           color="error"
-          :disabled="method === 'password' && !confirmed && !password"
+          :disabled="!confirmed && (!wordMatches || !password)"
           :loading="deleting"
           variant="flat"
           @click="onDelete"
@@ -63,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { confirmMethod } from '@/services/firebase';
 import { useAccountStore } from '@/stores/account';
@@ -78,8 +94,14 @@ const emit = defineEmits<{ 'update:modelValue': [open: boolean] }>();
 const { t } = useI18n();
 const account = useAccountStore();
 
+/** The word the user types before the identity step, the same in every language. */
+const CONFIRM_WORD = 'DELETE';
+
 const method = confirmMethod();
 const password = ref('');
+const word = ref('');
+// Trimmed so a stray space from the keyboard doesn't block it; case-sensitive so it's typed on purpose.
+const wordMatches = computed(() => word.value.trim() === CONFIRM_WORD);
 // Locked (persistent, Cancel off) only while the deletion itself runs. The Google step leaves the
 // page, so it only spins its own button, and a cancelled trip must leave the dialog usable.
 const deleting = ref(false);
@@ -90,6 +112,7 @@ watch(
   (open) => {
     if (open) {
       password.value = '';
+      word.value = '';
     }
   },
 );
@@ -107,7 +130,7 @@ function onUpdate(open: boolean) {
 }
 
 async function onGoogle() {
-  if (googleBusy.value) {
+  if (googleBusy.value || !wordMatches.value) {
     return;
   }
   googleBusy.value = true;
@@ -129,7 +152,9 @@ onMounted(() => window.addEventListener('pageshow', resetBusy));
 onBeforeUnmount(() => window.removeEventListener('pageshow', resetBusy));
 
 async function onDelete() {
-  if (deleting.value) {
+  // Enter in the password field lands here too, so the button's own checks are repeated.
+  // Back from Google (confirmed), the word was typed before the redirect and isn't asked again.
+  if (deleting.value || (!props.confirmed && (!wordMatches.value || (method === 'password' && !password.value)))) {
     return;
   }
   deleting.value = true;

@@ -426,9 +426,9 @@ if (isEdit) {
 
 function addCard() {
   const card: FlashCard = { id: uid(), front: '', back: '', learned: false, date: new Date().toISOString() };
-  const index = focusedIndex.value;
+  const index = draft.value.cards.length ? Math.min(focusedIndex.value + 1, draft.value.cards.length) : 0;
   draft.value.cards.splice(index, 0, card);
-  void nextTick(() => cardGroup.value?.scrollToCard(index));
+  void nextTick(() => cardGroup.value?.goTo(index));
 }
 
 function openDialog(which: 'import' | 'reorder') {

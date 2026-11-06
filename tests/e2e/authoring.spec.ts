@@ -324,6 +324,71 @@ test.describe('reorder', () => {
   });
 });
 
+test.describe('add card', () => {
+  const addCardButton = (page: Page) => page.getByRole('button', { name: 'Add card', exact: true });
+  const numberIn = (page: Page, n: number) =>
+    page.locator('.flash-card__number').filter({ hasText: new RegExp(`^\\s*${n}\\s*$`) });
+
+  test('the first card of a new set is numbered 1', async ({ page }) => {
+    await page.goto('/add');
+    await addCardButton(page).click();
+    expect(await reorderTexts(page)).toEqual(['-']);
+    await page.getByRole('button', { name: 'Close' }).last().click();
+    await expect(numberIn(page, 1)).toBeInViewport();
+  });
+
+  test('a new card goes right after the focused first card and is brought into view', async ({ page }) => {
+    await createSetByImport(page, 'Letters', ['A\t1', 'B\t2', 'C\t3']);
+    await editSet(page, 'Letters');
+    await addCardButton(page).click();
+    await expect(numberIn(page, 2)).toBeInViewport();
+    expect(await reorderTexts(page)).toEqual(['A', '-', 'B', 'C']);
+  });
+
+  /**
+   * Swipes the editor's card slider to its end, as a user does, and waits until the slider has
+   * settled there. The slider takes its focused card from the scroll position
+   * (`round(scrollLeft / card width)`, GroupCardFlash's updateFocused), so this waits for that to
+   * name `index`, then for the scroll event that reports it.
+   */
+  async function swipeToLastCard(page: Page, index: number) {
+    const slider = page.locator('.card-slider');
+    await expect(slider.locator('.card-slider__item')).toHaveCount(index + 1);
+    await slider.evaluate((el) => el.scrollTo({ left: el.scrollWidth }));
+    await expect
+      .poll(() =>
+        slider.evaluate((el) => {
+          const card = el.querySelector('.card-slider__item')!.getBoundingClientRect().width;
+          const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
+          return atEnd ? Math.round(el.scrollLeft / card) : -1;
+        }),
+      )
+      .toBe(index);
+    await slider.evaluate(
+      () => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))),
+    );
+  }
+
+  test('with the last card focused the new card goes last', async ({ page }) => {
+    await createSetByImport(page, 'Letters', ['A\t1', 'B\t2', 'C\t3']);
+    await editSet(page, 'Letters');
+    await swipeToLastCard(page, 2);
+    await expect(numberIn(page, 3)).toBeInViewport();
+    await addCardButton(page).click();
+    await expect(numberIn(page, 4)).toBeInViewport();
+    expect(await reorderTexts(page)).toEqual(['A', 'B', 'C', '-']);
+  });
+
+  test('two quick taps insert one after the other', async ({ page }) => {
+    await createSetByImport(page, 'Letters', ['A\t1', 'B\t2']);
+    await editSet(page, 'Letters');
+    await addCardButton(page).click();
+    await addCardButton(page).click();
+    await expect(numberIn(page, 3)).toBeInViewport();
+    expect(await reorderTexts(page)).toEqual(['A', '-', '-', 'B']);
+  });
+});
+
 test('the editor with a dialog open is accessible at 390 px', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/add');

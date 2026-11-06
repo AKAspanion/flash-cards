@@ -16,7 +16,7 @@ the bin, with an Undo in the snack bar. A menu leads to the bin, labels (profile
 button starts a new set. When cards are due, a banner shows "{n} cards due" with a Study now button that opens `/due`, and each set card shows "{n} due" and "{m} new", each hidden at 0 ([spaced repetition](spaced-repetition.md)), and a "Studied {relative time}" line in the app language, or "Not studied yet" when the set has no `studiedAt`. Sets in the bin show neither the counts nor that line. Below the sets list, once the sets have loaded, an AdSense banner shows when ads are configured
 ([one AdSense banner](../decisions/adsense-banner-ads.md)).
 
-Home also shows the review streak and today's count against the daily goal, linking to `/stats`
+Home also shows the review streak and, when a set outside the bin holds a card, today's count against the daily goal, linking to `/stats`
 ([progress and habits](progress-habits.md)).
 
 ## Screens and routes

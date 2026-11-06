@@ -123,11 +123,11 @@
 
     <div class="home__sets">
       <div
-        v-if="stats.status === 'ready'"
+        v-if="stats.status === 'ready' && (stats.streak > 0 || showGoal)"
         class="home__progress text-title-medium"
       >
         <span v-if="stats.streak > 0">{{ t('stats.streak', { n: stats.streak }) }}</span>
-        <span>{{ t('stats.today', { done: stats.todayCount, goal: stats.goal }) }}</span>
+        <span v-if="showGoal">{{ t('stats.today', { done: stats.todayCount, goal: stats.goal }) }}</span>
       </div>
       <div
         v-if="library.status === 'ready' && dueTotal > 0"
@@ -236,7 +236,7 @@ import ContainerEmpty from '@/components/ContainerEmpty.vue';
 import OptionPanel from '@/components/OptionPanel.vue';
 import ShimmerCardFlashSet from '@/components/ShimmerCardFlashSet.vue';
 import type { CardSet, Label } from '@/types';
-import { filterAndSortSets } from '@/utils/cardSets';
+import { filterAndSortSets, hasCards } from '@/utils/cardSets';
 import { localDate } from '@/utils/dates';
 import { dueCount } from '@/utils/srs';
 import { useLibraryStore } from '@/stores/library';
@@ -273,7 +273,9 @@ const visibleSets = computed(() =>
     favOnTop: prefs.favOnTop,
   }),
 );
-const dueTotal = computed(() => dueCount(library.sets, localDate()));
+// Like Study now, the goal is only offered once there is something to study.
+const showGoal = computed(() => library.status === 'ready' && hasCards(library.sets));
+const dueTotal =computed(() => dueCount(library.sets, localDate()));
 const shimmerCount = computed(() => ({ xs: 3, sm: 4, md: 4, lg: 6, xl: 9, xxl: 9 })[display.name.value] ?? 3);
 
 const menuItems = computed(() => [

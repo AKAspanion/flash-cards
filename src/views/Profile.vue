@@ -128,27 +128,12 @@
       flat
     >
       <div class="profile__card-content">
-        <div
-          v-for="item in timeMeta"
-          :key="item.name"
-          class="d-flex align-start pb-8"
-        >
-          <v-icon>{{ item.icon }}</v-icon>
-          <div class="pl-8">
-            <div class="text-body-small">
-              {{ t(item.name) }}
-            </div>
-            <div class="text-title-small">
-              {{ item.value }}
-            </div>
-          </div>
-        </div>
+        <h2 class="profile__heading text-title-medium text-primary">
+          {{ t('profile.section.labels') }}
+        </h2>
         <div class="d-flex align-start pb-8">
           <v-icon>mdi-label-variant</v-icon>
           <div class="pl-8 flex-grow-1">
-            <div class="text-body-small">
-              {{ t('profile.label.title') }}
-            </div>
             <div class="text-title-small">
               {{ t('profile.label.subtitle') }}
             </div>
@@ -192,13 +177,31 @@
             </div>
           </div>
         </div>
+        <h2 class="profile__heading profile__heading--next text-title-medium text-primary">
+          {{ t('profile.section.account') }}
+        </h2>
+        <div
+          v-for="item in timeMeta"
+          :key="item.name"
+          class="d-flex align-start pb-8"
+        >
+          <v-icon>{{ item.icon }}</v-icon>
+          <div class="pl-8">
+            <div class="text-body-small">
+              {{ t(item.name) }}
+            </div>
+            <div class="text-title-small">
+              {{ item.value }}
+            </div>
+          </div>
+        </div>
         <button
           v-if="!(xs && labelFocused)"
           class="d-flex align-start profile__row"
           type="button"
           @click="deleteOpen = true"
         >
-          <v-icon color="error">
+          <v-icon>
             mdi-account-remove-outline
           </v-icon>
           <div class="pl-8">
@@ -261,6 +264,14 @@ const signingOut = ref(false);
 
 const deleteOpen = ref(false);
 const deleteConfirmed = ref(false);
+
+// A Google return arms the final step for the one opening that follows it. Any close (Cancel,
+// outside click, Esc) disarms it, so every later opening asks for DELETE and the identity check again.
+watch(deleteOpen, (open) => {
+  if (!open) {
+    deleteConfirmed.value = false;
+  }
+});
 
 // Back from Google's reconfirmation: reopen the dialog at its last step, or show why it failed.
 // The stored key goes either way, so a later visit never resumes an old deletion.
@@ -393,6 +404,8 @@ async function onSignOut() {
   border-bottom-left-radius: 0;
 }
 .profile__row {
+  width: 100%;
+  padding: 0;
   color: inherit;
   font: inherit;
   text-align: left;
@@ -402,5 +415,11 @@ async function onSignOut() {
 }
 .profile__card-content {
   padding: 32px 32px 120px;
+}
+.profile__heading {
+  margin: 0 0 16px;
+}
+.profile__heading--next {
+  margin-top: 16px;
 }
 </style>

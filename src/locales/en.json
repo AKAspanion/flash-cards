@@ -84,8 +84,11 @@
   "profile": {
     "member": "Member Since",
     "login": "Last Login",
+    "section": {
+      "labels": "Labels",
+      "account": "Account"
+    },
     "label": {
-      "title": "Your Labels",
       "create": "Create new label",
       "subtitle": "Create new label or select one to edit"
     },
@@ -319,6 +322,7 @@
     "banner": "Verify your email to keep your account safe.",
     "resend": "Resend email",
     "check": "I've verified",
+    "dismiss": "Dismiss",
     "sent": "Sent. Check your inbox.",
     "not-yet": "Not verified yet. Open the link in the email first.",
     "done": "Email verified."
@@ -360,6 +364,8 @@
       "row": "Remove your account and everything in it",
       "title": "Delete your account?",
       "body": "This deletes your account and all your sets, cards and labels. It can't be undone.",
+      "type": "Type DELETE to confirm",
+      "typeHint": "Type the word DELETE in capitals.",
       "password": "Password",
       "confirm": "Delete my account",
       "google": "Continue with Google",
@@ -374,7 +380,7 @@
   },
   "privacy": {
     "title": "Privacy policy",
-    "updated": "Last updated: 4 November 2026",
+    "updated": "Last updated: 6 November 2026",
     "intro": "FlashCards is made by Ankit Kumar Pandit. This policy explains what the app stores and what you can do about it.",
     "store": {
       "title": "What we store",
@@ -384,12 +390,13 @@
     },
     "use": {
       "title": "How it is used",
-      "body": "To sign you in and to show and save your sets. We don't use analytics, and we don't sell your data."
+      "body": "To sign you in, to show and save your sets, and to show ads (see Ads). We don't use analytics, and we don't sell your data."
     },
     "ads": {
       "title": "Ads",
-      "body": "FlashCards shows ads from Google AdSense at the bottom of some screens, never while you study. Google and its partners use cookies and device identifiers to show and measure these ads, and may personalise them. If you are in the EEA, the UK or Switzerland, you are asked for your consent first. You can turn off personalised ads at {settings}, and read how Google uses this data at {partners}.",
+      "body": "FlashCards shows ads from Google AdSense at the bottom of some screens, never while you study. Third-party vendors, including Google, use cookies to serve ads based on your prior visits to this app and other websites. Google's use of advertising cookies lets it and its partners serve ads to you based on those visits. Each ad request sends Google your IP address and information about your browser and device. If you are in the EEA, the UK or Switzerland, you are asked for your consent first. You can turn off personalised ads at {settings}, opt out of other vendors' cookies for personalised ads at {aboutads}, and read how Google uses this data at {partners}.",
       "settingsLink": "adssettings.google.com",
+      "aboutadsLink": "www.aboutads.info",
       "partnersLink": "policies.google.com/technologies/partner-sites"
     },
     "where": {
@@ -418,7 +425,7 @@
     },
     "app": {
       "title": "In the app",
-      "body": "Open your profile, choose Delete account, and confirm it's you."
+      "body": "Open your profile, choose Delete account, type DELETE, and confirm with your password or Google."
     },
     "signin": "Sign in to delete",
     "profile": "Go to profile",

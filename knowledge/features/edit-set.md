@@ -26,6 +26,8 @@ Undo). An options panel can move the set to the bin.
   (`src/utils/duplicateCards.ts`), because cards keep every field across saves.
 - Quicker entry: in the card text dialog, "Next: back side" (or Tab) moves from the front to the back, and "Save and
   add next" (Ctrl or Cmd+Enter) saves the card, inserts a new one after it and opens it.
+- Add card inserts the new card right after the focused card (at index 0 when the set is empty) and moves focus to it
+  (`addCard` in `src/views/Add.vue` calls `goTo` of `GroupCardFlash`).
   Whole-set backup is in [settings](settings-and-about.md).
 
 ## Screens and routes
@@ -52,6 +54,7 @@ Undo). An options panel can move the set to the bin.
 
 ## History
 
+- 2026-11-06: Add card put the new card at the end; now it goes right after the focused card and takes focus, because of the bug batch.
 - 2026-11-05: a save was refused while offline; now it counts as done once in the device cache, because of the offline-study plan. See [offline study](offline-study.md).
 - 2026-11-05: the options panel had no sharing or language rows; now it has Share set, Stop sharing and read-aloud languages, and card text is Markdown. See [sharing](sharing.md) and [rich cards](rich-cards.md).
 - 2026-11-05: the editor only added, edited and deleted cards; now it also imports, exports, reorders and duplicates, and enters cards faster, to fill a set quickly. See [the size decision](../decisions/set-size-limit-900000-bytes.md).

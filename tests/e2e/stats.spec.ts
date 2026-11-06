@@ -93,20 +93,44 @@ test.beforeEach(async ({ page }) => {
   await page.clock.setFixedTime(NOW);
 });
 
-test('a new account shows 0/20 today and no streak on Home', async ({ page }) => {
+test('a new account shows no daily goal and no streak on Home', async ({ page }) => {
   await page.goto('/home');
-  await expect(page.getByText('0/20 today')).toBeVisible();
+  await expect(page.getByText('Welcome to your flashcards library!')).toBeVisible();
+  await expect(page.getByText(/ today$/)).toHaveCount(0);
   await expect(page.getByText(/day streak/)).toHaveCount(0);
 });
 
+test('a set with cards shows 0/20 today on Home', async ({ page }) => {
+  await seedSet(page, email, 'Goal set', 2, 0);
+  await page.goto('/home');
+  await expect(page.getByText('0/20 today')).toBeVisible();
+});
+
 test('Home shows today and the streak from seeded stats', async ({ page }) => {
+  await seedSet(page, email, 'Goal set', 2, 0);
   await seedStats(page, email, { '2026-11-01': 2, '2026-11-02': 3 });
   await page.goto('/home');
   await expect(page.getByText('3/20 today')).toBeVisible();
   await expect(page.getByText('2-day streak')).toBeVisible();
 });
 
+test('with no cards the streak still shows but the daily goal does not', async ({ page }) => {
+  await seedStats(page, email, { '2026-11-01': 2, '2026-11-02': 3 });
+  await page.goto('/home');
+  await expect(page.getByText('2-day streak')).toBeVisible();
+  await expect(page.getByText(/ today$/)).toHaveCount(0);
+});
+
+test('a set moved to the bin takes the daily goal off Home', async ({ page }) => {
+  await seedSet(page, email, 'Binned set', 2, 0, true);
+  await seedStats(page, email, { '2026-11-02': 3 });
+  await page.goto('/home');
+  await expect(page.getByText('Welcome to your flashcards library!')).toBeVisible();
+  await expect(page.getByText(/ today$/)).toHaveCount(0);
+});
+
 test('a streak that ended yesterday still shows, with 0 done today', async ({ page }) => {
+  await seedSet(page, email, 'Goal set', 2, 0);
   await seedStats(page, email, { '2026-11-01': 2 });
   await page.goto('/home');
   await expect(page.getByText('0/20 today')).toBeVisible();
@@ -164,6 +188,7 @@ test('bar dates follow the app language', async ({ page }) => {
 });
 
 test('a second account on the same tab does not see the first one\'s counts', async ({ page }) => {
+  await seedSet(page, email, 'First set', 2, 0);
   await seedStats(page, email, { '2026-11-02': 3 });
   await page.goto('/home');
   await expect(page.getByText('3/20 today')).toBeVisible();
@@ -171,13 +196,15 @@ test('a second account on the same tab does not see the first one\'s counts', as
   await page.goto('/profile');
   await page.getByRole('button', { name: 'Sign out' }).click();
   await expect(page).toHaveURL(/\/login/);
-  await signUp(page);
+  const second = await signUp(page);
   await page.clock.setFixedTime(NOW);
+  await seedSet(page, second, 'Second set', 2, 0);
   await page.goto('/home');
   await expect(page.getByText('0/20 today')).toBeVisible();
 });
 
 test('the daily goal set in Settings shows on Home and survives a reload', async ({ page }) => {
+  await seedSet(page, email, 'Goal set', 2, 0);
   await page.goto('/settings');
   const select = page.locator('.v-select').filter({ has: page.getByLabel('Daily goal') });
   await select.locator('.v-field').click();

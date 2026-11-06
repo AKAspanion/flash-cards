@@ -28,10 +28,17 @@
         {{ secondsLeft > 0 ? `${t('verify.resend')} (${secondsLeft})` : t('verify.resend') }}
       </v-btn>
       <v-btn
+        v-if="onProfile"
         :loading="checking"
         @click="onCheck"
       >
         {{ t('verify.check') }}
+      </v-btn>
+      <v-btn
+        v-else
+        @click="onDismiss"
+      >
+        {{ t('verify.dismiss') }}
       </v-btn>
     </template>
   </v-banner>
@@ -43,6 +50,7 @@ import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useAccountStore } from '@/stores/account';
 import { useSessionStore } from '@/stores/session';
+import { isSnoozed, readDismissedAt, writeDismissedAt } from '@/utils/verifyBanner';
 
 // The wait between sends, as in splitify, so repeated presses don't run into Auth's rate limit.
 const RESEND_COOLDOWN_SECONDS = 60;
@@ -52,13 +60,33 @@ const route = useRoute();
 const session = useSessionStore();
 const account = useAccountStore();
 
+const onProfile = computed(() => route.name === 'profile');
+
+/** The user who pressed Dismiss in this visit: hidden for them at once, before (or without) the stored time. */
+const dismissedBy = ref<string | null>(null);
+
 /**
- * A reminder only: it gates nothing, and shows on signed-in screens until the email is verified. Full-height
- * screens (study, editor) opt out, since the banner's height would push their layout off the screen.
+ * Read again whenever the route or the user changes, so Home picks up a dismissal (or its end) on each visit.
+ * Each user has their own dismissal, so another account on this browser still sees its banner.
  */
-const shown = computed(
-  () => !!session.user && !session.user.emailVerified && !!route.meta.requireAuth && !route.meta.fullHeight,
-);
+const snoozedOnHome = computed(() => {
+  const uid = session.user?.uid;
+  if (!uid || route.name !== 'home') {
+    return false;
+  }
+  return dismissedBy.value === uid || isSnoozed(readDismissedAt(localStorage, uid), Date.now());
+});
+
+/**
+ * A reminder only: it gates nothing (decisions/email-verification-reminder-only). Until the email is verified it
+ * shows on /profile always, and on Home unless dismissed in the last 7 days; no other screen shows it.
+ */
+const shown = computed(() => {
+  if (!session.user || session.user.emailVerified) {
+    return false;
+  }
+  return onProfile.value || (route.name === 'home' && !snoozedOnHome.value);
+});
 
 const resending = ref(false);
 const checking = ref(false);
@@ -114,6 +142,23 @@ async function onCheck() {
   } finally {
     checking.value = false;
   }
+}
+
+/**
+ * Hides the banner at once, then quietly checks whether the email was verified meanwhile (in another tab, say). If
+ * it was, the store marks the user verified and the banner is gone everywhere; if not, or offline, or the check
+ * fails, Home waits 7 days before showing it again.
+ */
+async function onDismiss() {
+  const uid = session.user?.uid;
+  if (!uid) {
+    return;
+  }
+  dismissedBy.value = uid;
+  if (await account.checkVerifiedQuietly()) {
+    return;
+  }
+  writeDismissedAt(localStorage, uid, Date.now());
 }
 
 onBeforeUnmount(stopCooldown);
