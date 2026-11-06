@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { signUp } from './helpers';
+import { goOffline, signOut, signUp } from './helpers';
 import { DEV_PORTS } from '../../dev-ports';
 
 const AUTH = `http://127.0.0.1:${DEV_PORTS.auth}`;
@@ -119,7 +119,7 @@ test('offline, Dismiss hides the banner and stores the dismissal without an erro
   await signUp(page);
   await expect(verifyBanner(page)).toBeVisible();
 
-  await context.setOffline(true);
+  await goOffline(page);
   await verifyBanner(page).getByRole('button', { name: 'Dismiss' }).click();
   await expect(verifyBanner(page)).toHaveCount(0);
   await expect(page.getByText("You're offline. Connect to the internet to save.")).toHaveCount(0);
@@ -145,9 +145,7 @@ test("another user signing in on this browser still sees the banner after the fi
   await expect(verifyBanner(page)).toHaveCount(0);
   await expect.poll(async () => Object.keys(await storedDismissals(page)).length).toBe(1);
 
-  await page.goto('/profile');
-  await page.getByRole('button', { name: 'Sign out' }).click();
-  await expect(page).toHaveURL(/\/login/);
+  await signOut(page);
 
   await signUp(page);
   await expect(page.getByText(HOME_EMPTY)).toBeVisible();

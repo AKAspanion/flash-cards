@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Browser, type Page } from '@playwright/test';
-import { createSet, setCard, signUp } from './helpers';
+import { createSet, goOffline, setCard, signUp } from './helpers';
 import { DEV_PORTS } from '../../dev-ports';
 
 const DOCS = `http://127.0.0.1:${DEV_PORTS.firestore}/v1/projects/demo-flash-cards/databases/(default)/documents`;
@@ -122,7 +122,7 @@ test('saving a shared set updates its public copy, unsaved edits first', async (
 });
 
 test('offline, Share set is refused with the offline message', async ({ page, context }) => {
-  await context.setOffline(true);
+  await goOffline(page);
   await page.getByRole('button', { name: 'Options' }).first().click();
   await page.getByRole('button', { name: 'Share set' }).click();
   await expect(page.getByText("You're offline. Connect to the internet to save.")).toBeVisible();

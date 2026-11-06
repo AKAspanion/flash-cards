@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
-import { setCard, signUp } from './helpers';
+import { goOffline, setCard, signUp } from './helpers';
 import { DEV_PORTS } from '../../dev-ports';
 
 const AUTH = `http://127.0.0.1:${DEV_PORTS.auth}`;
@@ -227,7 +227,7 @@ test('offline, restore shows the offline message and backup still downloads', as
   await seedSet(page, email, 'Spanish');
   await page.goto('/settings');
   await expect(page.getByRole('button', { name: 'Back up all sets' })).toBeVisible();
-  await context.setOffline(true);
+  await goOffline(page);
 
   await page.getByRole('button', { name: 'Restore from backup' }).click();
   await expect(page.getByText("You're offline. Connect to the internet to save.")).toBeVisible();
