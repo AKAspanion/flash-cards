@@ -22,6 +22,7 @@ verified: human:panditankit1995@gmail.com
   motion on (`playwright.config.ts`).
 - Writing review e2e tests: wait for the card to show before pressing Space, wait for the flip animation to finish before clicking a rating (a click mid-flip lets Playwright's scroll-into-view move the slider), and leave `/due` on the last card through the summary's Back to home, since Done opens the summary.
 - Writing library e2e tests: Home's search toggle and field share the "Search" label, so use the textbox role; open the Vuetify order select by clicking `.settings__select .v-field`; set titles look uppercase only through CSS, so assert on the real text.
+- `tests/e2e/password-reset.spec.ts` reads reset codes from the Auth emulator's `oobCodes` endpoint and aborts `accounts:sendOobCode` to test a failed request.
 - E2E accounts exist only in the Auth emulator for one run; `tests/e2e/helpers.ts` holds their shared password and
   makes unique emails. That password and `.env.emulator` are test values, not secrets.
 - The emulators must be started from the branch being tested, because they load that checkout's `firestore.rules`:
@@ -58,6 +59,7 @@ verified: human:panditankit1995@gmail.com
 - `playwright.config.ts`
 - `package.json`
 - `tests/e2e/study-modes.spec.ts`
+- `tests/e2e/password-reset.spec.ts`
 - `tests/e2e/authoring.spec.ts`
 - `tests/e2e/quick-entry.spec.ts`
 - `tests/e2e/backup.spec.ts`

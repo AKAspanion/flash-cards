@@ -21,8 +21,24 @@ sign-up only. Asked for by the developer on 2026-11-03.
 - Errors are shown through the auth error mapping (`src/services/authErrors.ts`), in English and Hindi.
 - Covered by an e2e test against the Auth emulator.
 
+## How it is met
+
+- `sendPasswordReset` (`src/services/firebase.ts`) sends Firebase's reset email and resolves for an unknown or
+  disabled account, so the reply is the same. Its link opens Firebase's action page
+  ([decision](../decisions/password-reset-uses-firebase-action-page.md)).
+- The reset mode of `src/views/Login.vue` ([sign in](../features/sign-in.md)) asks for the address and shows one
+  snack for any address; `tests/e2e/password-reset.spec.ts` covers it against the Auth emulator.
+- Whether the reply is also the same on the wire depends on the Firebase project's Email Enumeration Protection:
+  [an open question](../questions/email-enumeration-protection.md).
+
+## History
+
+- 2026-11-05: the flow was only asked for; now it is built, because of the password reset plan.
+
 ## Sources
 
 - `src/views/Login.vue`
 - `src/services/firebase.ts`
 - `src/services/authErrors.ts`
+- `tests/unit/passwordReset.spec.ts`
+- `tests/e2e/password-reset.spec.ts`

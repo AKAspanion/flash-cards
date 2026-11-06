@@ -79,8 +79,8 @@ Until these exist, `deploy.yml` fails with a message naming what is missing.
 ### Domains
 
 Both addresses serve the same deploy. Each one the app is opened from must be listed in
-Firebase console > Authentication > Settings > **Authorized domains**, or Google sign-in fails there
-(email/password works everywhere). If you restrict the web API key by HTTP referrer, list both domains there too.
+Firebase console > Authentication > Settings > **Authorized domains**, or Google sign-in and the password reset
+link fail there (email/password sign-in works everywhere). If you restrict the web API key by HTTP referrer, list both domains there too.
 
 Google sign-in is a same-origin redirect: the auth domain is the host serving the app (`window.location.host`),
 so Google's handler (`/__/auth/handler`) is always on the page's own origin. `VUE_APP_AUTH_DOMAIN` is only the

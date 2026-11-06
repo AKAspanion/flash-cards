@@ -19,6 +19,17 @@ describe('authErrorMessage', () => {
     expect(authErrorMessage({ code: 'auth/requires-recent-login' }, t)).toBe('t:auth.error.recent-login');
   });
 
+  it('maps a missing email address to the same wording the form rule uses', () => {
+    expect(authErrorMessage({ code: 'auth/missing-email', message: 'Raw' }, t)).toBe('t:email.enter');
+  });
+
+  it.each(['auth/unauthorized-continue-uri', 'auth/invalid-continue-uri', 'auth/quota-exceeded'])(
+    'maps %s, a reset failure the user cannot fix, to translated text',
+    (code) => {
+      expect(authErrorMessage({ code, message: 'Raw' }, t)).toBe('t:auth.error.reset-unavailable');
+    },
+  );
+
   it('no longer maps a blocked popup', () => {
     expect(authErrorMessage({ code: 'auth/popup-blocked', message: 'Raw' }, t)).toBe('Raw');
   });
