@@ -108,6 +108,17 @@ describe('authRedirect for public routes', () => {
   });
 });
 
+describe('full-height screens', () => {
+  it('marks exactly the study screens and the editor, whose layouts size themselves against the viewport', () => {
+    const fullHeight = router
+      .getRoutes()
+      .filter((r) => r.meta.fullHeight)
+      .map((r) => r.name)
+      .sort();
+    expect(fullHeight).toEqual(['add', 'due', 'edit', 'view']);
+  });
+});
+
 describe('safeRedirect', () => {
   it('only accepts in-app paths', () => {
     expect(safeRedirect('/abc/view')).toBe('/abc/view');

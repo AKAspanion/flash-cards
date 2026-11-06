@@ -208,10 +208,11 @@ function goToApp() {
   return router.replace(safeRedirect(route.query.redirect));
 }
 
-async function run(action: () => Promise<unknown>, successMessage?: string) {
+/** Runs a sign-in step; `action` resolves to the snack to show on success, or nothing. */
+async function run(action: () => Promise<string | void>) {
   busy.value = true;
   try {
-    await action();
+    const successMessage = await action();
     if (successMessage) {
       session.showSnack(successMessage);
     }
@@ -254,11 +255,17 @@ async function onSubmit() {
   if (mode.value === 'reset') {
     void sendReset();
   } else if (mode.value === 'signIn') {
-    void run(() => signInWithEmail(email.value, password.value));
+    void run(async () => {
+      await signInWithEmail(email.value, password.value);
+    });
   } else if (password.value !== repassword.value) {
     session.showSnack(t('rule.password.match'));
   } else {
-    void run(() => signUpWithEmail(email.value, password.value), t('toast.success.sign-up'));
+    // A failed verification send still signs the user in; the banner's Resend covers it.
+    void run(async () => {
+      const { verificationSent } = await signUpWithEmail(email.value, password.value);
+      return t(verificationSent ? 'toast.success.sign-up-verify' : 'toast.success.sign-up');
+    });
   }
 }
 

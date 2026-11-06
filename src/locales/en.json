@@ -252,6 +252,7 @@
   "toast": {
     "success": {
       "sign-up": "Account created successfully!",
+      "sign-up-verify": "Account created. Check your inbox to verify your email.",
       "reset-sent": "If an account exists for that address, we've sent it a link to reset the password."
     },
     "error": {
@@ -313,6 +314,14 @@
       "recent-login": "Please confirm it's you again, then try once more.",
       "reset-unavailable": "Password reset isn't available right now. Please try again later."
     }
+  },
+  "verify": {
+    "banner": "Verify your email to keep your account safe.",
+    "resend": "Resend email",
+    "check": "I've verified",
+    "sent": "Sent. Check your inbox.",
+    "not-yet": "Not verified yet. Open the link in the email first.",
+    "done": "Email verified."
   },
   "card": {
     "example": {

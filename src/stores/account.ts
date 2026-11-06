@@ -8,7 +8,7 @@ import { useLibraryStore } from './library';
 import { useSessionStore } from './session';
 
 /**
- * Signing out and deleting the signed-in user's account. Actions show their own error and resolve to false,
+ * Signing out, deleting the signed-in user's account, and verifying its email. Actions show their own error and resolve to false,
  * so the dialog only moves on once a step has really succeeded. Every step needs the server,
  * so offline each one is refused with the offline-save message (spec 10.5).
  */
@@ -113,5 +113,67 @@ export const useAccountStore = defineStore('account', () => {
     return true;
   }
 
-  return { confirmWithPassword, confirmWithGoogle, deleteAccount, signOut };
+  /**
+   * True when the signed-in user is no longer `uid`: another user signed in (or the user signed out) while a call
+   * for `uid` ran, so its outcome belongs to someone else and must not reach this session.
+   */
+  function userChangedFrom(uid: string | undefined): boolean {
+    return session.user?.uid !== uid;
+  }
+
+  /**
+   * Resolves true once the email is sent; false after showing why (offline, rate limit, network). Resolves false
+   * silently when the signed-in user changed while it ran.
+   */
+  async function resendVerification(): Promise<boolean> {
+    if (refuseOffline()) {
+      return false;
+    }
+    const uid = session.user?.uid;
+    try {
+      await session.track(api.sendVerificationEmail());
+    } catch (err) {
+      if (!userChangedFrom(uid)) {
+        showAuthError(err);
+      }
+      return false;
+    }
+    if (userChangedFrom(uid)) {
+      return false;
+    }
+    session.showSnack(i18n.global.t('verify.sent'));
+    return true;
+  }
+
+  /**
+   * Resolves true, and sets session.user.emailVerified, once verified; false after showing why. Resolves false
+   * silently when the signed-in user changed while it ran, so one user's result never marks another verified.
+   */
+  async function checkVerified(): Promise<boolean> {
+    if (refuseOffline()) {
+      return false;
+    }
+    const uid = session.user?.uid;
+    let verified: boolean;
+    try {
+      verified = await session.track(api.reloadEmailVerified());
+    } catch (err) {
+      if (!userChangedFrom(uid)) {
+        showAuthError(err);
+      }
+      return false;
+    }
+    if (userChangedFrom(uid)) {
+      return false;
+    }
+    if (!verified) {
+      session.showSnack(i18n.global.t('verify.not-yet'));
+      return false;
+    }
+    session.patchUser({ emailVerified: true });
+    session.showSnack(i18n.global.t('verify.done'));
+    return true;
+  }
+
+  return { confirmWithPassword, confirmWithGoogle, deleteAccount, signOut, resendVerification, checkVerified };
 });

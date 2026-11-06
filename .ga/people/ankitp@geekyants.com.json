@@ -3,7 +3,8 @@
     "steps": {
       "spec": "suggest",
       "plan": "always",
-      "tdd": "encouraged"
+      "tdd": "encouraged",
+      "approve": "when-settled"
     }
   },
   "habitsOffered": "2026-11-03",

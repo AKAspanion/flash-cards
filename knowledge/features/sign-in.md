@@ -42,9 +42,14 @@ A visitor who is not signed in lands on `/login`. They can sign in with email an
   flight the mode links are disabled, so the mode can't change under it. Errors a user can't fix (the project's
   setup or sending quota) show `auth.error.reset-unavailable`; a missing email shows `email.enter`.
 - Emails are trimmed before they are sent to Firebase (`signInWithEmail`, `signUpWithEmail`).
+- Email sign-up sends a verification email (`signUpWithEmail`); a failed send never fails the sign-up and is logged by
+  error code only, since the error's data can carry the address. The success snack tells the user to check their
+  inbox, or says only that the account was created when the email didn't send. The reminder is
+  [email verification](email-verification.md).
 
 ## History
 
+- 2026-11-05: sign-up sent no email and the snack only said the account was created; now it sends a verification email and the snack says to check the inbox, because of the email-verification plan.
 - 2026-11-05: this concept said sign-in refuses offline with the offline-save snack, which `Login.vue` never did; corrected to say it shows Firebase's network error. Also gained the reset mode, because of the password reset plan.
 - 2026-11-05: sign-in had no offline rule and no shared-link return; now it is online-only and a signed-out Add to my library returns through it, because of the offline-study and sharing plans.
 - 2026-11-04: the email field always auto-focused; now only with a fine pointer, because a phone's keyboard hid the screen.
@@ -56,6 +61,7 @@ A visitor who is not signed in lands on `/login`. They can sign in with email an
 - `src/router/index.ts`
 - `src/services/firebase.ts`
 - `src/services/authErrors.ts`
+- `tests/unit/emailVerification.spec.ts`
 - `tests/unit/router.spec.ts`
 - `tests/unit/authErrors.spec.ts`
 - `tests/e2e/auth.spec.ts`

@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
+import type { User } from 'firebase/auth';
 
 vi.mock('@/services/firebase', () => ({ getRedirectOutcome: vi.fn() }));
 
-const { useSessionStore } = await import('@/stores/session');
+const { useSessionStore, toSessionUser } = await import('@/stores/session');
 const { PENDING_SNACK_KEY } = await import('@/utils/freshLoad');
 
 const OFFLINE_SAVED = "Saved on this device. It will sync when you're back online.";
@@ -68,5 +69,26 @@ describe('session store: a snack left by a fresh page load', () => {
 
   it('shows nothing when none was left', () => {
     expect(useSessionStore().snack.show).toBe(false);
+  });
+});
+
+describe('toSessionUser', () => {
+  function firebaseUser(emailVerified: boolean) {
+    return {
+      uid: 'u1',
+      email: 'a@b.test',
+      displayName: null,
+      photoURL: null,
+      emailVerified,
+      metadata: { creationTime: 'then', lastSignInTime: 'now' },
+    } as unknown as User;
+  }
+
+  it('carries a verified email across', () => {
+    expect(toSessionUser(firebaseUser(true)).emailVerified).toBe(true);
+  });
+
+  it('carries an unverified email across', () => {
+    expect(toSessionUser(firebaseUser(false)).emailVerified).toBe(false);
   });
 });

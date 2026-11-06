@@ -18,8 +18,13 @@ this repository.
 
 ## Tokens and sessions
 
-- Firebase's web SDK stores and refreshes the session itself; the app never handles tokens. Firestore calls carry
-  the user's ID token automatically, and [the rules](roles.md) check `request.auth.uid`.
+- Firebase's web SDK stores and refreshes the session itself; the app reads no token. Firestore calls carry
+  the user's ID token automatically, and [the rules](roles.md) check `request.auth.uid`. The one token call is
+  `reloadEmailVerified`, which forces a refresh (`getIdToken(true)`) once the user is verified, best effort: a failed
+  refresh is logged by code only and the user still counts as verified.
+- Email verification is a reminder only ([feature](../features/email-verification.md)): no Firestore rule, route or
+  function reads `emailVerified`. Checking or resending for a user who was switched out mid-call is ignored
+  (`checkVerified`, `resendVerification` in `src/stores/account.ts`).
 - `router.beforeEach` (`src/router/index.ts`) waits for the saved session to be restored (`getAuthUser`, which awaits
   `authStateReady`) before every navigation, then applies `authRedirect`: a route with `meta.requireAuth` sends a
   signed-out user to `/login?redirect=<path>`, and `/login` sends a signed-in user on.
@@ -42,6 +47,7 @@ this repository.
 
 ## History
 
+- 2026-11-05: the app never handled tokens and verification didn't exist; now one best-effort token refresh follows a verified reload, and verification is a reminder that gates nothing, because of the email-verification plan.
 - 2026-11-05: there was no password reset; now `sendPasswordReset` sends one with the same reply for every address, because of the password reset plan. See [the decision](../decisions/password-reset-uses-firebase-action-page.md).
 - 2026-11-05: sign-out ended at once and left the cache; now it waits for unsynced writes (15 s at most), clears the device cache and stays signed in past the deadline, and `/s/:shareId` is a third public route, because of the offline-study and sharing plans.
 - 2026-11-04: Google sign-in used a popup and every route but `/login` needed sign-in; now a redirect on the app's own host, with two public routes. See [the decision](../decisions/google-sign-in-redirect.md).
@@ -51,6 +57,7 @@ this repository.
 - `src/services/firebase.ts`
 - `src/router/index.ts`
 - `src/stores/session.ts`
+- `src/stores/account.ts`
 - `src/services/authDomain.ts`
 - `src/main.ts`
 - `tests/unit/router.spec.ts`

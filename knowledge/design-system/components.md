@@ -24,6 +24,9 @@ All in `src/components/`, built on Vuetify components:
 - `OptionPanel`: a draggable bottom panel for options, with `toggle` exposed; closes on an outside tap. It stops below
   the top bar and its body scrolls when the content doesn't fit, so a long list of options can't cover the top bar's
   Options button.
+- `BannerVerifyEmail`: the top-of-screen verify-email reminder, mounted once in `App.vue`
+  ([email verification](../features/email-verification.md)). Its buttons are uncoloured on purpose: brand-pink text
+  on the surface misses AA contrast, so only its icon takes the brand colour.
 - `DialogShare`: the editor's Share set dialog, showing the public link to copy and a Stop sharing action
   ([sharing](../features/sharing.md)).
 - `CardFlash` shows card text through `renderCardText` (Markdown), its text dialog has Insert image, and a read aloud
@@ -33,6 +36,7 @@ All in `src/components/`, built on Vuetify components:
 
 ## History
 
+- 2026-11-05: no verify-email reminder existed; now `BannerVerifyEmail` is mounted in `App.vue`, because of the email-verification plan.
 - 2026-11-05: OptionPanel had a fixed height and no sharing dialog existed; now its body scrolls and `DialogShare` exists, and CardFlash renders Markdown with Insert image and read aloud, because of the sharing and rich-cards plans.
 - 2026-11-05: CardFlash flipping un-learned a learned card and had no rating; now it has a `rating` prop, a `rate` emit and `rate()`, and GroupCardFlash has `rating`, `rate`, `rateFocused()` and a unique list key per occurrence (an Again card is queued twice), for [spaced repetition](../features/spaced-repetition.md).
 - 2026-11-05: CardFlash and GroupCardFlash were driven only by touch and scroll; now CardFlash takes `reverse` and exposes `flip()`, and GroupCardFlash exposes `next`, `prev`, `goTo`, `flipFocused`, because study-mode shortcuts need them.
@@ -43,6 +47,7 @@ All in `src/components/`, built on Vuetify components:
 
 - `src/components/BarTop.vue`
 - `src/components/BarNav.vue`
+- `src/components/BannerVerifyEmail.vue`
 - `src/components/BtnAction.vue`
 - `src/components/CardFlashSet.vue`
 - `src/components/ShimmerCardFlashSet.vue`

@@ -23,6 +23,7 @@ export function toSessionUser(user: User): SessionUser {
     photoURL: user.photoURL ?? '',
     creationTime: user.metadata.creationTime ?? '',
     lastSignInTime: user.metadata.lastSignInTime ?? '',
+    emailVerified: user.emailVerified,
   };
 }
 

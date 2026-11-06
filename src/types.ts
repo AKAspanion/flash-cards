@@ -57,6 +57,8 @@ export interface SessionUser {
   photoURL: string;
   creationTime: string;
   lastSignInTime: string;
+  /** False until the user opens the link in Firebase's verification email; Google accounts arrive verified. */
+  emailVerified: boolean;
 }
 
 export type SetOrder = 'Alphabetically' | 'New first' | 'Old first' | 'Progress' | 'Recently studied';

@@ -10,6 +10,7 @@ import {
   onAuthStateChanged,
   reauthenticateWithCredential,
   reauthenticateWithRedirect,
+  sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithRedirect,
@@ -105,12 +106,16 @@ function getServices() {
   return services;
 }
 
-function requireUid(): string {
+function requireUser(): User {
   const user = getServices().auth.currentUser;
   if (!user) {
     throw new Error('You are signed out. Please log in again.');
   }
-  return user.uid;
+  return user;
+}
+
+function requireUid(): string {
+  return requireUser().uid;
 }
 
 // ---- Auth ----
@@ -131,8 +136,44 @@ export function signInWithEmail(email: string, password: string) {
   return signInWithEmailAndPassword(getServices().auth, email.trim(), password);
 }
 
-export function signUpWithEmail(email: string, password: string) {
-  return createUserWithEmailAndPassword(getServices().auth, email.trim(), password);
+/** Creates the account, then tries to send the verification email; a failed send is logged, not thrown. */
+export async function signUpWithEmail(email: string, password: string): Promise<{ verificationSent: boolean }> {
+  const { user } = await createUserWithEmailAndPassword(getServices().auth, email.trim(), password);
+  // The account exists and the user is signed in either way; the verify banner's Resend covers a failed send.
+  try {
+    await sendEmailVerification(user);
+    return { verificationSent: true };
+  } catch (err) {
+    // The cause class only: the error's custom data can carry the address.
+    console.error('Verification email not sent:', (err as { code?: string })?.code ?? (err as Error)?.name);
+    return { verificationSent: false };
+  }
+}
+
+/** Sends the verification email to the signed-in user. Rejects when nobody is signed in. */
+export async function sendVerificationEmail(): Promise<void> {
+  await sendEmailVerification(requireUser());
+}
+
+/**
+ * Reloads the signed-in user and, once verified, refreshes their ID token. Resolves true once the reload says
+ * verified, even when the refresh fails: Firebase already counts the user verified, so the app must too.
+ */
+export async function reloadEmailVerified(): Promise<boolean> {
+  const user = requireUser();
+  await user.reload();
+  if (!user.emailVerified) {
+    return false;
+  }
+  // A fresh token carries email_verified: true, so anything reading the claim sees it now, not in an hour.
+  // Best effort: nothing reads the claim today, and the token refreshes itself within the hour anyway.
+  try {
+    await user.getIdToken(true);
+  } catch (err) {
+    // The cause class only: the error's custom data can carry the address.
+    console.error('ID token not refreshed after verification:', (err as { code?: string })?.code ?? (err as Error)?.name);
+  }
+  return true;
 }
 
 /**

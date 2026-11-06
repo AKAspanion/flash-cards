@@ -98,6 +98,22 @@ async function storedSets(page: Page, email: string): Promise<StoredSet[]> {
     });
 }
 
+/** Reads the person's label names from the emulator itself, so a check sees what reached the server. */
+async function storedLabels(page: Page, email: string): Promise<string[]> {
+  const uid = await uidFor(page, email);
+  const response = await page.request.post(`${DOCS}:runQuery`, {
+    headers: OWNER,
+    data: {
+      structuredQuery: {
+        from: [{ collectionId: 'labels' }],
+        where: { fieldFilter: { field: { fieldPath: 'uid' }, op: 'EQUAL', value: { stringValue: uid } } },
+      },
+    },
+  });
+  const rows = (await response.json()) as { document?: { fields: { label: { stringValue: string } } } }[];
+  return rows.flatMap((r) => (r.document ? [r.document.fields.label.stringValue] : []));
+}
+
 /** Moves inside the loaded app the way the router does on browser back/forward: no page load. */
 async function goInApp(page: Page, path: string) {
   await page.evaluate((to) => {
@@ -310,7 +326,10 @@ test('offline, a label created on Profile is kept after reconnecting', async ({ 
   await page.keyboard.press('Enter');
   await expect(page.locator('.v-chip', { hasText: 'Verbs' })).toBeVisible();
 
+  // Firestore saves the queued write to IndexedDB a moment after the chip shows, so a reload at
+  // once can lose it: wait for the label to reach the server first, as the other reconnect tests do.
   await context.setOffline(false);
+  await expect.poll(() => storedLabels(page, email)).toEqual(['Verbs']);
   await page.reload();
   await expect(page.locator('.v-chip', { hasText: 'Verbs' })).toBeVisible();
 });
