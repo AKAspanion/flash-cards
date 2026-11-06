@@ -32,7 +32,7 @@ A visitor who is not signed in lands on `/login`. They can sign in with email an
 - Google sign-in is a redirect: see [Google sign-in uses a same-origin redirect](../decisions/google-sign-in-redirect.md).
 - The email field auto-focuses only when `(pointer: coarse)` doesn't match: a touch keyboard opening over the screen hides it.
 - Signing in and signing up need the device online ([offline study](offline-study.md)), but `Login.vue` has no
-  offline check: offline, the user sees Firebase's network error through `authErrorMessage`, not the offline-save
+  offline check: offline, `authErrorMessage` maps the network error (or shows `auth.error.generic` if unmapped), not the offline-save
   snack. A visitor who pressed Add to my library on a shared link while signed out
   comes back through `/login?redirect=/s/<id>` and the copy finishes once ([sharing](sharing.md)).
 - A third mode, reset, opens from "Forgot password?" and sends a reset link ([requirement](../requirements/password-reset.md),
@@ -54,6 +54,7 @@ A visitor who is not signed in lands on `/login`. They can sign in with email an
 
 ## History
 
+- 2026-11-06: an unmapped auth error showed Firebase's own message; now `auth.error.generic`, because the friendly-error-messages plan hid technical wording.
 - 2026-11-06: a refused continue link made the reset email fail; now it is sent again without the link, because of the password reset continue-fallback plan.
 - 2026-11-05: sign-up sent no email and the snack only said the account was created; now it sends a verification email and the snack says to check the inbox, because of the email-verification plan.
 - 2026-11-05: this concept said sign-in refuses offline with the offline-save snack, which `Login.vue` never did; corrected to say it shows Firebase's network error. Also gained the reset mode, because of the password reset plan.

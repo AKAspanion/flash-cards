@@ -25,9 +25,11 @@ through `showAuthError`.
 
 ## Status
 
-Open. Log the error's `code` (or name) only, as `signUpWithEmail` does.
+Open. `authErrorMessage` (`src/services/authErrors.ts`) now logs only `code ?? name`, so that path is fixed, but `showAuthError` in `src/stores/account.ts` still logs the whole error, and so does `session.showError` (`src/stores/session.ts`; no caller passes personal data today). An unmapped account error is also logged twice, once by each. Log the code only in both.
 
 ## Sources
 
 - `src/stores/account.ts`
 - `src/services/firebase.ts`
+- `src/services/authErrors.ts`
+- `src/stores/session.ts`

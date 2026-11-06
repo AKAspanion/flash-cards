@@ -87,10 +87,13 @@ export const useSessionStore = defineStore('session', () => {
     }
   }
 
+  /**
+   * Logs `err` to the console and shows the text of `fallbackKey`, the i18n key of the message the
+   * user sees. The error's own message (Firebase's technical text) never reaches the snack.
+   */
   function showError(err: unknown, fallbackKey = 'toast.error.generic') {
     console.error(err);
-    const message = (err as Error)?.message;
-    showSnack(message || i18n.global.t(fallbackKey));
+    showSnack(i18n.global.t(fallbackKey));
   }
 
   /** True once this offline period has shown the offline-saved snack; going online clears it. */

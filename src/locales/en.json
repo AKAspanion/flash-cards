@@ -263,6 +263,7 @@
       "stats": "Couldn't update your stats. Your progress is saved.",
       "generic": "Something went wrong. Please try again.",
       "load": "Error getting your flashcards. Please try later!",
+      "stats-load": "Couldn't load your stats. Please try again.",
       "save": "Could not save. Please try again.",
       "delete": "Could not delete. Please try again.",
       "name": {
@@ -372,6 +373,9 @@
       "confirmed": "You're confirmed. Delete your account now?",
       "done": "Your account has been deleted.",
       "error": "Couldn't delete your account. Please try again."
+    },
+    "signout": {
+      "cache-left": "You're signed out, but your sets may still be stored on this device."
     }
   },
   "links": {

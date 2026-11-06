@@ -225,8 +225,10 @@ test('a refused goal save keeps the old goal and shows the save error', async ({
   await expect(select).toContainText('20');
   await select.locator('.v-field').click();
   await page.getByRole('option', { name: '100' }).click();
-  // Save errors show the Firebase error's own message; the locale text is only the fallback.
-  await expect(page.locator('.v-snackbar')).toContainText(/PERMISSION_DENIED/);
+  // A save error shows the app's own message; Firebase's text goes only to the console.
+  const snack = page.locator('.v-snackbar');
+  await expect(snack).toContainText('Could not save. Please try again.');
+  await expect(snack).not.toContainText('PERMISSION_DENIED');
   await expect(select).toContainText('20');
 });
 

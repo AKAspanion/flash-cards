@@ -156,7 +156,8 @@ export const useLibraryStore = defineStore('library', () => {
       try {
         await api.clearShareId(set);
       } catch (clearErr) {
-        session.showError(clearErr, 'toast.error.save');
+        // The set itself saved: only the link's state failed.
+        reportSyncFailure(clearErr);
       }
     });
   }

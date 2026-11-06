@@ -1,4 +1,4 @@
-// Maps Firebase Auth error codes to i18n keys; anything unknown falls back to the raw message.
+// Maps Firebase Auth error codes to i18n keys; anything unknown shows `auth.error.generic`, never Firebase's message.
 const AUTH_ERROR_KEYS: Record<string, string> = {
   'auth/invalid-credential': 'auth.error.invalid-credential',
   'auth/wrong-password': 'auth.error.invalid-credential',
@@ -28,8 +28,11 @@ export function isAuthCancel(err: unknown): boolean {
 
 export function authErrorMessage(err: unknown, t: (key: string) => string): string {
   const code = (err as { code?: string })?.code;
-  if (code && AUTH_ERROR_KEYS[code]) {
+  if (typeof code === 'string' && Object.hasOwn(AUTH_ERROR_KEYS, code)) {
     return t(AUTH_ERROR_KEYS[code]);
   }
-  return (err as Error)?.message || t('auth.error.generic');
+  // Its own message never reaches the user, so the console is the only place the cause shows. Only the code is
+  // logged: an IdP error's customData carries the user's address and the OAuth token response.
+  console.error('Unmapped auth error:', code ?? (err as { name?: string })?.name);
+  return t('auth.error.generic');
 }

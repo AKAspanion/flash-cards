@@ -29,10 +29,11 @@ reviewed); Settings has a Daily goal select with the values in `DAILY_GOALS` (`s
 - Streak maths is pure, in `src/utils/streaks.ts`: a streak is consecutive days with at least one review, and ending
   yesterday still counts, so a streak isn't lost before the user has studied today.
 - Stats writes follow the library's save rule: awaited online, counted as done offline once they are in the device
-  cache ([offline study](offline-study.md)). A failed stats write shows `toast.error.stats`.
+  cache ([offline study](offline-study.md)). A failed stats write shows `toast.error.stats`, and a failed load `toast.error.stats-load`.
 
 ## History
 
+- 2026-11-06: a failed stats load showed the generic error; now `toast.error.stats-load`, because the friendly-error-messages plan gave each action its own wording.
 - 2026-11-06: Home always showed today's count; now it hides it when no set outside the bin holds a card, because the goal means nothing without cards.
 
 ## Screens and routes
