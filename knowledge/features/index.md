@@ -9,7 +9,7 @@
 - [Email verification reminder](email-verification.md) - Email sign-up sends a verification email, and a banner on signed-in screens reminds unverified users with Resend email and I've verified actions; it gates nothing.
 - [Library (home)](library.md) - The home screen listing the user's sets, with search, label and favourite filters, the saved sort order, swipe gestures, and move to bin with undo.
 - [Offline study](offline-study.md) - Firestore keeps a persistent IndexedDB cache, so sets open and saves work offline and sync later; a few actions stay online-only, and sign-out clears the cache within a bounded time.
-- [Privacy policy and delete-account pages](privacy-and-deletion-pages.md) - Two public pages, /privacy and /delete-account, that Google Play's listing points at; anyone can open them without signing in.
+- [Privacy policy, terms and delete-account pages](privacy-and-deletion-pages.md) - Three public pages, /privacy, /terms and /delete-account, that anyone can open without signing in; Google Play's listing points at the privacy and deletion pages.
 - [Profile and labels](profile-and-labels.md) - The profile screen — display name and photo URL, account dates, sign out — which is also where labels are created and renamed.
 - [Progress and habits](progress-habits.md) - Reviews are counted per day in the user's user-stats document; Home shows the streak and today's count, /stats shows the history, and Settings sets a daily goal of 10, 20, 50 or 100.
 - [Rich cards and read aloud](rich-cards.md) - Card text is Markdown, shown only through renderCardText; the editor can insert an image; the review screen and /due read a card aloud (R), with a language per side stored on the set.

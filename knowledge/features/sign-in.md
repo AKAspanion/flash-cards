@@ -17,8 +17,8 @@ A visitor who is not signed in lands on `/login`. They can sign in with email an
 ## Screens and routes
 
 - `/login`: `src/views/Login.vue`. It is the only route that is neither `meta.requireAuth` nor `meta.public`; a signed-in
-  user who opens it is sent on by `authRedirect` in `src/router/index.ts`. It links to the public
-  [privacy and deletion pages](privacy-and-deletion-pages.md).
+  user who opens it is sent on by `authRedirect` in `src/router/index.ts`. Its footer links to the public privacy
+  policy and terms ([privacy, terms and deletion pages](privacy-and-deletion-pages.md)).
 
 ## Rules
 
@@ -51,9 +51,13 @@ A visitor who is not signed in lands on `/login`. They can sign in with email an
   error code only, since the error's data can carry the address. The success snack tells the user to check their
   inbox, or says only that the account was created when the email didn't send. The reminder is
   [email verification](email-verification.md).
+- In sign-up mode only, a line under the submit button (`login.agree`) says signing up means agreeing to the Terms of
+  service and the Privacy policy, both linked. There is no checkbox, so sign-up stays one step
+  ([what the terms say](../decisions/terms-of-service-content.md)).
 
 ## History
 
+- 2026-11-18: sign-up showed no terms; now a line under its button says signing up agrees to the Terms of service and Privacy policy, because the app gained terms. See [what the terms say](../decisions/terms-of-service-content.md).
 - 2026-11-06: an unmapped auth error showed Firebase's own message; now `auth.error.generic`, because the friendly-error-messages plan hid technical wording.
 - 2026-11-06: a refused continue link made the reset email fail; now it is sent again without the link, because of the password reset continue-fallback plan.
 - 2026-11-05: sign-up sent no email and the snack only said the account was created; now it sends a verification email and the snack says to check the inbox, because of the email-verification plan.

@@ -13,7 +13,7 @@ vi.mock('@/services/firebase', () => api);
 const fresh = vi.hoisted(() => ({ loadFresh: vi.fn(), takePendingSnack: vi.fn(() => null) }));
 vi.mock('@/utils/freshLoad', () => fresh);
 
-const { default: router, authRedirect, safeRedirect } = await import('@/router');
+const { default: router, authRedirect, safeRedirect, routes } = await import('@/router');
 const { useStatsStore } = await import('@/stores/stats');
 const { useLibraryStore } = await import('@/stores/library');
 const { useSessionStore } = await import('@/stores/session');
@@ -81,6 +81,21 @@ describe('authRedirect for public routes', () => {
     expect(authRedirect(route('/privacy', undefined, {}, true), false)).toBe(true);
     expect(authRedirect(route('/privacy', undefined, {}, true), true)).toBe(true);
     expect(authRedirect(route('/privacy', undefined, { redirect: '/bin' }, true), true)).toBe(true);
+  });
+
+  it('lets signed-out and signed-in users read the terms, even with a redirect query', () => {
+    const terms = routes.find((r) => r.path === '/terms');
+    const to = (query: Record<string, unknown> = {}) => ({ fullPath: '/terms', meta: terms?.meta ?? {}, query });
+    expect(authRedirect(to(), false)).toBe(true);
+    expect(authRedirect(to(), true)).toBe(true);
+    expect(authRedirect(to({ redirect: '/bin' }), true)).toBe(true);
+  });
+
+  it('marks /terms as public, not protected', () => {
+    const terms = routes.find((r) => r.path === '/terms');
+    expect(terms?.name).toBe('terms');
+    expect(terms?.meta?.public).toBe(true);
+    expect(terms?.meta?.requireAuth).toBeUndefined();
   });
 
   it('lets anyone open a shared-set link, even with a redirect query', () => {

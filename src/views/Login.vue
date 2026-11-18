@@ -74,6 +74,26 @@
           </v-btn>
         </v-form>
       </v-card>
+      <!-- No checkbox: signing up is the agreement, so sign-up stays one step (decision terms-of-service-content). -->
+      <i18n-t
+        v-if="mode === 'signUp'"
+        keypath="login.agree"
+        tag="p"
+        class="text-body-small pt-4"
+      >
+        <template #terms>
+          <router-link
+            class="login__link"
+            to="/terms"
+          >{{ t('links.terms') }}</router-link>
+        </template>
+        <template #privacy>
+          <router-link
+            class="login__link"
+            to="/privacy"
+          >{{ t('links.privacy') }}</router-link>
+        </template>
+      </i18n-t>
       <div
         v-if="mode === 'signIn'"
         class="text-body-small pt-4"
@@ -135,6 +155,12 @@
           to="/privacy"
         >
           {{ t('links.privacy') }}
+        </router-link>
+        <router-link
+          class="login__link"
+          to="/terms"
+        >
+          {{ t('links.terms') }}
         </router-link>
       </div>
     </div>

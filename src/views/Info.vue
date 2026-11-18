@@ -96,6 +96,17 @@
           </div>
         </div>
         <div class="info__row">
+          <v-icon>mdi-file-document-outline</v-icon>
+          <div class="info__text">
+            <router-link
+              class="text-title-small info__link"
+              to="/terms"
+            >
+              {{ t('links.terms') }}
+            </router-link>
+          </div>
+        </div>
+        <div class="info__row">
           <v-icon>mdi-account-remove-outline</v-icon>
           <div class="info__text">
             <router-link

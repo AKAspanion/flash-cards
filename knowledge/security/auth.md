@@ -29,7 +29,7 @@ this repository.
   `authStateReady`) before every navigation, then applies `authRedirect`: a route with `meta.requireAuth` sends a
   signed-out user to `/login?redirect=<path>`, and `/login` sends a signed-in user on.
 - Every route except `/login` has `meta.requireAuth`, apart from the routes with `meta.public` (`/privacy`,
-  `/delete-account`, `/s/:shareId`), which anyone can open (the `routes` array in the same file). The guard only hides
+  `/terms`, `/delete-account`, `/s/:shareId`), which anyone can open (the `routes` array in the same file). The guard only hides
   screens; the data is protected by the Firestore rules.
 - `watchAuthChanges` reacts to sign-in or sign-out outside navigation (another tab, a revoked token): it swaps the
   loaded library and moves to `/login` or `/home`; a tab that sees the user signed out elsewhere loads `/login` as a
@@ -56,6 +56,7 @@ this repository.
 
 ## History
 
+- 2026-11-18: three public routes besides login; now `/terms` is public too, because the app gained terms of service. See [what the terms say](../decisions/terms-of-service-content.md).
 - 2026-11-06: a continue link Firebase refused failed the reset email; now both auth emails are sent again without it, silently, because of the password reset continue-fallback plan.
 - 2026-11-06: auth emails were sent in Firebase's default language; now `languageCode` follows `prefs.lang`, because the verification-email plan asked for emails in the app's language.
 - 2026-11-05: the app never handled tokens and verification didn't exist; now one best-effort token refresh follows a verified reload, and verification is a reminder that gates nothing, because of the email-verification plan.
