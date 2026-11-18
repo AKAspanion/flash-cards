@@ -7,3 +7,10 @@ overrides:
 allowBuilds:
   '@firebase/util': false
   protobufjs: false
+
+# picomatch ReDoS (high) has no fixed version: picomatch@4.0.7 is the latest and affected. It comes only through
+# vue-router's build-time file-routing plugin, which this app doesn't use, and none of it reaches the built app.
+# Remove this entry once picomatch ships a fix. See knowledge/decisions/audit-ignores-picomatch-redos.md.
+auditConfig:
+  ignoreGhsas:
+    - GHSA-fc5q-39xc-vjpf
