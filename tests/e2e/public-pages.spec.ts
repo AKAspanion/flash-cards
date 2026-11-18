@@ -69,10 +69,67 @@ test('delete-account explains the email route', async ({ page }) => {
   await expect(page.locator(`a[href="${MAILTO}"]`)).toBeVisible();
 });
 
-test('the login screen links only to the privacy policy', async ({ page }) => {
+test('a signed-out visitor can read the terms of service', async ({ page }) => {
+  await page.goto('/terms');
+  await expect(page).toHaveURL(/\/terms$/);
+  await expect(page.getByRole('heading', { name: 'Terms of service' })).toBeVisible();
+  await expect(page.getByText('Last updated: 17 November 2026')).toBeVisible();
+  for (const title of [
+    'Who can use it',
+    'Your sets',
+    'Sharing',
+    "What's not allowed",
+    'If the terms are broken',
+    'No warranty',
+    'Governing law',
+    'Contact',
+  ]) {
+    await expect(page.getByText(title, { exact: true })).toBeVisible();
+  }
+  await expect(page.getByText('the laws of India')).toBeVisible();
+  await expect(page.locator(`a[href="${MAILTO}"]`)).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Privacy policy' })).toHaveAttribute('href', '/privacy');
+  await page.getByRole('button', { name: 'Back' }).click();
+  await expect(page).toHaveURL(/\/login/);
+});
+
+test('a signed-in user stays on the terms and goes back home', async ({ page }) => {
+  await signUp(page);
+  await page.goto('/terms');
+  await expect(page).toHaveURL(/\/terms$/);
+  await expect(page.getByRole('heading', { name: 'Terms of service' })).toBeVisible();
+  await page.getByRole('button', { name: 'Back' }).click();
+  await expect(page).toHaveURL(/\/home$/);
+});
+
+test('the login screen links to the privacy policy and the terms', async ({ page }) => {
   await page.goto('/login');
   await expect(page.getByRole('link', { name: 'Privacy policy' })).toHaveAttribute('href', '/privacy');
+  await expect(page.getByRole('link', { name: 'Terms of service' })).toHaveAttribute('href', '/terms');
+  await expect(page.getByText('By signing up you agree')).toHaveCount(0);
   await expect(page.getByRole('link', { name: 'Delete account' })).toHaveCount(0);
+});
+
+test('sign-up says that signing up agrees to the terms and the privacy policy', async ({ page }) => {
+  await page.goto('/login');
+  await page.getByRole('button', { name: 'Sign up' }).click();
+  const agree = page.getByText('By signing up you agree to the Terms of service and Privacy policy.');
+  await expect(agree).toBeVisible();
+  await expect(agree.getByRole('link', { name: 'Terms of service' })).toHaveAttribute('href', '/terms');
+  await expect(agree.getByRole('link', { name: 'Privacy policy' })).toHaveAttribute('href', '/privacy');
+  await expect(page.getByRole('checkbox')).toHaveCount(0);
+});
+
+test('password reset shows no agree line', async ({ page }) => {
+  await page.goto('/login');
+  await page.getByRole('button', { name: 'Forgot password?' }).click();
+  await expect(page.getByRole('button', { name: 'Send reset link' })).toBeVisible();
+  await expect(page.getByText('By signing up you agree')).toHaveCount(0);
+});
+
+test('the privacy policy links to the terms', async ({ page }) => {
+  await page.goto('/privacy');
+  await expect(page.getByRole('link', { name: 'Terms of service' })).toHaveAttribute('href', '/terms');
 });
 
 test('the login email field takes focus only with a fine pointer', async ({ page }, testInfo) => {
@@ -86,9 +143,10 @@ test('the login email field takes focus only with a fine pointer', async ({ page
   }
 });
 
-test('the info screen links to both pages', async ({ page }) => {
+test('the info screen links to the three public pages', async ({ page }) => {
   await signUp(page);
   await page.goto('/info');
   await expect(page.getByRole('link', { name: 'Privacy policy' })).toHaveAttribute('href', '/privacy');
+  await expect(page.getByRole('link', { name: 'Terms of service' })).toHaveAttribute('href', '/terms');
   await expect(page.getByRole('link', { name: 'Delete account' })).toHaveAttribute('href', '/delete-account');
 });

@@ -1,7 +1,7 @@
 ---
 type: Application
 title: flash-cards web app
-description: The Vue 3 + Vuetify PWA at the repository root, built by Vite and served by Firebase Hosting; every screen except login and the two public pages needs a signed-in user.
+description: The Vue 3 + Vuetify PWA at the repository root, built by Vite and served by Firebase Hosting; every screen except login, the public policy pages and shared links needs a signed-in user.
 generated: { by: claude-code/claude-opus-5-5, at: 2026-11-02T19:12:23Z }
 verified: human:panditankit1995@gmail.com
 ---
@@ -31,7 +31,7 @@ Vue 3, Vuetify, Pinia, Vue Router, vue-i18n and the Firebase web SDK, in TypeScr
 ## Screens and routes
 
 The routes are the `routes` array in `src/router/index.ts`; each loads a view from `src/views/` lazily. Every route
-has `meta.requireAuth` except `/login` and the routes with `meta.public` (`/privacy`, `/delete-account`, `/s/:shareId`), which are open to everyone; unknown paths redirect to `/home`. The guard is described in
+has `meta.requireAuth` except `/login` and the routes with `meta.public` (`/privacy`, `/terms`, `/delete-account`, `/s/:shareId`), which are open to everyone; unknown paths redirect to `/home`. The guard is described in
 [auth](../security/auth.md). Each screen is a feature:
 
 - `/home`: [library](../features/library.md)
@@ -44,7 +44,7 @@ has `meta.requireAuth` except `/login` and the routes with `meta.public` (`/priv
 - `/profile`: [profile and labels](../features/profile-and-labels.md)
 - `/settings`, `/info`: [settings and about](../features/settings-and-about.md)
 - `/login`: [sign-in](../features/sign-in.md)
-- `/privacy`, `/delete-account`: [privacy and deletion pages](../features/privacy-and-deletion-pages.md)
+- `/privacy`, `/terms`, `/delete-account`: [privacy, terms and deletion pages](../features/privacy-and-deletion-pages.md)
 - `/profile` also hosts [account deletion](../features/account-deletion.md)
 
 ## Also built from this repository
@@ -60,6 +60,7 @@ has `meta.requireAuth` except `/login` and the routes with `meta.public` (`/priv
 
 ## History
 
+- 2026-11-18: three public routes; now `/terms` is public too, because the app needed terms of service. See [what the terms say](../decisions/terms-of-service-content.md).
 - 2026-11-05: two public routes; now `/s/:shareId` is public too, `/stats` exists, and the app uses `markdown-it` and `dompurify`, because of the sharing, progress-habits and rich-cards plans.
 - 2026-11-04: no outside services beyond Firebase; now Google AdSense shows one banner on Home and Info. See [one AdSense banner](../decisions/adsense-banner-ads.md).
 - 2026-11-04: a small `img.boot-logo` showed until Vue mounted; now `#boot-splash` shows until the first route is ready, then fades, because the launch showed five different screens. See [the decision](../decisions/splash-held-until-ready.md).

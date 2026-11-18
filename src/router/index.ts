@@ -30,6 +30,7 @@ export const routes: RouteRecordRaw[] = [
   { path: '/settings', name: 'settings', component: () => import('@/views/Settings.vue'), meta: { requireAuth: true } },
   { path: '/stats', name: 'stats', component: () => import('@/views/Stats.vue'), meta: { requireAuth: true } },
   { path: '/privacy', name: 'privacy', component: () => import('@/views/Privacy.vue'), meta: { public: true } },
+  { path: '/terms', name: 'terms', component: () => import('@/views/Terms.vue'), meta: { public: true } },
   { path: '/delete-account', name: 'delete-account', component: () => import('@/views/Deletion.vue'), meta: { public: true } },
   { path: '/login', name: 'login', component: () => import('@/views/Login.vue') },
   { path: '/s/:shareId', name: 'shared', component: () => import('@/views/Shared.vue'), meta: { public: true } },

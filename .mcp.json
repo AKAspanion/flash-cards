@@ -4,7 +4,9 @@
       "command": "npx",
       "args": [
         "-y",
-        "@playwright/mcp@latest"
+        "@playwright/mcp@latest",
+        "--config",
+        ".ga/playwright-mcp.json"
       ]
     },
     "chrome-devtools": {

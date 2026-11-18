@@ -292,6 +292,7 @@
     "no-account": "Don't have an account?",
     "have-account": "Already have an account?",
     "forgot": "Forgot password?",
+    "agree": "By signing up you agree to the {terms} and {privacy}.",
     "reset": {
       "send": "Send reset link",
       "back": "Back to login"
@@ -380,6 +381,7 @@
   },
   "links": {
     "privacy": "Privacy policy",
+    "terms": "Terms of service",
     "delete": "Delete account"
   },
   "privacy": {
@@ -420,6 +422,44 @@
       "body": "Ankit Kumar Pandit, {email}"
     },
     "changes": "If this policy changes, the date above changes with it."
+  },
+  "terms": {
+    "title": "Terms of service",
+    "updated": "Last updated: 17 November 2026",
+    "intro": "FlashCards is made by Ankit Kumar Pandit. By using it, you agree to these terms.",
+    "who": {
+      "title": "Who can use it",
+      "body": "You must be 13 or older to use FlashCards. Keep your sign-in details safe; you are responsible for what happens in your account."
+    },
+    "yours": {
+      "title": "Your sets",
+      "body": "The sets, cards and labels you make are yours. We store them only to run the app for you, as the Privacy policy explains."
+    },
+    "sharing": {
+      "title": "Sharing",
+      "body": "When you share a set, anyone with its link can view it and add a copy to their own library, until you stop sharing. Copies already added stay with the people who added them."
+    },
+    "rules": {
+      "title": "What's not allowed",
+      "body": "Only put on your cards what you have the right to use. Don't use FlashCards for anything unlawful or abusive, or that infringes someone else's rights."
+    },
+    "enforce": {
+      "title": "If the terms are broken",
+      "body": "We may remove shared content, or close an account, that breaks these terms."
+    },
+    "warranty": {
+      "title": "No warranty",
+      "body": "FlashCards is free and provided \"as is\", without warranties of any kind. As far as the law allows, we are not liable for any loss or damage from using it."
+    },
+    "law": {
+      "title": "Governing law",
+      "body": "These terms are governed by the laws of India."
+    },
+    "contact": {
+      "title": "Contact",
+      "body": "Ankit Kumar Pandit, {email}"
+    },
+    "changes": "If these terms change, the date above changes with it."
   },
   "deletion": {
     "title": "Delete your FlashCards account",

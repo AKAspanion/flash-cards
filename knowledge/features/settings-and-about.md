@@ -12,7 +12,7 @@ verified: human:panditankit1995@gmail.com
 
 `/settings` sets the language (English or Hindi), dark mode, how sets are ordered on the home screen (five orders: Alphabetically, New first, Old first, Progress, Recently studied; see [library](library.md)), and whether
 favourites go on top. `/info` shows the app version and lets the user copy or open the web link and, when one is
-configured, the Google Play listing. It also links to the [privacy policy and the delete-account
+configured, the Google Play listing. It also links to the [privacy policy, the terms of service and the delete-account
 page](privacy-and-deletion-pages.md). The screen ends with the AdSense banner
 (`src/components/AdBanner.vue`, [decision](../decisions/adsense-banner-ads.md)).
 
@@ -44,6 +44,7 @@ time with Add to calendar ([daily reminder](daily-reminder.md)). `/stats` is rea
 
 ## History
 
+- 2026-11-18: `/info` linked the privacy and delete-account pages; now the terms of service too, because the app gained terms. See [what the terms say](../decisions/terms-of-service-content.md).
 - 2026-11-05: Settings had no goal or reminder, and a backup did not carry read-aloud languages; now it has a Daily goal select and a reminder time, and backups keep the languages, because of the progress-habits, reminders and rich-cards plans. Backup and restore no longer both refuse offline: only restore does.
 - 2026-11-05: the order list had three items; now five, adding Progress and Recently studied, and the open list is labelled for axe.
 - 2026-11-05: Settings had only device-local preferences; now it also backs up and restores the user's sets, because the usability spec's 5.3 put data export there.

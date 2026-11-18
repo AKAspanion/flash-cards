@@ -22,6 +22,7 @@ test('public pages are accessible', async ({ page }) => {
   for (const [path, heading] of [
     ['/privacy', 'Privacy policy'],
     ['/delete-account', 'Delete your FlashCards account'],
+    ['/terms', 'Terms of service'],
   ]) {
     await page.goto(path);
     await expect(page.getByRole('heading', { name: heading })).toBeVisible();

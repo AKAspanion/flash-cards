@@ -114,9 +114,7 @@
                 <router-link
                   v-if="i > 0"
                   to="/delete-account"
-                >
-                  {{ t('links.delete') }}
-                </router-link>{{ part }}
+                >{{ t('links.delete') }}</router-link>{{ part }}
               </template>
             </p>
           </div>
@@ -155,6 +153,11 @@
     </v-card>
     <p class="text-body-small legal__changes">
       {{ t('privacy.changes') }}
+    </p>
+    <p class="text-body-small legal__also">
+      <router-link to="/terms">
+        {{ t('links.terms') }}
+      </router-link>
     </p>
   </div>
 </template>
@@ -222,6 +225,10 @@ const contactParts = computed(() => t('privacy.contact.body', { email: CONTACT_E
 }
 .legal__changes {
   max-width: 640px;
-  padding: 16px 32px 96px;
+  padding: 16px 32px 0;
+}
+.legal__also {
+  max-width: 640px;
+  padding: 8px 32px 96px;
 }
 </style>

@@ -14,7 +14,8 @@ verified: human:panditankit1995@gmail.com
   tests, rules tests, production build, `pnpm audit --prod` of shipped dependencies, build and audit of
   `functions/`) and
   job `e2e` (the Playwright suite; the report is uploaded on failure). `e2e` is skipped on pull requests and runs
-  only when deploy calls CI ([e2e before deploy](../decisions/e2e-only-before-deploy.md)).
+  only when deploy calls CI ([e2e before deploy](../decisions/e2e-only-before-deploy.md)). The root audit ignores
+  one unpatched advisory, `GHSA-fc5q-39xc-vjpf` ([picomatch ReDoS](../decisions/audit-ignores-picomatch-redos.md)).
 - `.github/workflows/deploy.yml`, on push to `master` or by hand: runs `ci.yml`, checks that the deploy variables
   and secret exist, builds, and deploys hosting to the live channel, passing the optional AdSense variables `VUE_APP_ADSENSE_CLIENT` and `VUE_APP_ADSENSE_SLOT` to the build ([environment](../operations/environment.md)). Run by hand with `deploy_rules` ticked, it also
   deploys `firestore.rules`. One deploy runs at a time (concurrency group `deploy-production`).
@@ -35,6 +36,7 @@ verified: human:panditankit1995@gmail.com
 
 ## History
 
+- 2026-11-18: the audit failed on every advisory; now it ignores `GHSA-fc5q-39xc-vjpf`, which has no fix and doesn't reach the built app. See [picomatch ReDoS](../decisions/audit-ignores-picomatch-redos.md).
 - 2026-11-04: `e2e` ran on every pull request; now only before a deploy, as the developer decided. See [e2e before deploy](../decisions/e2e-only-before-deploy.md).
 - 2026-11-04: the root and `functions/` installed with `npm ci` and were audited with `npm audit`; now `pnpm install --frozen-lockfile` and `pnpm audit --prod`, because both moved to pnpm. See [pnpm](../decisions/pnpm-package-manager.md).
 
